@@ -1,0 +1,11 @@
+Package: spatialFDA
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person("Martin", "Emons", , "martin.emons@uzh.ch", role = c("aut", "cre"),
+           comment = c(ORCID = "0009-0000-5219-5311"))
+Description: What the package does (one paragraph).
+License: GPL (>= 3) + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
