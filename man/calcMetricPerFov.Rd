@@ -4,7 +4,7 @@
 \alias{calcMetricPerFov}
 \title{Calculate a spatial metric on a spatial experiment object per field of view}
 \usage{
-calcMetricPerFov(spe, selection, fun, marks = NULL, r_seq = NULL)
+calcMetricPerFov(spe, selection, fun, marks = NULL, r_seq = NULL, ncores = 1)
 }
 \arguments{
 \item{spe}{a spatial experiment object}
@@ -16,9 +16,13 @@ calcMetricPerFov(spe, selection, fun, marks = NULL, r_seq = NULL)
 \item{marks}{the marks to consider e.g. cell types}
 
 \item{r_seq}{the range of r values to compute the function over}
+
+\item{ncores}{the number of cores to use for parallel processing, default is 1}
 }
 \value{
-a list of spatstat metric objects with the fov number, the number of points and the centroid of the image
+a dataframe of the spatstat metric objects with the radius r, the
+theoretical value of a Poisson process, the different border corrections
+the fov number, the number of points and the centroid of the image
 }
 \description{
 Calculate a spatial metric on a spatial experiment object per field of view
@@ -26,5 +30,5 @@ Calculate a spatial metric on a spatial experiment object per field of view
 \examples{
  spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
  metric_res <- calcMetricPerFov(spe, c('alpha', 'beta'), fun = 'Gcross'
- , marks = 'cell_type', r_seq = seq(0,50, length.out = 50))
+ , marks = 'cell_type', r_seq = seq(0,50, length.out = 50), ncores = 2)
 }
