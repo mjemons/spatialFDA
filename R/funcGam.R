@@ -22,7 +22,7 @@
 #'  metric_res <- calcMetricPerFov(spe, c('alpha', 'beta'), fun = 'Gcross',
 #'  marks = 'cell_type', r_seq = seq(0,50, length.out = 50), ncores = 2)
 #'  metric_res$ID <- paste0(metric_res$condition,'x' ,metric_res$patient_id,
-#'  'x',metric_res$image_id)
+#'  'x', metric_res$image_id)
 #'  #extract the functional response matrix
 #'  mat <- metric_res %>% select(ID, r, rs) %>%
 #'  spread(ID, rs) %>% select(!r)

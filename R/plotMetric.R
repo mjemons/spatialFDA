@@ -21,9 +21,10 @@
 #' @import dplyr ggplot2
 plotMetricPerFov <- function(spe, selection, fun, marks = NULL, r_seq = NULL, ncores = 1, correction = NULL, x = NULL){
   metric_df <- calcMetricPerFov(spe, selection, fun, marks, r_seq, ncores = ncores)
+  metric_df$ID <- paste0(metric_df$condition,'|' ,metric_df$patient_id)
   p <- ggplot(metric_df, aes(x = .data[[x]], y = .data[[correction]], color = factor(image_id))) +
     geom_line() +
-    facet_wrap(~patient_id) +
+    facet_wrap(~ID) +
     theme_minimal() +
     theme(legend.position = "none") +
     labs(title = paste0(fun, ' metric for ', paste(selection, collapse = ' and ')))
