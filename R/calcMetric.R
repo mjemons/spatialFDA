@@ -19,6 +19,7 @@
 extractMetric <- function(spe, selection, fov, fun, marks = NULL, r_seq = NULL){
   pp <- .speToppp(spe, marks = marks)
   patient_id <- spe$patient_id %>% unique()
+  condition <- spe$patient_stage %>% unique()
   pp_sub <- subset(pp, marks %in% selection, drop = TRUE)
 
   #small quality control to only consider pp that have more than 100 points per fov and more than one unique mark
@@ -27,6 +28,7 @@ extractMetric <- function(spe, selection, fov, fun, marks = NULL, r_seq = NULL){
     metric_res <- do.call(fun, args = list(X=pp_sub, r = r_seq))
     metric_res$image_id = fov
     metric_res$patient_id = patient_id
+    metric_res$condition = condition
     metric_res$npoints = spatstat.geom::npoints(pp_sub)
     centroid <- spatstat.geom::centroid.owin(pp_sub$window)
     metric_res$centroidx <- centroid$x
