@@ -1,5 +1,5 @@
 Package: spatialFDA
-Title: What the Package Does (One Line, Title Case)
+Title: A Tool for Spatial Multi-sample Comparisons
 Version: 0.0.0.9000
 Authors@R: c(
     person("Martin", "Emons", , "martin.emons@uzh.ch", role = c("aut", "cre"),
