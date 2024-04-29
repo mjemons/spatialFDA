@@ -54,6 +54,7 @@ General additive model with functional response
  dat$image_id <- factor(sapply(split_data, `[`, 3))
  #create a designmatrix
  condition <- dat$condition
+ #relevel the condition - can set explicit contrasts here
  condition <- relevel(condition, 'Non-diabetic')
  designmat <- model.matrix( ~ condition)
  #colnames don't work with the '-' sign
