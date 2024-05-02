@@ -69,8 +69,7 @@ functionalGam <- function(data, x, designmat, weights, formula){
   mdl <- refund::pffr(formula,
               yind=x,
               data=data,
-              weights = weights,
-              method = "REML")
+              weights = weights)
   endTime <- Sys.time()
   print(endTime-startTime)
   return(mdl)
