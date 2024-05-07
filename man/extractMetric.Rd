@@ -4,7 +4,7 @@
 \alias{extractMetric}
 \title{Compute a spatial metric on a spatial experiment object}
 \usage{
-extractMetric(spe, selection, fov, fun, marks = NULL, r_seq = NULL)
+extractMetric(spe, selection, fov, fun, marks = NULL, r_seq = NULL, by = NULL)
 }
 \arguments{
 \item{spe}{a spatial experiment object subset to a single image}
@@ -18,9 +18,12 @@ extractMetric(spe, selection, fov, fun, marks = NULL, r_seq = NULL)
 \item{marks}{the marks to consider e.g. cell types}
 
 \item{r_seq}{the range of r values to compute the function over}
+
+\item{by}{the spe colData variable(s) to add to the meta data}
 }
 \value{
-a spatstat metric object with the fov number, the number of points and the centroid of the image
+a spatstat metric object with the fov number, the number of
+points and the centroid of the image
 }
 \description{
 Compute a spatial metric on a spatial experiment object
@@ -29,5 +32,6 @@ Compute a spatial metric on a spatial experiment object
  spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
  spe_sub <- subset(spe, ,image_number == '138')
  metric_res <- extractMetric(spe_sub, c('alpha', 'beta'), 138, fun = 'Gcross'
- , marks = 'cell_type', r_seq = seq(0,1000, length.out = 100))
+ , marks = 'cell_type', r_seq = seq(0,1000, length.out = 100),
+ by = c('patient_stage', 'patient_id'))
 }

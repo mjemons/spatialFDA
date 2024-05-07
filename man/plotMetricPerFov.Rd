@@ -7,9 +7,11 @@
 plotMetricPerFov(
   spe,
   selection,
+  subsetby = NULL,
   fun,
   marks = NULL,
   r_seq = NULL,
+  by = NULL,
   ncores = 1,
   correction = NULL,
   x = NULL
@@ -20,11 +22,15 @@ plotMetricPerFov(
 
 \item{selection}{the mark(s) you want to compare}
 
+\item{subsetby}{the spe colData variable to subset the data by}
+
 \item{fun}{the spatstat function to compute on the point pattern object}
 
 \item{marks}{the marks to consider e.g. cell types}
 
 \item{r_seq}{the range of r values to compute the function over}
+
+\item{by}{the spe colData variable(s) to add to the meta data}
 
 \item{ncores}{the number of cores to use for parallel processing, default is 1}
 
@@ -40,8 +46,8 @@ Plot a spatial metric per field of view
 }
 \examples{
  spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
- p <- plotMetricPerFov(spe, c('alpha', 'beta'), fun = 'Gcross'
- , marks = 'cell_type', r_seq = seq(0,50, length.out = 50), ncores = 2,
- correction = 'rs', x = 'r')
+ p <- plotMetricPerFov(spe, c('alpha', 'beta'), subsetby = 'image_number',
+ fun = 'Gcross' , marks = 'cell_type', r_seq = seq(0,50, length.out = 50),
+ by = c('patient_stage', 'patient_id'), ncores = 2, correction = 'rs', x = 'r')
  print(p)
 }

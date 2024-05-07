@@ -19,9 +19,10 @@
 #'  library('dplyr')
 #'  spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 #'  #calculate the Gcross metric for alpha and beta cells
-#'  metric_res <- calcMetricPerFov(spe, c('alpha', 'beta'), fun = 'Gcross',
-#'  marks = 'cell_type', r_seq = seq(0,50, length.out = 50), ncores = 2)
-#'  metric_res$ID <- paste0(metric_res$condition,'x' ,metric_res$patient_id,
+#'  metric_res <- calcMetricPerFov(spe, c('alpha', 'beta'), subsetby = 'image_number', fun = 'Gcross',
+#'  marks = 'cell_type', r_seq = seq(0,50, length.out = 50),
+#'  c('patient_stage', 'patient_id'), ncores = 2)
+#'  metric_res$ID <- paste0(metric_res$patient_stage,'x' ,metric_res$patient_id,
 #'  'x', metric_res$image_id)
 #'  #extract the functional response matrix
 #'  mat <- metric_res %>% select(ID, r, rs) %>%
