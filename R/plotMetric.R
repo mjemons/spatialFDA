@@ -24,7 +24,7 @@
 plotMetricPerFov <- function(spe, selection, subsetby = NULL, fun, marks = NULL, r_seq = NULL, by = NULL, ncores = 1, correction = NULL, x = NULL){
   metric_df <- calcMetricPerFov(spe, selection, subsetby, fun, marks, r_seq, by = by, ncores = ncores)
   metric_df$ID <- paste0(metric_df[[by[1]]],'|' ,metric_df[[by[2]]])
-  p <- ggplot(metric_df, aes(x = .data[[x]], y = .data[[correction]], color = factor(image_id))) +
+  p <- ggplot(metric_df, aes(x = .data[[x]], y = .data[[correction]], group = factor(image_id), colour = factor(ID))) +
     geom_line() +
     facet_wrap(~ID) +
     theme_minimal() +
