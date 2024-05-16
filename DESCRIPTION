@@ -1,12 +1,12 @@
 Package: spatialFDA
 Title: A Tool for Spatial Multi-sample Comparisons
-Version: 0.0.0.9000
+Version: 0.99.0
 Authors@R: c(
     person("Martin", "Emons", , "martin.emons@uzh.ch", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-5219-5311")),
     person("Mark", "Robinson", , "mark.robinson@mls.uzh.ch", role = c("aut"),
            comment = c(ORCID = "0000-0002-3048-5518")))
-Description: What the package does (one paragraph).
+Description: spatialFDA is a package to calculate spatial statistics metrics and compare them across samples/conditions using functional additive models. Furthermore, it provides exploratory visualisations using functional principal component analysis.
 License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -23,3 +23,10 @@ Imports:
     stringr,
     SummarizedExperiment,
     tidyr
+biocViews: Software, Spatial, Transcriptomics
+VignetteBuilder: knitr
+Suggests: 
+    knitr,
+    rmarkdown,
+    BiocStyle
+
