@@ -46,5 +46,6 @@ Plot a biplot from an fPCA analysis
  dat$patient_id <- factor(sapply(split_data, `[`, 2))
  dat$image_id <- factor(sapply(split_data, `[`, 3))
  #calculate fPCA
- mdl <- plotFpca(dat = dat, r = metric_res$r |> unique(), knots = 30, pve=0.99)
+ p <- plotFpca(dat = dat, r = metric_res$r |> unique(), knots = 30, pve=0.99)
+ print(p)
 }
