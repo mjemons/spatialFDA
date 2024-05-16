@@ -1,0 +1,30 @@
+---
+title: "Functional Data Analysis of Spatial Metrics"
+author: 
+  - name: "Martin Emons"
+    affiliation:
+      - &DMLS Department of Molecular Life Sciences, University of Zurich, Switzerland
+      - &SIB SIB Swiss Institute of Bioinformatics, University of Zurich, Switzerland
+    email: "martin.emons@uzh.ch"
+  - name: Mark D. Robinson
+    affiliation:
+      - *DMLS
+      - *SIB
+package: "`r BiocStyle::Biocpkg('spatialFDA')`"
+output:
+  BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Functional Data Analysis of Spatial Metrics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}  
+---
+
+```{r v1, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE
+)
+```
+
+
