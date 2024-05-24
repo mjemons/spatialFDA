@@ -13,6 +13,9 @@ author:
 package: "`r BiocStyle::Biocpkg('spatialFDA')`"
 output:
   BiocStyle::html_document
+abstract: >
+  A package to calculate spatial statistics metrics and compare them with 
+  functional additive mixed models
 vignette: >
   %\VignetteIndexEntry{Functional Data Analysis of Spatial Metrics}
   %\VignetteEngine{knitr::rmarkdown}
@@ -27,4 +30,190 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Introduction
 
+This vignette demonstrates how to use `r BiocStyle::Biocpkg('spatialFDA')` to perform functional data analysis on spatial statistics metrics. The main aim of this package is to detect differential spatial arrangements within and between celltypes given several samples/conditions. It does so by calculating spatial statistics metrics via the `r BiocStyle::CRANpkg('spatstat')` package and comparing for differences using functional additive mixed models as implemented in the `r BiocStyle::CRANpkg('refund')` package.
+
+The package consists thus from two main steps.
+
+- calculating spatial statistics within or between discrete/continuous marks via `r BiocStyle::CRANpkg('spatstat')`.
+
+- comparing these curves across conditions using functional additive mixed models as implemented in `r BiocStyle::CRANpkg('refund')`.
+
+The use case is a dataset from the `r BiocStyle::Biocpkg('imcdatasets')` package. The dataset contains images from 12 human donors [@damondMapHumanType2019]. 
+
+# Installation
+
+`r BiocStyle::Biocpkg('spatialFDA')` can be installed and loaded from Bioconductor as follows
+
+```{r installation, include = TRUE, eval=FALSE}
+if (!requireNamespace("BiocManager"))
+    install.packages("BiocManager")
+BiocManager::install("spatialFDA")
+```
+
+```{r setup}
+library('spatialFDA')
+library('dplyr')
+library('ggplot2')
+library('tidyr')
+library('stringr')
+library('dplyr')
+```
+
+# Getting started
+
+In this vignette we will analyse a diabetes dataset acquired by imaging mass cytometry (IMC) as developed by Damond et al. [@damondMapHumanType2019]. The dataset contains images from 12 human donors, 4 healthy and 8 with type 1 diabetes (T1D). With IMC, 35 markers were measured at single cell resolution [@damondMapHumanType2019].
+
+## Loading the data
+
+The Damond et al. [@damondMapHumanType2019] dataset is easily loaded via the `r BiocStyle::Biocpkg('imcdatasets')` package. For computational reasons we will work with a reduced dataset for three patients. The entire dataset can be loaded by setting `full_dataset = TRUE`.  The package offers multiple datatypes, we will use the `r BiocStyle::Biocpkg('SpatialExperiment')` (SPE) object.
+
+```{r loading}
+#load the dataset as SpatialExperiment object
+spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+spe
+``` 
+
+
+## Visualising the raw data
+
+We can look at the fields of view of the diabetes dataset. To do so we extract the spatial coordinates, store them as a dataframe and add the colData from the SPE to this. Finally due to overplotting, we will look only secretory cells ($\alpha, \beta$ and $\delta$ cells) and T-cells (CD8+ and CD4+ T-cells) for the first four fovs of the healthy sample.
+
+```{r plotting fovs}
+df <- as.data.frame(spatialCoords(spe))
+
+df <- cbind(df, colData(spe))
+
+df_sub <- df %>% subset(cell_type %in% c('alpha', 'beta', 'delta', 'Th', 'Tc'))  %>%  
+  subset(image_name %in% c('E02', 'E03', 'E04', 'E05'))
+p <- ggplot(df_sub, aes(x = cell_x, y = cell_y, color = cell_type)) + 
+  geom_point() + 
+  facet_wrap(~image_name, scales='free') + 
+  theme_light()
+
+p
+```
+
+# Calculating Spatial Statistics Metrics
+
+In a first step, we calculate a spatial statistic curve as implemented by `r BiocStyle::CRANpkg('spatstat')`. One can choose from a range of metrics for discrete marks and calculate these within a mark or between two marks. Common metrics are:
+
+- Ripley's $K$ function and its variance stabilised form, Besag's $L$
+
+- Pair correlation function $g$
+
+- Nearest-neighbour function $G$
+
+- Empty space function $F$
+
+All of these function have different implementations to correct for inhomogeneity and for comparison between two marks (cross functions) [@baddeleySpatialPointPatterns]. 
+
+
+## Correlation
+
+With correlation metrics we assess the distances of all points to one another while normalising for effects of different density and of the window size $|W|$. Furthermore, spatial metrics are corrected for edge effects, the fact that points at the boarder of a fov have not a fully observed neighborhood [@baddeleySpatialPointPatterns, pp. 204].  
+
+A known metric is Ripley's $K$ function or its variance-stabilised transformation, the $L$ function. We can calculate a variant of the $L$ function with the function `calcMetricPerFov` between e.g $\alpha$ and $\beta$ cells. The output is a dataframe with the following most important columns:
+
+- `r`: the radius at which the spatial metric is evaluated
+
+- `theo`: the theoretical value of a homogeneous (Poisson) realisation of a point process
+
+- `border`: an edge corrected value of the $L$ function
+
+
+```{r Lfunction}
+metric_res <- calcMetricPerFov(spe, c('alpha', 'beta'),
+ subsetby = 'image_number',fun = 'Lcross', marks = 'cell_type',
+ r_seq = seq(0,50, length.out = 50), by = c('patient_stage', 'patient_id'),
+ ncores = 2)
+
+metric_res %>% head()
+```
+
+We can visualise this metric with `plotMetricPerFov` function. Here, we need to specify which border correction we want to plot and what the x-axis is. Both can vary from function to function.
+
+```{r plotLfunction}
+p <- plotMetricPerFov(metric_res, correction = 'border', x = 'r')
+print(p)
+```
+
+by eye we see now big difference between the conditions in terms of correlation.
+
+## Spacing
+
+Another important aspect of spatial analysis is spacing. Here, the shortest distances or empty space to the next neighbor is calculated. This gives a different aspect of a point pattern than correlation or intensity of points. Two very well known concepts are:
+
+- nearest-neighbor distance distribution $G$
+
+- empty space function $F$
+
+[@baddeleySpatialPointPatterns, pp. 255-266]
+
+For spacing metrics we get different border corrections but the calculation stays the same:
+
+```{r Gfunction}
+metric_res <- calcMetricPerFov(spe, c('alpha', 'beta'),
+ subsetby = 'image_number',fun = 'Gcross', marks = 'cell_type',
+ r_seq = seq(0,50, length.out = 50), by = c('patient_stage', 'patient_id'),
+ ncores = 2)
+
+metric_res %>% head()
+```
+
+```{r plotGfunction}
+p <- plotMetricPerFov(metric_res, correction = 'rs', x = 'r')
+print(p)
+```
+
+In the nearest-neighbor distance function we see a strong difference between long duration T1D, onset T1D and non-diabetic controls. 
+
+# Functional additive mixed models
+
+The $L$ function above showed no clear difference between the three conditions whereas the $G$ function showed a strong difference between long duration T1D and the two other conditions. In order to test these differences we will use functional additive mixed models. These are generalisations of standard additive mixed models to compare functions over their entire domain. The package that we use is the `r BiocStyle::CRANpkg('refund')` package [@scheiplFunctionalAdditiveMixed2013, @scheiplGeneralizedFunctionalAdditive2016].
+
+In this context we need to specify a design matrix and contrasts. 
+
+[TODO: potentially write a wrapper to create the dat dataframe as pffr expects it]
+
+```{r funcGamG}
+#create a unique ID for each row
+metric_res$ID <- paste0(metric_res$patient_stage,'x' ,metric_res$patient_id,
+ 'x', metric_res$image_id)
+#extract the functional response matrix
+mat <- metric_res %>% select(ID, r, rs) %>%
+spread(ID, rs) %>% select(!r)
+#extract the number of points as weights - are ordered differently,
+#thus order according to image ID
+weights <- metric_res %>% group_by(ID) %>%
+select(ID, npoints) %>% unique() %>% arrange(ID)
+#create a dataframe as required by pffr
+dat <-  data.frame(ID = colnames(mat))
+dat$Y = t(mat)
+#create meta info of the IDs
+split_data <- str_split(dat$ID, "x")
+dat$condition <- factor(sapply(split_data, `[`, 1))
+dat$patient_id <- factor(sapply(split_data, `[`, 2))
+dat$image_id <- factor(sapply(split_data, `[`, 3))
+#create a designmatrix
+condition <- dat$condition
+#relevel the condition - can set explicit contrasts here
+condition <- relevel(condition, 'Non-diabetic')
+designmat <- model.matrix( ~ condition)
+#colnames don't work with the '-' sign
+colnames(designmat) <- c('(Intercept)', 'conditionLong_duration', 'conditionOnset')
+#fit the model
+mdl <- functionalGam(dat = dat, x = metric_res$r |> unique(),
+designmat = designmat, weights = weights$npoints,
+formula = formula(Y ~ conditionLong_duration +
+conditionOnset + s(patient_id,  bs='re')))
+summary(mdl)
+plot(mdl)
+```
+
+# Functional Principal Component Analysis
+
+```{r sessionInfo}
+sessionInfo()
+```
