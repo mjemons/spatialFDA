@@ -75,6 +75,10 @@ calcMetricPerFov <- function(spe, selection, subsetby = NULL, fun, marks = NULL,
                                 fun = fun, marks = marks, r_seq = r_seq, by = by) %>% as.data.frame()
     return(metric_res)
   }, mc.cores = ncores) %>% bind_rows()
+  #store metadata of the calculation in the dataframe
+  metric_df$ID <- paste0(metric_df[[by[1]]],'|' ,metric_df[[by[2]]])
+  metric_df$fun <- fun
+  metric_df$selection <- paste(selection, collapse = ' and ')
   return(metric_df)
 }
 
