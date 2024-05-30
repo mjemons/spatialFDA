@@ -59,6 +59,7 @@ library('ggplot2')
 library('tidyr')
 library('stringr')
 library('dplyr')
+library('patchwork')
 ```
 
 # Getting started
@@ -175,22 +176,14 @@ The $L$ function above showed no clear difference between the three conditions w
 
 In this context we need to specify a design matrix and contrasts. 
 
-[TODO: potentially write a wrapper to create the dat dataframe as pffr expects it]
-
-```{r funcGamG}
+```{r funcGamG, fig.height=10}
 #create a unique ID for each row
 metric_res$ID <- paste0(metric_res$patient_stage,'x' ,metric_res$patient_id,
  'x', metric_res$image_id)
-#extract the functional response matrix
-mat <- metric_res %>% select(ID, r, rs) %>%
-spread(ID, rs) %>% select(!r)
-#extract the number of points as weights - are ordered differently,
-#thus order according to image ID
-weights <- metric_res %>% group_by(ID) %>%
-select(ID, npoints) %>% unique() %>% arrange(ID)
-#create a dataframe as required by pffr
-dat <-  data.frame(ID = colnames(mat))
-dat$Y = t(mat)
+
+#prepare dataframe from calcMetricRes to be in the correct format for pffr
+dat <- prepData(metric_res, 'r', 'rs')
+
 #create meta info of the IDs
 split_data <- str_split(dat$ID, "x")
 dat$condition <- factor(sapply(split_data, `[`, 1))
@@ -198,18 +191,21 @@ dat$patient_id <- factor(sapply(split_data, `[`, 2))
 dat$image_id <- factor(sapply(split_data, `[`, 3))
 #create a designmatrix
 condition <- dat$condition
-#relevel the condition - can set explicit contrasts here
+#relevel the condition - can set explicit contrasts here - default is treamtment
+#control contrast
 condition <- relevel(condition, 'Non-diabetic')
 designmat <- model.matrix( ~ condition)
 #colnames don't work with the '-' sign
-colnames(designmat) <- c('(Intercept)', 'conditionLong_duration', 'conditionOnset')
+colnames(designmat) <- c('Intercept', 'conditionLong_duration', 'conditionOnset')
 #fit the model
 mdl <- functionalGam(dat = dat, x = metric_res$r |> unique(),
-designmat = designmat, weights = weights$npoints,
+designmat = designmat, weights = dat$weights$npoints,
 formula = formula(Y ~ conditionLong_duration +
 conditionOnset + s(patient_id,  bs='re')))
 summary(mdl)
-plot(mdl)
+
+plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl)
+wrap_plots(plot_ls,nrow=3)
 ```
 
 # Functional Principal Component Analysis
