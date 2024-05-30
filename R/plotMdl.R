@@ -51,6 +51,7 @@ plotMdl <- function(mdl, predictor){
     geom_line() +
     #here, I implement a Wald CI - could be improved
     geom_ribbon(data=df,aes(ymin=value-1.96*se,ymax=value + 1.96*se),alpha=0.3) +
+    geom_hline(yintercept = 0, linetype = 'dashed', color = 'red') +
     ggtitle(predictor) +
     theme_light()
   return(p)
