@@ -38,16 +38,8 @@ General additive model with functional response
  c('patient_stage', 'patient_id'), ncores = 2)
  metric_res$ID <- paste0(metric_res$patient_stage,'x' ,metric_res$patient_id,
  'x', metric_res$image_id)
- #extract the functional response matrix
- mat <- metric_res \%>\% select(ID, r, rs) \%>\%
- spread(ID, rs) \%>\% select(!r)
- #extract the number of points as weights - are ordered differently,
- #thus order according to image ID
- weights <- metric_res \%>\% group_by(ID) \%>\%
- select(ID, npoints) \%>\% unique() \%>\% arrange(ID)
- #create a dataframe as required by pffr
- dat <-  data.frame(ID = colnames(mat))
- dat$Y = t(mat)
+ #prepare data for FDA
+ dat <- prepData(metric_res, 'r', 'rs')
  #create meta info of the IDs
  split_data <- str_split(dat$ID, "x")
  dat$condition <- factor(sapply(split_data, `[`, 1))
@@ -62,7 +54,7 @@ General additive model with functional response
  colnames(designmat) <- c('(Intercept)', 'conditionLong_duration', 'conditionOnset')
  #fit the model
  mdl <- functionalGam(dat = dat, x = metric_res$r |> unique(),
- designmat = designmat, weights = weights$npoints,
+ designmat = designmat, weights = dat$weights$npoints,
  formula = formula(Y ~ conditionLong_duration +
  conditionOnset + s(patient_id,  bs='re')))
  summary(mdl)
