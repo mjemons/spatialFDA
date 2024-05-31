@@ -53,7 +53,6 @@ plotMdl <- function(mdl, predictor){
     geom_ribbon(data=df,aes(ymin=value-1.96*se,ymax=value + 1.96*se),alpha=0.3) +
     geom_hline(yintercept = 0, linetype = 'dashed', color = 'red') +
     ggtitle(predictor) +
-    theme_light() +
-    ylim(-0.5, 0.45)
+    theme_light()
   return(p)
 }
