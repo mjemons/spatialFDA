@@ -79,9 +79,7 @@ functionalPCA <- function(dat, r, knots, pve=0.95){
 #'  p <- plotFpca(dat = dat, r = metric_res$r |> unique(), knots = 30, pve=0.99)
 #'  print(p)
 #' @import dplyr
-plotFpca <- function(dat, r, knots, pve=0.95){
-  #calculate the fPCA
-  res <- functionalPCA(dat = dat, r = r, knots = knots, pve=pve)
+plotFpca <- function(dat, res){
   scores_df <- res$scores %>% as.data.frame()
   #plot fCPA results - assumes same order of fPCA results and input data
   p <- ggplot(scores_df, aes(scores_df[,1], scores_df[,2], colour = factor(dat$condition), label = factor(dat$patient_id))) +
