@@ -182,7 +182,7 @@ metric_res$ID <- paste0(metric_res$patient_stage,'x' ,metric_res$patient_id,
  'x', metric_res$image_id)
 
 #prepare dataframe from calcMetricRes to be in the correct format for pffr
-dat <- prepData(metric_res, 'r', 'border')
+dat <- prepData(metric_res, 'r', 'rs')
 
 #create meta info of the IDs
 split_data <- str_split(dat$ID, "x")
@@ -208,9 +208,20 @@ plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl)
 wrap_plots(plot_ls,nrow=3)
 ```
 
+We note that there is no difference in the $G$ function between non-diabetic and early onset T1D samples but a strong difference between non-diabetic and long duration T1D. This difference is most pronounced at $\sim 25 µm$ and deteriorates at longer distances. Therefore, we don't only see that a spatial difference colocalisation of $\alpha$ and $\beta$ cells is statistically significant but also at which spatial scale this difference occurs.
 
+# Functional principal component analysis
 
-# Functional Principal Component Analysis
+Another analysis that can be performed is functional principal componentent analysis (fPCA). This is a method to capture the main modes of variation in functional data [@ramsayPrincipalComponentsAnalysis2005][@illianPrincipalComponentAnalysis2006]. We use the `r BiocStyle::CRANpkg('refund')` implementation of fPCA. 
+
+```{r fPCA}
+#calculate the fPCA
+pca <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve=0.99)
+#plot the biplot of the first two PCs
+plotFpca(dat = dat, res = pca)
+```
+
+In the biplot above we get a very basic differentiation of the $G$ curves. Long-duration T1D separates from non-diabetic and onset T1D along the first fPC. The second fPC describes less variation. The onset T1D samples are less clustered and more spread out along the first two fPCs than the non-diabetic samples.
 
 ```{r sessionInfo}
 sessionInfo()
