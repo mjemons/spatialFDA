@@ -182,7 +182,7 @@ metric_res$ID <- paste0(metric_res$patient_stage,'x' ,metric_res$patient_id,
  'x', metric_res$image_id)
 
 #prepare dataframe from calcMetricRes to be in the correct format for pffr
-dat <- prepData(metric_res, 'r', 'rs')
+dat <- prepData(metric_res, 'r', 'border')
 
 #create meta info of the IDs
 split_data <- str_split(dat$ID, "x")
@@ -207,6 +207,8 @@ summary(mdl)
 plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl)
 wrap_plots(plot_ls,nrow=3)
 ```
+
+
 
 # Functional Principal Component Analysis
 
