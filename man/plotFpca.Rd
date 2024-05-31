@@ -4,7 +4,7 @@
 \alias{plotFpca}
 \title{Plot a biplot from an fPCA analysis}
 \usage{
-plotFpca(dat, r, knots, pve = 0.95)
+plotFpca(dat, res)
 }
 \arguments{
 \item{dat}{a data object for functional data analysis containing at least the
