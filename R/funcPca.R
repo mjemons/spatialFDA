@@ -45,9 +45,7 @@ functionalPCA <- function(dat, r, knots, pve=0.95){
 #'
 #' @param dat a data object for functional data analysis containing at least the
 #' the functional
-#' @param r the functional domain
-#' @param knots the number of knots
-#' @param pve the proportion of variance explained
+#' @param res the output from the fPCA calculation
 #'
 #' @return a list with components of fpca.face
 #' @export
@@ -76,7 +74,8 @@ functionalPCA <- function(dat, r, knots, pve=0.95){
 #'  dat$patient_id <- factor(sapply(split_data, `[`, 2))
 #'  dat$image_id <- factor(sapply(split_data, `[`, 3))
 #'  #calculate fPCA
-#'  p <- plotFpca(dat = dat, r = metric_res$r |> unique(), knots = 30, pve=0.99)
+#'  mdl <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve=0.99)
+#'  p <- plotFpca(dat = dat, res = mdl)
 #'  print(p)
 #' @import dplyr
 plotFpca <- function(dat, res){
