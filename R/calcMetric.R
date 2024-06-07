@@ -26,8 +26,8 @@ extractMetric <- function(spe, selection, fov, fun, marks = NULL, r_seq = NULL, 
 
   #small quality control to only consider pp that have more than 100 points per
   #fov and more than one unique mark and that each mark has more than one point
-  if(spatstat.geom::npoints(pp_sub)>100 &&
-    (length(unique(spatstat.geom::marks(pp_sub)))>1 && sum(table(pp_sub$marks) > 5) > 1)
+  if(spatstat.geom::npoints(pp_sub)>50 &&
+    (length(unique(spatstat.geom::marks(pp_sub)))>1 && sum(table(pp_sub$marks) > 2) > 1)
     || length(selection) == 1){
     #TODO: Here I just fix the r values in the range between 0 and 500 to have
     #the same values to compare against in the library fda - that is not ideal
@@ -68,13 +68,13 @@ extractMetric <- function(spe, selection, fov, fun, marks = NULL, r_seq = NULL, 
 calcMetricPerFov <- function(spe, selection, subsetby = NULL, fun, marks = NULL,
                              r_seq = NULL, by = NULL, ncores = 1){
   fovs <- spe[[subsetby]] %>% unique()
-  future::plan(multisession, gc = TRUE, workers = ncores)
-  metric_df <- future.apply::future_lapply(fovs, function(x){
+  #future::plan(multisession, gc = TRUE, workers = ncores)
+  metric_df <- parallel::mclapply(fovs, function(x){
     spe_sub <- subset(spe, ,spe[[subsetby]] == x)
     metric_res <- extractMetric(spe = spe_sub, selection = selection, fov = x,
                                 fun = fun, marks = marks, r_seq = r_seq, by = by) %>% as.data.frame()
     return(metric_res)
-  }, future.globals = TRUE) %>% bind_rows()
+  }, mc.cores = ncores) %>% bind_rows()
   #store metadata of the calculation in the dataframe
   metric_df$ID <- paste0(metric_df[[by[1]]],'|' ,metric_df[[by[2]]])
   metric_df$fun <- fun
