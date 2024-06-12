@@ -7,17 +7,17 @@
 #'
 #' @examples
 #' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' spe_sub <- subset(spe, ,image_number == '138')
-#' pp <- .speToppp(spe_sub, marks = 'cell_type')
+#' spe_sub <- subset(spe, , image_number == "138")
+#' pp <- .speToppp(spe_sub, marks = "cell_type")
 #'
 #' @importFrom SummarizedExperiment colData
-.speToppp <- function(spe, marks = NULL){
-  df <- data.frame(x = SpatialExperiment::spatialCoords(spe)[,1], y = SpatialExperiment::spatialCoords(spe)[,2])
-  #is this definition of the window actually correct? Do I underestimate it?
-  pp <- spatstat.geom::as.ppp(df, W = spatstat.geom::owin(c(min(df$x)-1,max(df$x)+1),c(min(df$y)-1,max(df$y)+1)))
-  #set the marks
-  spatstat.geom::marks(pp) <- factor(colData(spe)[[marks]])
-  return(pp)
+.speToppp <- function(spe, marks = NULL) {
+    df <- data.frame(x = SpatialExperiment::spatialCoords(spe)[, 1], y = SpatialExperiment::spatialCoords(spe)[, 2])
+    # is this definition of the window actually correct? Do I underestimate it?
+    pp <- spatstat.geom::as.ppp(df, W = spatstat.geom::owin(c(min(df$x) - 1, max(df$x) + 1), c(min(df$y) - 1, max(df$y) + 1)))
+    # set the marks
+    spatstat.geom::marks(pp) <- factor(colData(spe)[[marks]])
+    return(pp)
 }
 
 #' Apply .as_ppp to a list of images
@@ -31,13 +31,13 @@
 #'
 #' @examples
 #' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' pp_ls <- .apply_ls_ppp(spe, list('138','139'),marks = 'cell_type' )
+#' pp_ls <- .apply_ls_ppp(spe, list("138", "139"), marks = "cell_type")
 #'
-.apply_ls_ppp <- function(spe, subset, marks = NULL){
-  pp_ls <- lapply(subset, function(x){
-    spe_sub <- subset(spe, ,image_number == x)
-    pp <- .speToppp(spe_sub, marks = marks)
-    return(pp)
-  })
-  return(pp_ls)
+.apply_ls_ppp <- function(spe, subset, marks = NULL) {
+    pp_ls <- lapply(subset, function(x) {
+        spe_sub <- subset(spe, , image_number == x)
+        pp <- .speToppp(spe_sub, marks = marks)
+        return(pp)
+    })
+    return(pp_ls)
 }
