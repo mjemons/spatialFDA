@@ -24,9 +24,9 @@ vignette: >
 
 ```{r v1, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = TRUE
+    collapse = TRUE,
+    comment = "#>",
+    eval = TRUE
 )
 ```
 
@@ -47,19 +47,20 @@ The use case is a dataset from the `r BiocStyle::Biocpkg('imcdatasets')` package
 `r BiocStyle::Biocpkg('spatialFDA')` can be installed and loaded from Bioconductor as follows
 
 ```{r installation, include = TRUE, eval=FALSE}
-if (!requireNamespace("BiocManager"))
+if (!requireNamespace("BiocManager")) {
     install.packages("BiocManager")
+}
 BiocManager::install("spatialFDA")
 ```
 
 ```{r setup}
-library('spatialFDA')
-library('dplyr')
-library('ggplot2')
-library('tidyr')
-library('stringr')
-library('dplyr')
-library('patchwork')
+library("spatialFDA")
+library("dplyr")
+library("ggplot2")
+library("tidyr")
+library("stringr")
+library("dplyr")
+library("patchwork")
 ```
 
 # Getting started
@@ -71,7 +72,7 @@ In this vignette we will analyse a diabetes dataset acquired by imaging mass cyt
 The Damond et al. [@damondMapHumanType2019] dataset is easily loaded via the `r BiocStyle::Biocpkg('imcdatasets')` package. For computational reasons we will work with a reduced dataset for three patients. The entire dataset can be loaded by setting `full_dataset = TRUE`.  The package offers multiple datatypes, we will use the `r BiocStyle::Biocpkg('SpatialExperiment')` (SPE) object.
 
 ```{r loading}
-#load the dataset as SpatialExperiment object
+# load the dataset as SpatialExperiment object
 spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 spe
 ``` 
@@ -86,12 +87,13 @@ df <- as.data.frame(spatialCoords(spe))
 
 df <- cbind(df, colData(spe))
 
-df_sub <- df %>% subset(cell_type %in% c('alpha', 'beta', 'delta', 'Th', 'Tc'))  %>%  
-  subset(image_name %in% c('E02', 'E03', 'E04', 'E05'))
-p <- ggplot(df_sub, aes(x = cell_x, y = cell_y, color = cell_type)) + 
-  geom_point() + 
-  facet_wrap(~image_name, scales='free') + 
-  theme_light()
+df_sub <- df %>%
+    subset(cell_type %in% c("alpha", "beta", "delta", "Th", "Tc")) %>%
+    subset(image_name %in% c("E02", "E03", "E04", "E05"))
+p <- ggplot(df_sub, aes(x = cell_x, y = cell_y, color = cell_type)) +
+    geom_point() +
+    facet_wrap(~image_name, scales = "free") +
+    theme_light()
 
 p
 ```
@@ -125,10 +127,11 @@ A known metric is Ripley's $K$ function or its variance-stabilised transformatio
 
 
 ```{r Lfunction}
-metric_res <- calcMetricPerFov(spe, c('alpha', 'beta'),
- subsetby = 'image_number',fun = 'Lcross', marks = 'cell_type',
- r_seq = seq(0,50, length.out = 50), by = c('patient_stage', 'patient_id'),
- ncores = 2)
+metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
+    subsetby = "image_number", fun = "Lcross", marks = "cell_type",
+    r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
+    ncores = 2
+)
 
 metric_res %>% head()
 ```
@@ -136,7 +139,7 @@ metric_res %>% head()
 We can visualise this metric with `plotMetricPerFov` function. Here, we need to specify which border correction we want to plot and what the x-axis is. Both can vary from function to function.
 
 ```{r plotLfunction}
-p <- plotMetricPerFov(metric_res, correction = 'border', x = 'r')
+p <- plotMetricPerFov(metric_res, correction = "border", x = "r")
 print(p)
 ```
 
@@ -155,16 +158,17 @@ Another important aspect of spatial analysis is spacing. Here, the shortest dist
 For spacing metrics we get different border corrections but the calculation stays the same:
 
 ```{r Gfunction}
-metric_res <- calcMetricPerFov(spe, c('alpha', 'beta'),
- subsetby = 'image_number',fun = 'Gcross', marks = 'cell_type',
- r_seq = seq(0,50, length.out = 50), by = c('patient_stage', 'patient_id'),
- ncores = 2)
+metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
+    subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+    r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
+    ncores = 2
+)
 
 metric_res %>% head()
 ```
 
 ```{r plotGfunction}
-p <- plotMetricPerFov(metric_res, correction = 'rs', x = 'r')
+p <- plotMetricPerFov(metric_res, correction = "rs", x = "r")
 print(p)
 ```
 
@@ -177,35 +181,39 @@ The $L$ function above showed no clear difference between the three conditions w
 In this context we need to specify a design matrix and contrasts. 
 
 ```{r funcGamG, fig.height=10}
-#create a unique ID for each row
-metric_res$ID <- paste0(metric_res$patient_stage,'x' ,metric_res$patient_id,
- 'x', metric_res$image_id)
+# create a unique ID for each row
+metric_res$ID <- paste0(
+    metric_res$patient_stage, "x", metric_res$patient_id,
+    "x", metric_res$image_id
+)
 
-#prepare dataframe from calcMetricRes to be in the correct format for pffr
-dat <- prepData(metric_res, 'r', 'rs')
+# prepare dataframe from calcMetricRes to be in the correct format for pffr
+dat <- prepData(metric_res, "r", "rs")
 
-#create meta info of the IDs
+# create meta info of the IDs
 split_data <- str_split(dat$ID, "x")
 dat$condition <- factor(sapply(split_data, `[`, 1))
 dat$patient_id <- factor(sapply(split_data, `[`, 2))
 dat$image_id <- factor(sapply(split_data, `[`, 3))
-#create a designmatrix
+# create a designmatrix
 condition <- dat$condition
-#relevel the condition - can set explicit contrasts here - default is treamtment
-#control contrast
-condition <- relevel(condition, 'Non-diabetic')
-designmat <- model.matrix( ~ condition)
-#colnames don't work with the '-' sign
-colnames(designmat) <- c('Intercept', 'conditionLong_duration', 'conditionOnset')
-#fit the model
-mdl <- functionalGam(dat = dat, x = metric_res$r |> unique(),
-designmat = designmat, weights = dat$weights$npoints,
-formula = formula(Y ~ conditionLong_duration +
-conditionOnset + s(patient_id,  bs='re')))
+# relevel the condition - can set explicit contrasts here - default is treamtment
+# control contrast
+condition <- relevel(condition, "Non-diabetic")
+designmat <- model.matrix(~condition)
+# colnames don't work with the '-' sign
+colnames(designmat) <- c("Intercept", "conditionLong_duration", "conditionOnset")
+# fit the model
+mdl <- functionalGam(
+    dat = dat, x = metric_res$r |> unique(),
+    designmat = designmat, weights = dat$weights$npoints,
+    formula = formula(Y ~ conditionLong_duration +
+        conditionOnset + s(patient_id, bs = "re"))
+)
 summary(mdl)
 
 plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl)
-wrap_plots(plot_ls,nrow=3)
+wrap_plots(plot_ls, nrow = 3)
 ```
 
 We note that there is no difference in the $G$ function between non-diabetic and early onset T1D samples but a strong difference between non-diabetic and long duration T1D. This difference is most pronounced at $\sim 25 µm$ and deteriorates at longer distances. Therefore, we don't only see that a spatial difference colocalisation of $\alpha$ and $\beta$ cells is statistically significant but also at which spatial scale this difference occurs.
@@ -215,9 +223,9 @@ We note that there is no difference in the $G$ function between non-diabetic and
 Another analysis that can be performed is functional principal componentent analysis (fPCA). This is a method to capture the main modes of variation in functional data [@ramsayPrincipalComponentsAnalysis2005][@illianPrincipalComponentAnalysis2006]. We use the `r BiocStyle::CRANpkg('refund')` implementation of fPCA. 
 
 ```{r fPCA}
-#calculate the fPCA
-pca <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve=0.99)
-#plot the biplot of the first two PCs
+# calculate the fPCA
+pca <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
+# plot the biplot of the first two PCs
 plotFpca(dat = dat, res = pca)
 ```
 

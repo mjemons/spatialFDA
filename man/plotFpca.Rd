@@ -10,11 +10,7 @@ plotFpca(dat, res)
 \item{dat}{a data object for functional data analysis containing at least the
 the functional}
 
-\item{r}{the functional domain}
-
-\item{knots}{the number of knots}
-
-\item{pve}{the proportion of variance explained}
+\item{res}{the output from the fPCA calculation}
 }
 \value{
 a list with components of fpca.face
@@ -23,29 +19,36 @@ a list with components of fpca.face
 Plot a biplot from an fPCA analysis
 }
 \examples{
- #load the pancreas dataset
- library('tidyr')
- library('stringr')
- library('dplyr')
- spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
- #calculate the Gcross metric for alpha and beta cells
- metric_res <- calcMetricPerFov(spe, c('alpha', 'beta'), subsetby = 'image_number', fun = 'Gcross',
- marks = 'cell_type', r_seq = seq(0,50, length.out = 50),
- c('patient_stage', 'patient_id'), ncores = 2)
- metric_res$ID <- paste0(metric_res$patient_stage,'x' ,metric_res$patient_id,
- 'x', metric_res$image_id)
- #extract the functional response matrix
- mat <- metric_res \%>\% select(ID, r, rs) \%>\%
- spread(ID, rs) \%>\% select(!r)
- #create a dataframe as required by pffr
- dat <-  data.frame(ID = colnames(mat))
- dat$Y = t(mat)
- #create meta info of the IDs
- split_data <- str_split(dat$ID, "x")
- dat$condition <- factor(sapply(split_data, `[`, 1))
- dat$patient_id <- factor(sapply(split_data, `[`, 2))
- dat$image_id <- factor(sapply(split_data, `[`, 3))
- #calculate fPCA
- p <- plotFpca(dat = dat, r = metric_res$r |> unique(), knots = 30, pve=0.99)
- print(p)
+# load the pancreas dataset
+library("tidyr")
+library("stringr")
+library("dplyr")
+spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+# calculate the Gcross metric for alpha and beta cells
+metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
+    subsetby = "image_number", fun = "Gcross",
+    marks = "cell_type", r_seq = seq(0, 50, length.out = 50),
+    c("patient_stage", "patient_id"), ncores = 2
+)
+metric_res$ID <- paste0(
+    metric_res$patient_stage, "x", metric_res$patient_id,
+    "x", metric_res$image_id
+)
+# extract the functional response matrix
+mat <- metric_res \%>\%
+    select(ID, r, rs) \%>\%
+    spread(ID, rs) \%>\%
+    select(!r)
+# create a dataframe as required by pffr
+dat <- data.frame(ID = colnames(mat))
+dat$Y <- t(mat)
+# create meta info of the IDs
+split_data <- str_split(dat$ID, "x")
+dat$condition <- factor(sapply(split_data, `[`, 1))
+dat$patient_id <- factor(sapply(split_data, `[`, 2))
+dat$image_id <- factor(sapply(split_data, `[`, 3))
+# calculate fPCA
+mdl <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
+p <- plotFpca(dat = dat, res = mdl)
+print(p)
 }
