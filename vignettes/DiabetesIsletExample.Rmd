@@ -73,7 +73,7 @@ The Damond et al. [@damondMapHumanType2019] dataset is easily loaded via the `r 
 
 ```{r loading}
 # load the dataset as SpatialExperiment object
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = TRUE)
 spe
 ``` 
 
