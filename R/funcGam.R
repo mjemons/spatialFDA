@@ -50,7 +50,7 @@
 #'         conditionOnset + s(patient_id, bs = "re"))
 #' )
 #' summary(mdl)
-#' plot(mdl)
+#' plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl)
 
 #' @import dplyr
 
