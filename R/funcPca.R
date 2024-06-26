@@ -1,4 +1,4 @@
-#' Functional Principal Component Regression
+#' Functional Principal Component Analysis
 #'
 #' @param dat a data object for functional data analysis containing at least the
 #' the functional
