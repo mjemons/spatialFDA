@@ -34,6 +34,7 @@ extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = N
         # TODO: Here I just fix the r values in the range between 0 and 500 to have
         # the same values to compare against in the library fda - that is not ideal
         metric_res <- do.call(fun, args = list(X = pp_sub, r = r_seq))
+        # is this needed?
         metric_res$image_id <- df$image_number %>% unique()
         metric_res <- cbind(metric_res, meta_data)
         metric_res$npoints <- spatstat.geom::npoints(pp_sub)
