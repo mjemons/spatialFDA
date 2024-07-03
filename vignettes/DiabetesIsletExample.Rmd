@@ -139,7 +139,7 @@ metric_res %>% head()
 We can visualise this metric with `plotMetricPerFov` function. Here, we need to specify which border correction we want to plot and what the x-axis is. Both can vary from function to function.
 
 ```{r plotLfunction}
-p <- plotMetricPerFov(metric_res, correction = "border", x = "r")
+p <- plotMetricPerFov(metric_res, correction = "border", x = "r", image_id = 'image_id', ID = 'ID')
 print(p)
 ```
 
@@ -168,7 +168,7 @@ metric_res %>% head()
 ```
 
 ```{r plotGfunction}
-p <- plotMetricPerFov(metric_res, correction = "rs", x = "r")
+p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = 'image_id', ID = 'ID')
 print(p)
 ```
 

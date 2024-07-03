@@ -41,9 +41,10 @@ the fov number, the number of points and the centroid of the image
 Calculate a spatial metric on a spatial experiment object per field of view
 }
 \examples{
- spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
- metric_res <- calcMetricPerFov(spe, c('alpha', 'beta'),
- subsetby = 'image_number',fun = 'Gcross', marks = 'cell_type',
- r_seq = seq(0,50, length.out = 50), by = c('patient_stage', 'patient_id'),
- ncores = 2)
+spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
+    subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+    r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
+    ncores = 2
+)
 }
