@@ -22,14 +22,17 @@ response Y and the weights
 Prepare data from calcMetricRes to be in the right format for FDA
 }
 \examples{
- spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
- metric_res <- calcMetricPerFov(spe, c('alpha', 'beta'),
- subsetby = 'image_number',fun = 'Gcross', marks = 'cell_type',
- r_seq = seq(0,50, length.out = 50), by = c('patient_stage', 'patient_id'),
- ncores = 2)
+spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
+    subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+    r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
+    ncores = 2
+)
 
-#create a unique ID for each row
-metric_res$ID <- paste0(metric_res$patient_stage,'x' ,metric_res$patient_id,
-                       'x', metric_res$image_id)
-dat <- prepData(metric_res, 'r', 'rs')
+# create a unique ID for each row
+metric_res$ID <- paste0(
+    metric_res$patient_stage, "x", metric_res$patient_id,
+    "x", metric_res$image_id
+)
+dat <- prepData(metric_res, "r", "rs")
 }

@@ -4,7 +4,13 @@
 \alias{plotMetricPerFov}
 \title{Plot a spatial metric per field of view}
 \usage{
-plotMetricPerFov(metric_df, correction = NULL, x = NULL)
+plotMetricPerFov(
+  metric_df,
+  correction = NULL,
+  x = NULL,
+  image_id = NULL,
+  ID = NULL
+)
 }
 \arguments{
 \item{metric_df}{the metric dataframe as calculated by calcMetricPerFov}
@@ -12,6 +18,10 @@ plotMetricPerFov(metric_df, correction = NULL, x = NULL)
 \item{correction}{the border correction to plot}
 
 \item{x}{the x-axis variable to plot}
+
+\item{image_id}{the ID of the image/fov}
+
+\item{ID}{a unique sample ID}
 }
 \value{
 a ggplot object
@@ -20,11 +30,12 @@ a ggplot object
 Plot a spatial metric per field of view
 }
 \examples{
- spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
- metric_res <- calcMetricPerFov(spe, c('alpha', 'beta'),
- subsetby = 'image_number',fun = 'Gcross', marks = 'cell_type',
- r_seq = seq(0,50, length.out = 50), by = c('patient_stage', 'patient_id'),
- ncores = 2)
- p <- plotMetricPerFov(metric_res, correction = 'rs', x = 'r')
- print(p)
+spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
+    subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+    r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
+    ncores = 2
+)
+p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = 'image_id', ID = 'ID')
+print(p)
 }

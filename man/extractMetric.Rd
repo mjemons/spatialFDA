@@ -4,14 +4,13 @@
 \alias{extractMetric}
 \title{Compute a spatial metric on a spatial experiment object}
 \usage{
-extractMetric(spe, selection, fov, fun, marks = NULL, r_seq = NULL, by = NULL)
+extractMetric(df, selection, fun, marks = NULL, r_seq = NULL, by = NULL)
 }
 \arguments{
-\item{spe}{a spatial experiment object subset to a single image}
+\item{df}{A dataframe with the x and y coordinates from the corresponding
+SpatialExperiment and the ColData}
 
 \item{selection}{the mark(s) you want to compare}
-
-\item{fov}{the field of view number}
 
 \item{fun}{the spatstat function to compute on the point pattern object}
 
@@ -29,9 +28,12 @@ points and the centroid of the image
 Compute a spatial metric on a spatial experiment object
 }
 \examples{
- spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
- spe_sub <- subset(spe, ,image_number == '138')
- metric_res <- extractMetric(spe_sub, c('alpha', 'beta'), 138, fun = 'Gcross'
- , marks = 'cell_type', r_seq = seq(0,1000, length.out = 100),
- by = c('patient_stage', 'patient_id'))
+spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+spe_sub <- subset(spe, , image_number == "138")
+df_sub <- .speToDf(spe_sub)
+metric_res <- extractMetric(df_sub, c("alpha", "beta"),
+    fun = "Gcross",
+    marks = "cell_type", r_seq = seq(0, 1000, length.out = 100),
+    by = c("patient_stage", "patient_id")
+)
 }
