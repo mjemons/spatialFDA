@@ -34,6 +34,21 @@ extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = N
         # TODO: Here I just fix the r values in the range between 0 and 500 to have
         # the same values to compare against in the library fda - that is not ideal
         metric_res <- do.call(fun, args = list(X = pp_sub, r = r_seq))
+    }
+    # This handles the case when we do cross functions for the same type
+    else if (spatstat.geom::npoints(pp_sub) > 2 &&
+             length(unique(selection)) == 1 &&
+             length(selection) > 1) {
+      metric_res <- do.call(fun, args = list(X = pp_sub, selection[1], selection[2], r = r_seq))
+    }
+    # When there are no cells of one type this will construct a dummy metric_res
+    # similar to the case of when a non-cross function is calles in a fov where
+    # there are no cells (e.g "Ependymal cells" in fov 0.21).
+    else {
+      metric_res <- data.frame(r = r_seq, fun = fun, theo = NA,
+                               border = NA, trans = NA, iso = NA,
+                               row.names = seq(1:length(r_seq)))
+    }
         # is this needed?
         metric_res$image_id <- df$image_number %>% unique()
         metric_res <- cbind(metric_res, meta_data)
@@ -42,7 +57,6 @@ extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = N
         metric_res$centroidx <- centroid$x
         metric_res$centroidy <- centroid$y
         return(metric_res)
-    }
 }
 
 #' Calculate a spatial metric on a spatial experiment object per field of view
