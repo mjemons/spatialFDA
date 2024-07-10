@@ -32,3 +32,49 @@ plotMetricPerFov <- function(metric_df, theo = FALSE, correction = NULL, x = NUL
     }
     return(p)
 }
+
+
+
+
+#' Plot a cross type spatial metric per field of view
+#'
+#' @param metric_df the metric dataframe as calculated by calcMetricPerFov
+#' @param theo logical; if the theoretical line should be plotted
+#' @param correction the border correction to plot
+#' @param x the x-axis variable to plot
+#' @param image_id the ID of the image/fov
+#'
+#' @return a ggplot object
+#' @export
+#'
+#' @examples #TBD
+plotCrossMetricPerFov <- function(metric_df,
+                                  theo = NULL,
+                                  correction = NULL,
+                                  x = NULL,
+                                  image_id = NULL) {
+  # Find all unique samples
+  samples <- metric_df[[image_id]] |> unique()
+
+  #  Creates a nXn plot of the cross metrics per sample
+  plotCrossFOV <- function(sub_fov, theo, correction, x, image_id) {
+    #  Apply plot metric function for each combination
+    lp <- lapply(unique(sub_fov$selection), function(sel)
+      plotMetricPerFov(sub_fov[sub_fov$selection == sel, ], theo, correction, x, image_id))
+    #  Count number of marks
+    nMarks <- length(unique(sub_fov$selection))
+    # Wraps the plot in an nXn grid
+    p <- wrap_plots(lp, ncol = sqrt(nMarks)) +
+      plot_layout(guides = "collect") &
+      theme(legend.position = 'bottom')
+    return(p)
+  }
+
+  # Applies the function abouve to all samples
+  res_p <- lapply(samples, function(fov) {
+    sub_fov <- subset(metric_df, sample_id %in% fov)
+    return(plotCrossFOV(sub_fov, theo, correction, x, image_id))
+  })
+
+  return(res_p)
+}
