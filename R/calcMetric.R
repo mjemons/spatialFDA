@@ -88,3 +88,38 @@ calcMetricPerFov <- function(
     metric_df$selection <- paste(selection, collapse = " and ")
     return(metric_df)
 }
+
+
+#' Calculate cross spatial metrics for all combinations on a spatial experiment object per field of view
+#'
+#' @param spe a spatial experiment object
+#' @param selection the mark(s) you want to compare
+#' @param subsetby the spe colData variable to subset the data by
+#' @param fun the spatstat function to compute on the point pattern object
+#' @param marks the marks to consider e.g. cell types
+#' @param r_seq the range of r values to compute the function over
+#' @param by the spe colData variable(s) to add to the meta data
+#' @param ncores the number of cores to use for parallel processing, default = 1
+#'
+#' @return a dataframe of the spatstat metric objects with the radius r, the
+#' theoretical value of a Poisson process, the different border corrections
+#' the fov number, the number of points and the centroid of the image
+#' @export
+#'
+#' @examples
+calcCrossMetricPerFov <- function(spe, selection, subsetby = NULL, fun,
+                                  marks = NULL, r_seq = NULL, by = NULL,
+                                  ncores = 1) {
+
+  # This creates a grid with all possible 2 way combinations
+  l <- apply(expand.grid(selection, selection), 1, function(x) {
+    return(c(x[1], x[2]))
+  }) |> t()
+
+  # calculate the metric per FOV
+  res_l <- apply(l, 1, function(x)
+    calcMetricPerFov(spe, x, subsetby, fun, marks, r_seq, by, ncores))
+
+  # Bind the data and return
+  return(bind_rows(res_l))
+}
