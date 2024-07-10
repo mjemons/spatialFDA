@@ -1,10 +1,10 @@
 #' Plot a spatial metric per field of view
 #'
 #' @param metric_df the metric dataframe as calculated by calcMetricPerFov
+#' @param theo logical; if the theoretical line should be plotted
 #' @param correction the border correction to plot
 #' @param x the x-axis variable to plot
 #' @param image_id the ID of the image/fov
-#' @param ID a unique sample ID
 #'
 #' @return a ggplot object
 #' @export
@@ -16,10 +16,10 @@
 #'     r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
 #'     ncores = 2
 #' )
-#' p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = 'image_id', ID = 'ID')
+#' p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = 'image_id')
 #' print(p)
 #' @import dplyr ggplot2
-plotMetricPerFov <- function(metric_df, correction = NULL, x = NULL, image_id = NULL, ID = NULL) {
+plotMetricPerFov <- function(metric_df, theo = FALSE, correction = NULL, x = NULL, image_id = NULL) {
     p <- ggplot(metric_df, aes(x = .data[[x]], y = .data[[correction]], group = factor(.data[[image_id]]), colour = factor(.data[[ID]]))) +
         geom_line() +
         # geom_line(aes(x=.data[[x]],y=theo),linetype = "dashed")+
@@ -27,5 +27,8 @@ plotMetricPerFov <- function(metric_df, correction = NULL, x = NULL, image_id = 
         theme_minimal() +
         theme(legend.position = "none") +
         labs(title = paste0(metric_df$fun, " metric for ", unique(metric_df$selection)))
+    if (theo == TRUE){
+      p <- p + geom_line(aes(x=.data[[x]],y=theo),linetype = "dashed", color = "black")
+    }
     return(p)
 }
