@@ -29,8 +29,8 @@ extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = N
     # small quality control to only consider pp that have more than 100 points per
     # fov and more than one unique mark and that each mark has more than one point
     if (spatstat.geom::npoints(pp_sub) > 100 &&
-        (length(unique(spatstat.geom::marks(pp_sub))) > 1 && sum(table(pp_sub$marks) > 2) > 0) ||
-        length(selection) == 1) {
+        ((length(unique(spatstat.geom::marks(pp_sub))) > 1 && sum(table(pp_sub$marks) > 2) > 1) ||
+        length(selection) == 1)) {
         # TODO: Here I just fix the r values in the range between 0 and 500 to have
         # the same values to compare against in the library fda - that is not ideal
         metric_res <- do.call(fun, args = list(X = pp_sub, r = r_seq))
