@@ -20,10 +20,10 @@
 #' print(p)
 #' @import dplyr ggplot2
 plotMetricPerFov <- function(metric_df, theo = FALSE, correction = NULL, x = NULL, image_id = NULL) {
-    p <- ggplot(metric_df, aes(x = .data[[x]], y = .data[[correction]], group = factor(.data[[image_id]]), colour = factor(.data[[ID]]))) +
+    p <- ggplot(metric_df, aes(x = .data[[x]], y = .data[[correction]], group = factor(.data[[image_id]]), colour = factor(.data[[selection]]))) +
         geom_line() +
         # geom_line(aes(x=.data[[x]],y=theo),linetype = "dashed")+
-        facet_wrap(ID) +
+        facet_wrap(selection~ID) +
         theme_minimal() +
         theme(legend.position = "none") +
         labs(title = paste0(metric_df$fun, " metric for ", unique(metric_df$selection)))
