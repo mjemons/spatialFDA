@@ -126,15 +126,30 @@ calcCrossMetricPerFov <- function(spe, selection, subsetby = NULL, fun,
                                   marks = NULL, r_seq = NULL, by = NULL,
                                   ncores = 1) {
 
-  # This creates a grid with all possible 2 way combinations
-  l <- apply(expand.grid(selection, selection), 1, function(x) {
-    return(c(x[1], x[2]))
-  }) |> t()
+  # Special case of dot functions
+  if (grepl("dot", "Kdot")) {
+    # one vs all other
+    l <- unique(selection)
+    # calculate the metric per FOV
+    res_l <- lapply(l, function(x) {
+      print(x)
+      calcMetricPerFov(spe, x, subsetby, fun, marks, r_seq, by, ncores)
+    })
+    # Bind the data and return
+    return(bind_rows(res_l))
+  }
 
-  # calculate the metric per FOV
-  res_l <- apply(l, 1, function(x)
-    calcMetricPerFov(spe, x, subsetby, fun, marks, r_seq, by, ncores))
+  else{
+    # This creates a grid with all possible 2 way combinations
+    l <- apply(expand.grid(selection, selection), 1, function(x) {
+      return(c(x[1], x[2]))
+    }) |> t()
 
-  # Bind the data and return
-  return(bind_rows(res_l))
+    # calculate the metric per FOV
+    res_l <- apply(l, 1, function(x)
+      calcMetricPerFov(spe, x, subsetby, fun, marks, r_seq, by, ncores))
+
+    # Bind the data and return
+    return(bind_rows(res_l))
+  }
 }
