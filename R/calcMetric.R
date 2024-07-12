@@ -127,7 +127,7 @@ calcCrossMetricPerFov <- function(spe, selection, subsetby = NULL, fun,
                                   ncores = 1) {
 
   # Special case of dot functions
-  if (grepl("dot", "Kdot")) {
+  if (grepl("dot", fun)) {
     # one vs all other
     l <- unique(selection)
     # calculate the metric per FOV
