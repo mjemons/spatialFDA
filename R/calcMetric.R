@@ -39,7 +39,8 @@ extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = N
     else if (spatstat.geom::npoints(pp_sub) > 2 &&
              length(unique(selection)) == 1 &&
              length(selection) > 1) {
-      metric_res <- do.call(fun, args = list(X = pp_sub, selection[1], selection[2], r = r_seq))
+      # here we use pp, otherwise there are problems with the mark connection function
+      metric_res <- do.call(fun, args = list(X = pp, selection[1], selection[2], r = r_seq))
     }
     # When there are no cells of one type this will construct a dummy metric_res
     # similar to the case of when a non-cross function is calles in a fov where
