@@ -30,7 +30,7 @@ extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = N
     # fov and more than one unique mark and that each mark has more than one point
     if (spatstat.geom::npoints(pp_sub) > 2 &&
         ((length(unique(spatstat.geom::marks(pp_sub))) > 1 &&
-        sum(table(pp_sub$marks) > 2) > 0) ||
+        sum(table(pp_sub$marks) > 0) > 1) ||
         length(selection) == 1)) {
         # TODO: Here I just fix the r values in the range between 0 and 500 to have
         # the same values to compare against in the library fda - that is not ideal
@@ -135,27 +135,27 @@ calcCrossMetricPerFov <- function(spe, selection, subsetby = NULL, fun,
   # Special case of dot functions
   if (grepl("dot", fun)) {
     # one vs all other
-    l <- unique(selection)
+    ls <- unique(selection)
     # calculate the metric per FOV
-    res_l <- lapply(l, function(x) {
+    res_ls <- lapply(ls, function(x) {
       print(x)
       calcMetricPerFov(spe, x, subsetby, fun, marks, r_seq, by, ncores)
     })
     # Bind the data and return
-    return(bind_rows(res_l))
+    return(bind_rows(res_ls))
   }
 
   else{
     # This creates a grid with all possible 2 way combinations
-    l <- apply(expand.grid(selection, selection), 1, function(x) {
+    ls <- apply(expand.grid(selection, selection), 1, function(x) {
       return(c(x[1], x[2]))
     }) |> t()
 
     # calculate the metric per FOV
-    res_l <- apply(l, 1, function(x)
+    res_ls <- apply(ls, 1, function(x)
       calcMetricPerFov(spe, x, subsetby, fun, marks, r_seq, by, ncores))
 
     # Bind the data and return
-    return(bind_rows(res_l))
+    return(bind_rows(res_ls))
   }
 }
