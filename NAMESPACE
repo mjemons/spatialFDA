@@ -2,6 +2,7 @@
 
 export(.dfToppp)
 export(.speToDf)
+export(calcCrossMetricPerFov)
 export(calcMetricPerFov)
 export(extractMetric)
 export(functionalGam)

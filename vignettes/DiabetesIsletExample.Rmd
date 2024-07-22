@@ -190,6 +190,9 @@ metric_res$ID <- paste0(
 # prepare dataframe from calcMetricRes to be in the correct format for pffr
 dat <- prepData(metric_res, "r", "rs")
 
+# drop rows with NA 
+dat <- dat |> drop_na()
+
 # create meta info of the IDs
 split_data <- str_split(dat$ID, "x")
 dat$condition <- factor(sapply(split_data, `[`, 1))

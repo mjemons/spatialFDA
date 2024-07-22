@@ -25,14 +25,11 @@
 #'     metric_res$patient_stage, "x", metric_res$patient_id,
 #'     "x", metric_res$image_id
 #' )
-#' # extract the functional response matrix
-#' mat <- metric_res %>%
-#'     select(ID, r, rs) %>%
-#'     spread(ID, rs) %>%
-#'     select(!r)
-#' # create a dataframe as required by pffr
-#' dat <- data.frame(ID = colnames(mat))
-#' dat$Y <- t(mat)
+#' # prepare data for FDA
+#' dat <- prepData(metric_res, "r", "rs")
+#'
+#' # drop rows with NA
+#' dat <- dat |> drop_na()
 #' # create meta info of the IDs
 #' split_data <- str_split(dat$ID, "x")
 #' dat$condition <- factor(sapply(split_data, `[`, 1))
@@ -72,14 +69,11 @@ functionalPCA <- function(dat, r, knots, pve = 0.95) {
 #'     metric_res$patient_stage, "x", metric_res$patient_id,
 #'     "x", metric_res$image_id
 #' )
-#' # extract the functional response matrix
-#' mat <- metric_res %>%
-#'     select(ID, r, rs) %>%
-#'     spread(ID, rs) %>%
-#'     select(!r)
-#' # create a dataframe as required by pffr
-#' dat <- data.frame(ID = colnames(mat))
-#' dat$Y <- t(mat)
+#' # prepare data for FDA
+#' dat <- prepData(metric_res, "r", "rs")
+#'
+#' # drop rows with NA
+#' dat <- dat |> drop_na()
 #' # create meta info of the IDs
 #' split_data <- str_split(dat$ID, "x")
 #' dat$condition <- factor(sapply(split_data, `[`, 1))
