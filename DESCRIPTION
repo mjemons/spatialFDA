@@ -4,6 +4,8 @@ Version: 0.99.0
 Authors@R: c(
     person("Martin", "Emons", , "martin.emons@uzh.ch", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-5219-5311")),
+    person("Samuel", "Gunz", ,role="aut",
+           comment = c(ORCID = "0000-0002-8909-0932")),
     person("Mark", "Robinson", , "mark.robinson@mls.uzh.ch", role = c("aut"),
            comment = c(ORCID = "0000-0002-3048-5518")))
 Description: spatialFDA is a package to calculate spatial statistics metrics and compare them across samples/conditions using functional additive models. Furthermore, it provides exploratory visualisations using functional principal component analysis.
@@ -16,6 +18,7 @@ Imports:
     ggplot2,
     imcdatasets,
     parallel,
+    patchwork,
     refund,
     SpatialExperiment,
     spatstat.explore,
@@ -29,4 +32,3 @@ Suggests:
     knitr,
     rmarkdown,
     BiocStyle
-
