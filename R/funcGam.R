@@ -30,6 +30,10 @@
 #' )
 #' # prepare data for FDA
 #' dat <- prepData(metric_res, "r", "rs")
+#'
+#' # drop rows with NA
+#' dat <- dat |> drop_na()
+#'
 #' # create meta info of the IDs
 #' split_data <- str_split(dat$ID, "x")
 #' dat$condition <- factor(sapply(split_data, `[`, 1))
