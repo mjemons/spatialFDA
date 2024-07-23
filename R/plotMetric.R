@@ -26,7 +26,7 @@ plotMetricPerFov <- function(metric_df, theo = FALSE, correction = NULL, x = NUL
     theme(legend.position = "none") +
     labs(title = paste0(metric_df$fun, " metric for ", unique(metric_df$selection)))
   if (theo == TRUE) p <- p + geom_line(aes(x=.data[[x]],y=theo),linetype = "dashed", color = "black")
-  if (!is.null(ID)) p <- p + facet_wrap(ID)
+  if (!is.null(ID)) p <- p + facet_wrap(~ID)
   return(p)
 }
 
