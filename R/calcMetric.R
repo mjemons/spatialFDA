@@ -89,7 +89,9 @@ calcMetricPerFov <- function(
         r_seq = NULL, by = NULL, ncores = 1) {
     # future::plan(multisession, gc = TRUE, workers = ncores)
     df <- .speToDf(spe)
-    df_ls <- split(df, df[[subsetby]])
+    # we have one case for discrete cell types where we have one column to subset
+    if(sum(grepl('cell_type', marks)) != 0) df_ls <- split(df, df[[subsetby]])
+    else df_ls <- purrr::map(subsetby, ~ df %>% select(all_of(setdiff(names(df), split_columns)), .x))
     metric_df <- parallel::mclapply(df_ls, function(df_sub) {
         metric_res <- extractMetric(
             df = df_sub, selection = selection,
