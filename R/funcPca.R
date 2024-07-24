@@ -87,10 +87,10 @@ functionalPCA <- function(dat, r, knots, pve = 0.95) {
 plotFpca <- function(dat, res, colourby=NULL, labelby=NULL) {
     scores_df <- res$scores %>% as.data.frame()
     # plot fCPA results - assumes same order of fPCA results and input data
-    p <- ggplot(scores_df, aes(scores_df[, 1], scores_df[, 2], colour = factor(dat[[colourby]]), label = factor(dat[[labelby]]))) +
+    p <- ggplot(scores_df, aes(scores_df[, 1], scores_df[, 2], colour = factor(dat[[colourby]]))) +
         geom_point() +
-        geom_text(hjust = 0, vjust = 0) +
         coord_equal() +
         theme_light()
+    if(!is.null(labelby)) p <- p + geom_text(hjust = 0, vjust = 0, aes(label = factor(dat[[labelby]])))
     return(p)
 }
