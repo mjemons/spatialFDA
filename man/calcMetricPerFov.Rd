@@ -12,6 +12,7 @@ calcMetricPerFov(
   marks = NULL,
   r_seq = NULL,
   by = NULL,
+  continuous = FALSE,
   ncores = 1
 )
 }
@@ -29,6 +30,9 @@ calcMetricPerFov(
 \item{r_seq}{the range of r values to compute the function over}
 
 \item{by}{the spe colData variable(s) to add to the meta data}
+
+\item{continuous}{A boolean indicating whether the marks are continuous
+defaults to FALSE}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
 }
