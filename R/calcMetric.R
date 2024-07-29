@@ -26,11 +26,13 @@
 #' @import spatstat.explore
 extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = NULL, continuous = FALSE) {
     pp <- .dfToppp(df, marks = marks, continuous = continuous)
-    meta_data <- df[, by] %>% unique()
     if(!continuous){
       pp_sub <- subset(pp, marks %in% selection, drop = TRUE)
-    }else{
+      meta_data <- df[, by] %>% unique()
+    }
+    else{
       pp_sub <- pp
+      meta_data$gene <- names(df)[names(df) %in% marks]
     }
     # small quality control to only consider pp that have more than 2 points per
     # fov and more than one unique mark and that each mark has more than one point
