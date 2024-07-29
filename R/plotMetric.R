@@ -20,13 +20,14 @@
 #' print(p)
 #' @import dplyr ggplot2
 plotMetricPerFov <- function(metric_df, theo = FALSE, correction = NULL, x = NULL, image_id = NULL, ID = NULL) {
-  p <- ggplot(metric_df, aes(x = .data[[x]], y = .data[[correction]], group = factor(.data[[image_id]]), colour = factor(.data[[ID]]))) +
-    geom_line() +
+  p <- ggplot(metric_df, aes(x = .data[[x]], y = .data[[correction]], group = factor(.data[[image_id]])))
+    if (!is.null(ID)) {p <- p + geom_line(aes(colour = factor(.data[[ID]]))) + facet_wrap(~ID)
+    }else {p <- p + geom_line(colour = factor(.data[[image_id]]))}
+  p <- p +
     theme_minimal() +
     theme(legend.position = "none") +
     labs(title = paste0(metric_df$fun, " metric for ", unique(metric_df$selection)))
   if (theo == TRUE) p <- p + geom_line(aes(x=.data[[x]],y=theo),linetype = "dashed", color = "black")
-  if (!is.null(ID)) p <- p + facet_wrap(~ID)
   return(p)
 }
 
