@@ -4,13 +4,18 @@
 \alias{.dfToppp}
 \title{Convert SpatialExperiment object to ppp object}
 \usage{
-.dfToppp(df, marks = NULL)
+.dfToppp(df, marks = NULL, continuous = FALSE)
 }
 \arguments{
 \item{df}{A dataframe with the x and y coordinates from the corresponding
 SpatialExperiment and the ColData}
 
-\item{marks}{A vector of marks to be associated with the points}
+\item{marks}{A vector of marks to be associated with the points, has to be
+either named 'cell_type' if you want to compare discrete celltypes or else
+continous gene expression measurements are assumed as marks.}
+
+\item{continuous}{A boolean indicating whether the marks are continuous
+defaults to FALSE}
 }
 \value{
 A ppp object for use with \code{spatstat} functions

@@ -19,6 +19,7 @@ Imports:
     imcdatasets,
     parallel,
     patchwork,
+    purrr,
     refund,
     SpatialExperiment,
     spatstat.explore,

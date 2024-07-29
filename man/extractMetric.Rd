@@ -4,7 +4,15 @@
 \alias{extractMetric}
 \title{Compute a spatial metric on a spatial experiment object}
 \usage{
-extractMetric(df, selection, fun, marks = NULL, r_seq = NULL, by = NULL)
+extractMetric(
+  df,
+  selection,
+  fun,
+  marks = NULL,
+  r_seq = NULL,
+  by = NULL,
+  continuous = FALSE
+)
 }
 \arguments{
 \item{df}{A dataframe with the x and y coordinates from the corresponding
@@ -19,6 +27,9 @@ SpatialExperiment and the ColData}
 \item{r_seq}{the range of r values to compute the function over}
 
 \item{by}{the spe colData variable(s) to add to the meta data}
+
+\item{continuous}{A boolean indicating whether the marks are continuous
+defaults to FALSE}
 }
 \value{
 a spatstat metric object with the fov number, the number of
