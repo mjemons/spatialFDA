@@ -23,7 +23,7 @@
 plotMetricPerFov <- function(metric_df, theo = FALSE, correction = NULL, x = NULL, image_id = NULL, ID = NULL) {
   p <- ggplot(metric_df, aes(x = .data[[x]], y = .data[[correction]], group = factor(.data[[image_id]])))
     if (!is.null(ID)) {p <- p + geom_line(aes(colour = factor(.data[[ID]]))) + facet_wrap(~ID)
-    }else {p <- p + geom_line(colour = factor(.data[[image_id]]))}
+    }else {p <- p + geom_line(aes(colour = factor(.data[[image_id]])))}
   p <- p +
     theme_minimal() +
     theme(legend.position = "none") +
