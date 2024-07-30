@@ -9,7 +9,8 @@ plotCrossMetricPerFov(
   theo = NULL,
   correction = NULL,
   x = NULL,
-  image_id = NULL
+  image_id = NULL,
+  ID = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ plotCrossMetricPerFov(
 \item{x}{the x-axis variable to plot}
 
 \item{image_id}{the ID of the image/fov}
+
+\item{ID}{the (optional) ID for plotting combinations}
 }
 \value{
 a ggplot object
@@ -37,6 +40,7 @@ metric_res <- calcCrossMetricPerFov(spe, c("alpha", "beta", "delta"),
     ncores = 2
 )
 metric_res <- subset(metric_res, image_id \%in\% c(138,139,140))
-p <- plotCrossMetricPerFov(metric_res, theo = TRUE, correction = "rs", x = "r", image_id = 'image_id')
+p <- plotCrossMetricPerFov(metric_res, theo = TRUE, correction = "rs",
+x = "r", image_id = 'image_id', ID = 'ID')
 print(p)
 }

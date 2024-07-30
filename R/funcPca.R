@@ -49,6 +49,8 @@ functionalPCA <- function(dat, r, knots, pve = 0.95) {
 #' @param dat a data object for functional data analysis containing at least the
 #' the functional
 #' @param res the output from the fPCA calculation
+#' @param colourby the variable by which to colour the PCA plot by
+#' @param labelby the variable by which to label the PCA plot by
 #'
 #' @return a list with components of fpca.face
 #' @export

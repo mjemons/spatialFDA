@@ -9,7 +9,8 @@ plotMetricPerFov(
   theo = FALSE,
   correction = NULL,
   x = NULL,
-  image_id = NULL
+  image_id = NULL,
+  ID = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ plotMetricPerFov(
 \item{x}{the x-axis variable to plot}
 
 \item{image_id}{the ID of the image/fov}
+
+\item{ID}{the (optional) ID for plotting combinations}
 }
 \value{
 a ggplot object
@@ -36,6 +39,6 @@ metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
     r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
     ncores = 2
 )
-p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = 'image_id')
+p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = 'image_id', ID = 'ID')
 print(p)
 }
