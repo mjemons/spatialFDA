@@ -4,13 +4,17 @@
 \alias{plotFpca}
 \title{Plot a biplot from an fPCA analysis}
 \usage{
-plotFpca(dat, res)
+plotFpca(dat, res, colourby = NULL, labelby = NULL)
 }
 \arguments{
 \item{dat}{a data object for functional data analysis containing at least the
 the functional}
 
 \item{res}{the output from the fPCA calculation}
+
+\item{colourby}{the variable by which to colour the PCA plot by}
+
+\item{labelby}{the variable by which to label the PCA plot by}
 }
 \value{
 a list with components of fpca.face
@@ -46,6 +50,6 @@ dat$patient_id <- factor(sapply(split_data, `[`, 2))
 dat$image_id <- factor(sapply(split_data, `[`, 3))
 # calculate fPCA
 mdl <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
-p <- plotFpca(dat = dat, res = mdl)
+p <- plotFpca(dat = dat, res = mdl, colourby = 'condition', labelby = 'patient_id')
 print(p)
 }

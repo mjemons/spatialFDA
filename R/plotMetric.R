@@ -5,6 +5,7 @@
 #' @param correction the border correction to plot
 #' @param x the x-axis variable to plot
 #' @param image_id the ID of the image/fov
+#' @param ID the (optional) ID for plotting combinations
 #'
 #' @return a ggplot object
 #' @export
@@ -38,19 +39,22 @@ plotMetricPerFov <- function(metric_df, theo = FALSE, correction = NULL, x = NUL
 #' @param correction the border correction to plot
 #' @param x the x-axis variable to plot
 #' @param image_id the ID of the image/fov
+#' @param ID the (optional) ID for plotting combinations
 #'
 #' @return a ggplot object
 #' @export
 #'
-plotCrossFOV <- function(sub_fov, theo, correction, x, image_id, ID) {
+plotCrossFOV <- function(sub_fov, theo, correction, x, image_id, ID = NULL) {
   #  Apply plot metric function for each combination
   lp <- lapply(unique(sub_fov$selection), function(sel)
-    plotMetricPerFov(sub_fov[sub_fov$selection == sel, ], theo, correction, x, image_id, ID))
+    plotMetricPerFov(metric_df = sub_fov[sub_fov$selection == sel, ],
+                     theo = theo, correction = correction, x = x,
+                     image_id = image_id, ID = ID))
   #  Count number of marks
   nMarks <- length(unique(sub_fov$selection))
   # Wraps the plot in an nXn grid
-  p <- wrap_plots(lp, ncol = sqrt(nMarks)) +
-    plot_layout(guides = "collect") &
+  p <- patchwork::wrap_plots(lp, ncol = sqrt(nMarks)) +
+    patchwork::plot_layout(guides = "collect") &
     theme(legend.position = 'bottom')
   return(p)
 }
@@ -63,6 +67,7 @@ plotCrossFOV <- function(sub_fov, theo, correction, x, image_id, ID) {
 #' @param correction the border correction to plot
 #' @param x the x-axis variable to plot
 #' @param image_id the ID of the image/fov
+#' @param ID the (optional) ID for plotting combinations
 #'
 #' @return a ggplot object
 #' @export
@@ -75,7 +80,8 @@ plotCrossFOV <- function(sub_fov, theo, correction, x, image_id, ID) {
 #'     ncores = 2
 #' )
 #' metric_res <- subset(metric_res, image_id %in% c(138,139,140))
-#' p <- plotCrossMetricPerFov(metric_res, theo = TRUE, correction = "rs", x = "r", image_id = 'image_id', ID = 'ID')
+#' p <- plotCrossMetricPerFov(metric_res, theo = TRUE, correction = "rs",
+#' x = "r", image_id = 'image_id', ID = 'ID')
 #' print(p)
 plotCrossMetricPerFov <- function(metric_df,
                                   theo = NULL,
@@ -89,7 +95,8 @@ plotCrossMetricPerFov <- function(metric_df,
   # Applies the function abouve to all samples
   res_p <- lapply(samples, function(fov) {
     sub_fov <- subset(metric_df, image_id %in% fov)
-    return(plotCrossFOV(sub_fov, theo, correction, x, image_id))
+    return(plotCrossFOV(sub_fov = sub_fov, theo = theo, correction = correction,
+                        x = x, image_id = image_id, ID = ID))
   })
 
   return(res_p)
