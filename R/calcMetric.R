@@ -33,6 +33,7 @@ extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = N
     }
     else{
       pp_sub <- pp
+      meta_data <- data.frame(gene = NA)
       meta_data$gene <- names(df)[names(df) %in% marks]
     }
     # small quality control to only consider pp that have more than 2 points per
