@@ -65,7 +65,7 @@ functionalPCA <- function(dat, r, knots, pve = 0.95) {
 #' metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
 #'     subsetby = "image_number", fun = "Gcross",
 #'     marks = "cell_type", r_seq = seq(0, 50, length.out = 50),
-#'     c("patient_stage", "patient_id"), ncores = 2
+#'     c("patient_stage", "patient_id"), ncores = 1
 #' )
 #' metric_res$ID <- paste0(
 #'     metric_res$patient_stage, "x", metric_res$patient_id,
