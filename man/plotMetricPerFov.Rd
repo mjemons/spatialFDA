@@ -37,7 +37,7 @@ spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
     r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
-    ncores = 2
+    ncores = 1
 )
 p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = "image_id", ID = "ID")
 print(p)

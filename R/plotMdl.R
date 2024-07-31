@@ -14,7 +14,7 @@
 #' metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
 #'     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
 #'     r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
-#'     ncores = 2
+#'     ncores = 1
 #' )
 #' # create a unique ID for each row
 #' metric_res$ID <- paste0(

@@ -140,7 +140,7 @@ extractMetric <- function(df,
 #' metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
 #'     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
 #'     r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
-#'     ncores = 2
+#'     ncores = 1
 #' )
 #' @import dplyr parallel
 calcMetricPerFov <- function(spe, selection, subsetby = NULL, fun, marks = NULL,
@@ -191,7 +191,7 @@ calcMetricPerFov <- function(spe, selection, subsetby = NULL, fun, marks = NULL,
 #' metric_res <- calcCrossMetricPerFov(spe, c("alpha", "beta", "delta"),
 #'     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
 #'     r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
-#'     ncores = 2
+#'     ncores = 1
 #' )
 calcCrossMetricPerFov <- function(spe, selection, subsetby = NULL, fun,
     marks = NULL, r_seq = NULL, by = NULL,
