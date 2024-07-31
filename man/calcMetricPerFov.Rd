@@ -13,8 +13,7 @@ calcMetricPerFov(
   r_seq = NULL,
   by = NULL,
   continuous = FALSE,
-  ncores = 1,
-  f = NULL
+  ncores = 1
 )
 }
 \arguments{
@@ -36,8 +35,6 @@ calcMetricPerFov(
 defaults to FALSE}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
-
-\item{f}{A function to specify the kind of interaction between the marks}
 }
 \value{
 a dataframe of the spatstat metric objects with the radius r, the

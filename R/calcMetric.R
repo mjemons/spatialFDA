@@ -9,7 +9,6 @@
 #' @param by the spe colData variable(s) to add to the meta data
 #' @param continuous A boolean indicating whether the marks are continuous
 #' defaults to FALSE
-#' @param f A function to specify the kind of interaction between the marks
 #'
 #' @return a spatstat metric object with the fov number, the number of
 #' points and the centroid of the image
@@ -25,7 +24,7 @@
 #'     by = c("patient_stage", "patient_id")
 #' )
 #' @import spatstat.explore
-extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = NULL, continuous = FALSE, f = NULL) {
+extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = NULL, continuous = FALSE) {
     pp <- .dfToppp(df, marks = marks, continuous = continuous)
     if(!continuous){
       pp_sub <- subset(pp, marks %in% selection, drop = TRUE)
@@ -44,21 +43,45 @@ extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = N
         length(selection) == 1)) {
         # TODO: Here I just fix the r values in the range between 0 and 500 to have
         # the same values to compare against in the library fda - that is not ideal
-        metric_res <- do.call(fun, args = list(X = pp_sub, r = r_seq, f = f))
+      tryCatch({
+        metric_res = do.call(fun, args = list(X = pp_sub, r = r_seq))
+                             },
+          warning = function(w) {
+            print(w)
+            return(metric_res)
+          },
+          error = function(e) {
+            print(e)
+            metric_res <- data.frame(r = r_seq,
+                                     fun = fun,
+                                     row.names = seq(1:length(r_seq)))
+            return(metric_res)
+          }
+        )
+
+      metric_res <- do.call(fun, args = list(X = pp_sub, r = r_seq))
     }
     # This handles the case when we do cross functions for the same type
     else if (spatstat.geom::npoints(pp_sub) > 2 &&
              length(unique(selection)) == 1 &&
              length(selection) > 1) {
+      tryCatch({
       # here we use pp, otherwise there are problems with the mark connection function
-      metric_res <- do.call(fun, args = list(X = pp, selection[1], selection[2], r = r_seq, f = f))
-    }
-    # When there are no cells of one type this will construct a dummy metric_res
-    # similar to the case of when a non-cross function is calles in a fov where
-    # there are no cells (e.g "Ependymal cells" in fov 0.21).
-    else {
-      metric_res <- data.frame(r = r_seq, fun = fun,
+      metric_res = do.call(fun, args = list(X = pp, i = selection[1], j = selection[2], r = r_seq))
+    },
+    warning = function(w) {
+      print(w)
+      return(metric_res)
+    },
+    error = function(e) {
+      print(e)
+      metric_res <- data.frame(r = r_seq,
+                               fun = fun,
                                row.names = seq(1:length(r_seq)))
+      return(metric_res)
+    }
+    )
+
     }
         # is this needed?
         metric_res$image_id <- df$image_number %>% unique()
@@ -82,7 +105,6 @@ extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = N
 #' @param continuous A boolean indicating whether the marks are continuous
 #' defaults to FALSE
 #' @param ncores the number of cores to use for parallel processing, default = 1
-#' @param f A function to specify the kind of interaction between the marks
 #'
 #' @return a dataframe of the spatstat metric objects with the radius r, the
 #' theoretical value of a Poisson process, the different border corrections
@@ -99,7 +121,7 @@ extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = N
 #' @import dplyr parallel
 calcMetricPerFov <- function(
         spe, selection, subsetby = NULL, fun, marks = NULL,
-        r_seq = NULL, by = NULL, continuous = FALSE, ncores = 1, f = NULL) {
+        r_seq = NULL, by = NULL, continuous = FALSE, ncores = 1) {
     # future::plan(multisession, gc = TRUE, workers = ncores)
     df <- .speToDf(spe)
     # we have one case for discrete cell types where we have one column to subset
@@ -108,7 +130,7 @@ calcMetricPerFov <- function(
     metric_df <- parallel::mclapply(df_ls, function(df_sub) {
         metric_res <- extractMetric(
             df = df_sub, selection = selection,
-            fun = fun, marks = marks, r_seq = r_seq, by = by, continuous = continuous, f = f
+            fun = fun, marks = marks, r_seq = r_seq, by = by, continuous = continuous
         ) %>% as.data.frame()
         return(metric_res)
     }, mc.cores = ncores) %>% bind_rows()
@@ -145,7 +167,7 @@ calcMetricPerFov <- function(
 #' )
 calcCrossMetricPerFov <- function(spe, selection, subsetby = NULL, fun,
                                   marks = NULL, r_seq = NULL, by = NULL,
-                                  ncores = 1) {
+                                  ncores = 1, continuous = FALSE) {
 
   # Special case of dot functions
   if (grepl("dot", fun)) {
@@ -155,7 +177,8 @@ calcCrossMetricPerFov <- function(spe, selection, subsetby = NULL, fun,
     res_ls <- lapply(ls, function(x) {
       print(x)
       calcMetricPerFov(spe = spe, selection = x, subsetby = subsetby, fun = fun,
-                       marks = marks, r_seq = r_seq, by = by, ncores = ncores)
+                       marks = marks, r_seq = r_seq, by = by, ncores = ncores,
+                       continuous = continuous)
     })
     # Bind the data and return
     return(bind_rows(res_ls))
@@ -170,7 +193,8 @@ calcCrossMetricPerFov <- function(spe, selection, subsetby = NULL, fun,
     # calculate the metric per FOV
     res_ls <- apply(ls, 1, function(x)
       calcMetricPerFov(spe = spe, selection = x, subsetby = subsetby, fun = fun,
-                       marks = marks, r_seq = r_seq, by = by, ncores = ncores))
+                       marks = marks, r_seq = r_seq, by = by, ncores = ncores,
+                       continuous = continuous))
 
     # Bind the data and return
     return(bind_rows(res_ls))
