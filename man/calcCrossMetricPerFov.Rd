@@ -12,7 +12,8 @@ calcCrossMetricPerFov(
   marks = NULL,
   r_seq = NULL,
   by = NULL,
-  ncores = 1
+  ncores = 1,
+  continuous = FALSE
 )
 }
 \arguments{

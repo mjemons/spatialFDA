@@ -11,8 +11,7 @@ extractMetric(
   marks = NULL,
   r_seq = NULL,
   by = NULL,
-  continuous = FALSE,
-  f = NULL
+  continuous = FALSE
 )
 }
 \arguments{
@@ -31,8 +30,6 @@ SpatialExperiment and the ColData}
 
 \item{continuous}{A boolean indicating whether the marks are continuous
 defaults to FALSE}
-
-\item{f}{A function to specify the kind of interaction between the marks}
 }
 \value{
 a spatstat metric object with the fov number, the number of

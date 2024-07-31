@@ -22,7 +22,7 @@
 #' @import dplyr ggplot2
 plotMetricPerFov <- function(metric_df, theo = FALSE, correction = NULL, x = NULL, image_id = NULL, ID = NULL) {
   p <- ggplot(metric_df, aes(x = .data[[x]], y = .data[[correction]], group = factor(.data[[image_id]])))
-    if (!is.null(ID)) {p <- p + geom_line(aes(colour = factor(.data[[ID]]))) + facet_wrap(~ID)
+    if (!is.null(ID)) {p <- p + geom_line(aes(colour = factor(.data[[ID]]))) + facet_wrap(selection~ID)
     }else {p <- p + geom_line(aes(colour = factor(.data[[image_id]])))}
   p <- p +
     theme_minimal() +
@@ -94,7 +94,7 @@ plotCrossMetricPerFov <- function(metric_df,
 
   # Applies the function abouve to all samples
   res_p <- lapply(samples, function(fov) {
-    sub_fov <- subset(metric_df, image_id %in% fov)
+    sub_fov <- subset(metric_df, metric_df[[image_id]] %in% fov)
     return(plotCrossFOV(sub_fov = sub_fov, theo = theo, correction = correction,
                         x = x, image_id = image_id, ID = ID))
   })
