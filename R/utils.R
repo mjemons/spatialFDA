@@ -18,12 +18,15 @@
 #'
 #' @importFrom SummarizedExperiment colData
 .dfToppp <- function(df, marks = NULL, continuous = FALSE) {
-  # is this definition of the window actually correct? Do I underestimate it?
-  pp <- spatstat.geom::as.ppp(data.frame(x = df$x, y = df$y), W = spatstat.geom::owin(c(min(df$x) - 1, max(df$x) + 1), c(min(df$y) - 1, max(df$y) + 1)))
-  # set the marks
-  if(!continuous) spatstat.geom::marks(pp) <- factor(df[[marks]])
-  else  spatstat.geom::marks(pp) <- subset(df, select = names(df) %in% marks)
-  return(pp)
+    # is this definition of the window actually correct? Do I underestimate it?
+    pp <- spatstat.geom::as.ppp(data.frame(x = df$x, y = df$y), W = spatstat.geom::owin(c(min(df$x) - 1, max(df$x) + 1), c(min(df$y) - 1, max(df$y) + 1)))
+    # set the marks
+    if (!continuous) {
+        spatstat.geom::marks(pp) <- factor(df[[marks]])
+    } else {
+        spatstat.geom::marks(pp) <- subset(df, select = names(df) %in% marks)
+    }
+    return(pp)
 }
 
 #' Transform a SpatialExperiment into a dataframe
