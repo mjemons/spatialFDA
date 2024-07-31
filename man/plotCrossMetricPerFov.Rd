@@ -37,10 +37,12 @@ spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 metric_res <- calcCrossMetricPerFov(spe, c("alpha", "beta", "delta"),
     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
     r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
-    ncores = 2
+    ncores = 1
 )
-metric_res <- subset(metric_res, image_id \%in\% c(138,139,140))
-p <- plotCrossMetricPerFov(metric_res, theo = TRUE, correction = "rs",
-x = "r", image_id = 'image_id', ID = 'ID')
+metric_res <- subset(metric_res, image_id \%in\% c(138, 139, 140))
+p <- plotCrossMetricPerFov(metric_res,
+    theo = TRUE, correction = "rs",
+    x = "r", image_id = "image_id", ID = "ID"
+)
 print(p)
 }

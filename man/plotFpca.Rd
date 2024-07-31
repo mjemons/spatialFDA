@@ -32,7 +32,7 @@ spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
     subsetby = "image_number", fun = "Gcross",
     marks = "cell_type", r_seq = seq(0, 50, length.out = 50),
-    c("patient_stage", "patient_id"), ncores = 2
+    c("patient_stage", "patient_id"), ncores = 1
 )
 metric_res$ID <- paste0(
     metric_res$patient_stage, "x", metric_res$patient_id,
@@ -50,6 +50,6 @@ dat$patient_id <- factor(sapply(split_data, `[`, 2))
 dat$image_id <- factor(sapply(split_data, `[`, 3))
 # calculate fPCA
 mdl <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
-p <- plotFpca(dat = dat, res = mdl, colourby = 'condition', labelby = 'patient_id')
+p <- plotFpca(dat = dat, res = mdl, colourby = "condition", labelby = "patient_id")
 print(p)
 }
