@@ -24,73 +24,86 @@
 #'     by = c("patient_stage", "patient_id")
 #' )
 #' @import spatstat.explore
-extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = NULL, continuous = FALSE) {
-    pp <- .dfToppp(df, marks = marks, continuous = continuous)
-    if(!continuous){
-      pp_sub <- subset(pp, marks %in% selection, drop = TRUE)
-      meta_data <- df[, by] %>% unique()
-    }
-    else{
-      pp_sub <- pp
-      meta_data <- data.frame(gene = NA)
-      meta_data$gene <- names(df)[names(df) %in% marks]
-    }
-    # small quality control to only consider pp that have more than 2 points per
-    # fov and more than one unique mark and that each mark has more than one point
-    if (spatstat.geom::npoints(pp_sub) > 2 &&
-        ((length(unique(spatstat.geom::marks(pp_sub))) > 1 &&
-        sum(table(pp_sub$marks) > 0) > 1) ||
-        length(selection) == 1)) {
-        # TODO: Here I just fix the r values in the range between 0 and 500 to have
-        # the same values to compare against in the library fda - that is not ideal
-      tryCatch({
-        metric_res = do.call(fun, args = list(X = pp_sub, r = r_seq))
-                             },
-          warning = function(w) {
-            print(w)
-            return(metric_res)
-          },
-          error = function(e) {
-            print(e)
-            metric_res <- data.frame(r = r_seq,
-                                     fun = fun,
-                                     row.names = seq(1:length(r_seq)))
-            return(metric_res)
-          }
-        )
-
-      metric_res <- do.call(fun, args = list(X = pp_sub, r = r_seq))
-    }
-    # This handles the case when we do cross functions for the same type
-    else if (spatstat.geom::npoints(pp_sub) > 2 &&
-             length(unique(selection)) == 1 &&
-             length(selection) > 1) {
-      tryCatch({
-      # here we use pp, otherwise there are problems with the mark connection function
-      metric_res = do.call(fun, args = list(X = pp, i = selection[1], j = selection[2], r = r_seq))
-    },
-    warning = function(w) {
+extractMetric <- function(df,
+                          selection,
+                          fun,
+                          marks = NULL,
+                          r_seq = NULL,
+                          by = NULL,
+                          continuous = FALSE) {
+  pp <- .dfToppp(df, marks = marks, continuous = continuous)
+  if (!continuous) {
+    pp_sub <- subset(pp, marks %in% selection, drop = TRUE)
+    meta_data <- df[, by] %>% unique()
+  }
+  else{
+    pp_sub <- pp
+    meta_data <- data.frame(gene = NA)
+    meta_data$gene <- names(df)[names(df) %in% marks]
+  }
+  # small quality control to only consider pp that have more than 2 points per
+  # fov and more than one unique mark and that each mark has more than one point
+  if (spatstat.geom::npoints(pp_sub) > 2 &&
+      ((length(unique(
+        spatstat.geom::marks(pp_sub)
+      )) > 1 &&
+      sum(table(pp_sub$marks) > 0) > 1) ||
+      length(selection) == 1)) {
+    # TODO: Here I just fix the r values in the range between 0 and 500 to have
+    # the same values to compare against in the library fda - that is not ideal
+    metric_res <- tryCatch({
+      metric_res = do.call(fun, args = list(X = pp_sub, r = r_seq))
+    }, warning = function(w) {
       print(w)
-      return(metric_res)
-    },
-    error = function(e) {
+      metric_res = do.call(fun, args = list(X = pp_sub, r = r_seq))
+    }, error = function(e) {
       print(e)
       metric_res <- data.frame(r = r_seq,
                                fun = fun,
                                row.names = seq(1:length(r_seq)))
-      return(metric_res)
-    }
-    )
+    })
 
-    }
-        # is this needed?
-        metric_res$image_id <- df$image_number %>% unique()
-        metric_res <- cbind(metric_res, meta_data)
-        metric_res$npoints <- spatstat.geom::npoints(pp_sub)
-        centroid <- spatstat.geom::centroid.owin(pp_sub$window)
-        metric_res$centroidx <- centroid$x
-        metric_res$centroidy <- centroid$y
-        return(metric_res)
+  }
+  # This handles the case when we do cross functions for the same type
+  else if (spatstat.geom::npoints(pp_sub) > 2 &&
+           length(unique(selection)) == 1 &&
+           length(selection) > 1) {
+    metric_res <- tryCatch({
+      # here we use pp, otherwise there are problems with the mark connection function
+      metric_res = do.call(fun, args = list(
+        X = pp,
+        i = selection[1],
+        j = selection[2],
+        r = r_seq
+      ))
+    }, warning = function(w) {
+      print(w)
+      metric_res = do.call(fun, args = list(
+        X = pp,
+        i = selection[1],
+        j = selection[2],
+        r = r_seq
+      ))
+    }, error = function(e) {
+      print(e)
+      metric_res <- data.frame(r = r_seq,
+                               fun = fun,
+                               row.names = seq(1:length(r_seq)))
+    })
+
+  } else{
+    metric_res <- data.frame(r = r_seq,
+                             fun = fun,
+                             row.names = seq(1:length(r_seq)))
+  }
+  # is this needed?
+  metric_res$image_id <- df$image_number %>% unique()
+  metric_res <- cbind(metric_res, meta_data)
+  metric_res$npoints <- spatstat.geom::npoints(pp_sub)
+  centroid <- spatstat.geom::centroid.owin(pp_sub$window)
+  metric_res$centroidx <- centroid$x
+  metric_res$centroidy <- centroid$y
+  return(metric_res)
 }
 
 #' Calculate a spatial metric on a spatial experiment object per field of view
@@ -152,6 +165,8 @@ calcMetricPerFov <- function(
 #' @param r_seq the range of r values to compute the function over
 #' @param by the spe colData variable(s) to add to the meta data
 #' @param ncores the number of cores to use for parallel processing, default = 1
+#' @param continuous A boolean indicating whether the marks are continuous
+#' defaults to FALSE
 #'
 #' @return a dataframe of the spatstat metric objects with the radius r, the
 #' theoretical value of a Poisson process, the different border corrections

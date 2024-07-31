@@ -94,7 +94,7 @@ plotCrossMetricPerFov <- function(metric_df,
 
   # Applies the function abouve to all samples
   res_p <- lapply(samples, function(fov) {
-    sub_fov <- subset(metric_df, metric_df[[image_id]] %in% fov)
+    sub_fov <- metric_df[metric_df[[image_id]] %in% fov, ]
     return(plotCrossFOV(sub_fov = sub_fov, theo = theo, correction = correction,
                         x = x, image_id = image_id, ID = ID))
   })
