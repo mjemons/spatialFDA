@@ -83,16 +83,16 @@ functionalPCA <- function(dat, r, knots, pve = 0.95) {
 #' dat$image_id <- factor(sapply(split_data, `[`, 3))
 #' # calculate fPCA
 #' mdl <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
-#' p <- plotFpca(dat = dat, res = mdl, colourby = 'condition', labelby = 'patient_id')
+#' p <- plotFpca(dat = dat, res = mdl, colourby = "condition", labelby = "patient_id")
 #' print(p)
 #' @import dplyr
-plotFpca <- function(dat, res, colourby=NULL, labelby=NULL) {
+plotFpca <- function(dat, res, colourby = NULL, labelby = NULL) {
     scores_df <- res$scores %>% as.data.frame()
     # plot fCPA results - assumes same order of fPCA results and input data
     p <- ggplot(scores_df, aes(scores_df[, 1], scores_df[, 2], colour = factor(dat[[colourby]]))) +
         geom_point() +
         coord_equal() +
         theme_light()
-    if(!is.null(labelby)) p <- p + geom_text(hjust = 0, vjust = 0, aes(label = factor(dat[[labelby]])))
+    if (!is.null(labelby)) p <- p + geom_text(hjust = 0, vjust = 0, aes(label = factor(dat[[labelby]])))
     return(p)
 }

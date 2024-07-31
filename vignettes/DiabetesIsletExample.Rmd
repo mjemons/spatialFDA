@@ -139,7 +139,7 @@ metric_res %>% head()
 We can visualise this metric with `plotMetricPerFov` function. Here, we need to specify which border correction we want to plot and what the x-axis is. Both can vary from function to function.
 
 ```{r plotLfunction}
-p <- plotMetricPerFov(metric_res, correction = "border", x = "r", image_id = 'image_id', ID = 'ID')
+p <- plotMetricPerFov(metric_res, correction = "border", x = "r", image_id = "image_id", ID = "ID")
 print(p)
 ```
 
@@ -168,7 +168,7 @@ metric_res %>% head()
 ```
 
 ```{r plotGfunction}
-p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = 'image_id', ID = 'ID')
+p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = "image_id", ID = "ID")
 print(p)
 ```
 
@@ -190,7 +190,7 @@ metric_res$ID <- paste0(
 # prepare dataframe from calcMetricRes to be in the correct format for pffr
 dat <- prepData(metric_res, "r", "rs")
 
-# drop rows with NA 
+# drop rows with NA
 dat <- dat |> drop_na()
 
 # create meta info of the IDs
@@ -229,7 +229,7 @@ Another analysis that can be performed is functional principal componentent anal
 # calculate the fPCA
 pca <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
 # plot the biplot of the first two PCs
-plotFpca(dat = dat, res = pca, colourby = 'condition', labelby = 'patient_id')
+plotFpca(dat = dat, res = pca, colourby = "condition", labelby = "patient_id")
 ```
 
 In the biplot above we get a very basic differentiation of the $G$ curves. Long-duration T1D separates from non-diabetic and onset T1D along the first fPC. The second fPC describes less variation. The onset T1D samples are less clustered and more spread out along the first two fPCs than the non-diabetic samples.
