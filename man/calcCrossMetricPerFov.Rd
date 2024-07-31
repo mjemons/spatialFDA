@@ -12,7 +12,8 @@ calcCrossMetricPerFov(
   marks = NULL,
   r_seq = NULL,
   by = NULL,
-  ncores = 1
+  ncores = 1,
+  continuous = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ calcCrossMetricPerFov(
 \item{by}{the spe colData variable(s) to add to the meta data}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
+
+\item{continuous}{A boolean indicating whether the marks are continuous
+defaults to FALSE}
 }
 \value{
 a dataframe of the spatstat metric objects with the radius r, the
