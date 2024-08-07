@@ -33,6 +33,7 @@ extractMetric <- function(df, selection, fun, marks = NULL, r_seq = NULL, by = N
     }
     else{
       pp_sub <- pp
+      meta_data <- df[, by] %>% unique()
       meta_data$gene <- names(df)[names(df) %in% marks]
     }
     # small quality control to only consider pp that have more than 2 points per
@@ -102,7 +103,8 @@ calcMetricPerFov <- function(
     # future::plan(multisession, gc = TRUE, workers = ncores)
     df <- .speToDf(spe)
     # we have one case for discrete cell types where we have one column to subset
-    if(!continuous) df_ls <- split(df, df[[subsetby]])
+    if(length(subsetby) == 1) df_ls <- split(df, df[[subsetby]])
+    # else we have several columns which we want to split
     else df_ls <- purrr::map(subsetby, ~ df %>% select(all_of(setdiff(names(df), subsetby)), .x))
     metric_df <- parallel::mclapply(df_ls, function(df_sub) {
         metric_res <- extractMetric(
