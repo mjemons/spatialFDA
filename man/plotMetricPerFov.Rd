@@ -39,6 +39,6 @@ metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
     r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
     ncores = 2
 )
-p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = 'image_id', ID = 'ID')
+p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = "image_id", ID = "ID")
 print(p)
 }
