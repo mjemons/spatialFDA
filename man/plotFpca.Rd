@@ -50,6 +50,6 @@ dat$patient_id <- factor(sapply(split_data, `[`, 2))
 dat$image_id <- factor(sapply(split_data, `[`, 3))
 # calculate fPCA
 mdl <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
-p <- plotFpca(dat = dat, res = mdl, colourby = 'condition', labelby = 'patient_id')
+p <- plotFpca(dat = dat, res = mdl, colourby = "condition", labelby = "patient_id")
 print(p)
 }
