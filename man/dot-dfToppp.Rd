@@ -4,7 +4,7 @@
 \alias{.dfToppp}
 \title{Convert SpatialExperiment object to ppp object}
 \usage{
-.dfToppp(df, marks = NULL, continuous = FALSE)
+.dfToppp(df, marks = NULL, continuous = FALSE, window = NULL)
 }
 \arguments{
 \item{df}{A dataframe with the x and y coordinates from the corresponding
@@ -16,6 +16,8 @@ continous gene expression measurements are assumed as marks.}
 
 \item{continuous}{A boolean indicating whether the marks are continuous
 defaults to FALSE}
+
+\item{window}{An observation window of the point pattern of class \code{owin}.}
 }
 \value{
 A ppp object for use with \code{spatstat} functions

@@ -7,6 +7,7 @@
 #' continous gene expression measurements are assumed as marks.
 #' @param continuous A boolean indicating whether the marks are continuous
 #' defaults to FALSE
+#' @param window An observation window of the point pattern of class `owin`.
 #' @return A ppp object for use with `spatstat` functions
 #' @export
 #'
@@ -17,7 +18,7 @@
 #' pp <- .dfToppp(df_sub, marks = "cell_type")
 #'
 #' @importFrom SummarizedExperiment colData
-.dfToppp <- function(df, marks = NULL, continuous = FALSE) {
+.dfToppp <- function(df, marks = NULL, continuous = FALSE, window = NULL) {
     # is this definition of the window actually correct? Do I underestimate it?
     pp <- spatstat.geom::as.ppp(data.frame(x = df$x, y = df$y), W = spatstat.geom::owin(c(min(df$x) - 1, max(df$x) + 1), c(min(df$y) - 1, max(df$y) + 1)))
     # set the marks
@@ -26,6 +27,11 @@
     } else {
         spatstat.geom::marks(pp) <- subset(df, select = names(df) %in% marks)
     }
+    # if window exist, set is as new window and potentially exclude some points
+    if (!is.null(window)) {
+      pp <- spatstat.geom::as.ppp(spatstat.geom::superimpose(pp, W = window))
+    }
+
     return(pp)
 }
 
