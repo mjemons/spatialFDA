@@ -27,9 +27,9 @@
     } else {
         spatstat.geom::marks(pp) <- subset(df, select = names(df) %in% marks)
     }
-    # if window exist, set is as new window and potentiall exclude some points
+    # if window exist, set is as new window and potentially exclude some points
     if (!is.null(window)) {
-      pp <- as.ppp(superimpose(pp, W = window))
+      pp <- spatstat.geom::as.ppp(spatstat.geom::superimpose(pp, W = window))
     }
 
     return(pp)
