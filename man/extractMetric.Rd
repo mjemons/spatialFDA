@@ -11,7 +11,8 @@ extractMetric(
   marks = NULL,
   r_seq = NULL,
   by = NULL,
-  continuous = FALSE
+  continuous = FALSE,
+  window = NULL
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ SpatialExperiment and the ColData}
 
 \item{continuous}{A boolean indicating whether the marks are continuous
 defaults to FALSE}
+
+\item{window}{a observation window for the point pattern of class \code{owin}.}
 }
 \value{
 a spatstat metric object with the fov number, the number of
