@@ -9,6 +9,7 @@
 #' @param by the spe colData variable(s) to add to the meta data
 #' @param continuous A boolean indicating whether the marks are continuous
 #' defaults to FALSE
+#' @param window a observation window for the point pattern of class `owin`.
 #'
 #' @return a spatstat metric object with the fov number, the number of
 #' points and the centroid of the image
@@ -30,8 +31,9 @@ extractMetric <- function(df,
     marks = NULL,
     r_seq = NULL,
     by = NULL,
-    continuous = FALSE) {
-    pp <- .dfToppp(df, marks = marks, continuous = continuous)
+    continuous = FALSE,
+    window = NULL) {
+    pp <- .dfToppp(df, marks = marks, continuous = continuous, window = window)
     if (!continuous) {
         pp_sub <- subset(pp, marks %in% selection, drop = TRUE)
         meta_data <- df[, by] %>% unique()
