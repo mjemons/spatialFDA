@@ -129,7 +129,7 @@ A known metric is Ripley's $K$ function or its variance-stabilised transformatio
 ```{r Lfunction}
 metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
     subsetby = "image_number", fun = "Lcross", marks = "cell_type",
-    r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
+    r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id", "image_number"),
     ncores = 1
 )
 
@@ -139,7 +139,7 @@ metric_res %>% head()
 We can visualise this metric with `plotMetricPerFov` function. Here, we need to specify which border correction we want to plot and what the x-axis is. Both can vary from function to function.
 
 ```{r plotLfunction}
-p <- plotMetricPerFov(metric_res, correction = "border", x = "r", image_id = "image_id", ID = "ID")
+p <- plotMetricPerFov(metric_res, correction = "border", x = "r", image_id = "image_number", ID = "ID")
 print(p)
 ```
 
@@ -160,7 +160,7 @@ For spacing metrics we get different border corrections but the calculation stay
 ```{r Gfunction}
 metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
-    r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id"),
+    r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id", "image_number"),
     ncores = 1
 )
 
@@ -168,7 +168,7 @@ metric_res %>% head()
 ```
 
 ```{r plotGfunction}
-p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = "image_id", ID = "ID")
+p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = "image_number", ID = "ID")
 print(p)
 ```
 
@@ -184,7 +184,7 @@ In this context we need to specify a design matrix and contrasts.
 # create a unique ID for each row
 metric_res$ID <- paste0(
     metric_res$patient_stage, "x", metric_res$patient_id,
-    "x", metric_res$image_id
+    "x", metric_res$image_number
 )
 
 # prepare dataframe from calcMetricRes to be in the correct format for pffr

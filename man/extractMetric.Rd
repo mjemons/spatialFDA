@@ -48,6 +48,6 @@ df_sub <- .speToDf(spe_sub)
 metric_res <- extractMetric(df_sub, c("alpha", "beta"),
     fun = "Gcross",
     marks = "cell_type", r_seq = seq(0, 1000, length.out = 100),
-    by = c("patient_stage", "patient_id")
+    by = c("patient_stage", "patient_id", "image_number")
 )
 }
