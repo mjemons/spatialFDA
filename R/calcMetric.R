@@ -10,6 +10,7 @@
 #' @param continuous A boolean indicating whether the marks are continuous
 #' defaults to FALSE
 #' @param window a observation window for the point pattern of class `owin`.
+#' @param ... Other parameters passed to spatstat.explore functions
 #'
 #' @return a spatstat metric object with the fov number, the number of
 #' points and the centroid of the image
@@ -32,7 +33,8 @@ extractMetric <- function(df,
     r_seq = NULL,
     by = NULL,
     continuous = FALSE,
-    window = NULL) {
+    window = NULL,
+    ...) {
     pp <- .dfToppp(df, marks = marks, continuous = continuous, window = window)
     if (!continuous) {
         pp_sub <- subset(pp, marks %in% selection, drop = TRUE)
@@ -54,11 +56,11 @@ extractMetric <- function(df,
         # the same values to compare against in the library fda - that is not ideal
         metric_res <- tryCatch(
             {
-                metric_res <- do.call(fun, args = list(X = pp_sub, r = r_seq))
+                metric_res <- do.call(fun, args = list(X = pp_sub, r = r_seq, ...))
             },
             warning = function(w) {
                 print(w)
-                metric_res <- do.call(fun, args = list(X = pp_sub, r = r_seq))
+                metric_res <- do.call(fun, args = list(X = pp_sub, r = r_seq, ...))
             },
             error = function(e) {
                 print(e)
@@ -81,7 +83,8 @@ extractMetric <- function(df,
                     X = pp,
                     i = selection[1],
                     j = selection[2],
-                    r = r_seq
+                    r = r_seq,
+                    ...
                 ))
             },
             warning = function(w) {
@@ -131,6 +134,7 @@ extractMetric <- function(df,
 #' @param continuous A boolean indicating whether the marks are continuous
 #' defaults to FALSE
 #' @param ncores the number of cores to use for parallel processing, default = 1
+#' @param ... Other parameters passed to spatstat.explore functions
 #'
 #' @return a dataframe of the spatstat metric objects with the radius r, the
 #' theoretical value of a Poisson process, the different border corrections
@@ -147,7 +151,7 @@ extractMetric <- function(df,
 #' )
 #' @import dplyr parallel
 calcMetricPerFov <- function(spe, selection, subsetby = NULL, fun, marks = NULL,
-    r_seq = NULL, by = NULL, continuous = FALSE, ncores = 1) {
+    r_seq = NULL, by = NULL, continuous = FALSE, ncores = 1, ...) {
     # future::plan(multisession, gc = TRUE, workers = ncores)
     df <- .speToDf(spe)
     # we have one case for discrete cell types where we have one column to subset
@@ -158,8 +162,14 @@ calcMetricPerFov <- function(spe, selection, subsetby = NULL, fun, marks = NULL,
     }
     metric_df <- parallel::mclapply(df_ls, function(df_sub) {
         metric_res <- extractMetric(
-            df = df_sub, selection = selection,
-            fun = fun, marks = marks, r_seq = r_seq, by = by, continuous = continuous
+            df = df_sub,
+            selection = selection,
+            fun = fun,
+            marks = marks,
+            r_seq = r_seq,
+            by = by,
+            continuous = continuous,
+            ...
         ) %>% as.data.frame()
         return(metric_res)
     }, mc.cores = ncores) %>% bind_rows()
@@ -183,6 +193,7 @@ calcMetricPerFov <- function(spe, selection, subsetby = NULL, fun, marks = NULL,
 #' @param ncores the number of cores to use for parallel processing, default = 1
 #' @param continuous A boolean indicating whether the marks are continuous
 #' defaults to FALSE
+#' @param ... Other parameters passed to spatstat.explore functions
 #'
 #' @return a dataframe of the spatstat metric objects with the radius r, the
 #' theoretical value of a Poisson process, the different border corrections
@@ -199,7 +210,7 @@ calcMetricPerFov <- function(spe, selection, subsetby = NULL, fun, marks = NULL,
 #' )
 calcCrossMetricPerFov <- function(spe, selection, subsetby = NULL, fun,
     marks = NULL, r_seq = NULL, by = NULL,
-    ncores = 1, continuous = FALSE) {
+    ncores = 1, continuous = FALSE, ...) {
     # Special case of dot functions
     if (grepl("dot", fun)) {
         # one vs all other
@@ -210,7 +221,7 @@ calcCrossMetricPerFov <- function(spe, selection, subsetby = NULL, fun,
             calcMetricPerFov(
                 spe = spe, selection = x, subsetby = subsetby, fun = fun,
                 marks = marks, r_seq = r_seq, by = by, ncores = ncores,
-                continuous = continuous
+                continuous = continuous, ...
             )
         })
         # Bind the data and return

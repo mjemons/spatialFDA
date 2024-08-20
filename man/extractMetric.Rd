@@ -12,7 +12,8 @@ extractMetric(
   r_seq = NULL,
   by = NULL,
   continuous = FALSE,
-  window = NULL
+  window = NULL,
+  ...
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ SpatialExperiment and the ColData}
 defaults to FALSE}
 
 \item{window}{a observation window for the point pattern of class \code{owin}.}
+
+\item{...}{Other parameters passed to spatstat.explore functions}
 }
 \value{
 a spatstat metric object with the fov number, the number of

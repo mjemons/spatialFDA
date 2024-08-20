@@ -53,7 +53,7 @@ plotMdl <- function(mdl, predictor) {
     # get the actual values into a dataframe
     df <- coef$sm[[paste0(predictor, "(x)")]]$coef
     # plot
-    p <- ggplot(df, aes(x.vec, value)) +
+    p <- ggplot(df, aes(.data$x.vec, .data$value)) +
         geom_line() +
         # here, I implement a Wald CI - could be improved
         geom_ribbon(data = df, aes(ymin = value - 1.96 * se, ymax = value + 1.96 * se), alpha = 0.3) +

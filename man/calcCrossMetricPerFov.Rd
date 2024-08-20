@@ -13,7 +13,8 @@ calcCrossMetricPerFov(
   r_seq = NULL,
   by = NULL,
   ncores = 1,
-  continuous = FALSE
+  continuous = FALSE,
+  ...
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ calcCrossMetricPerFov(
 
 \item{continuous}{A boolean indicating whether the marks are continuous
 defaults to FALSE}
+
+\item{...}{Other parameters passed to spatstat.explore functions}
 }
 \value{
 a dataframe of the spatstat metric objects with the radius r, the
