@@ -4,12 +4,15 @@
 \alias{plotMdl}
 \title{Plot a pffr model object}
 \usage{
-plotMdl(mdl, predictor)
+plotMdl(mdl, predictor, shift = NULL)
 }
 \arguments{
 \item{mdl}{a pffr model object}
 
 \item{predictor}{predictor to plot}
+
+\item{shift}{the value by which to shift the centered functional intercept.
+this will most often be the constant intercept}
 }
 \value{
 ggplot object of the functional estimate
@@ -56,5 +59,5 @@ mdl <- functionalGam(
         conditionOnset + s(patient_id, bs = "re"))
 )
 summary(mdl)
-plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl)
+plot_ls <- plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl, shift = mdl$coefficients[['(Intercept)']])
 }

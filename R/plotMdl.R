@@ -2,6 +2,8 @@
 #'
 #' @param mdl a pffr model object
 #' @param predictor predictor to plot
+#' @param shift the value by which to shift the centered functional intercept.
+#' this will most often be the constant intercept
 #'
 #' @return ggplot object of the functional estimate
 #' @export
@@ -45,11 +47,14 @@
 #'         conditionOnset + s(patient_id, bs = "re"))
 #' )
 #' summary(mdl)
-#' plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl)
+#' plot_ls <- plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl, shift = mdl$coefficients[['(Intercept)']])
 #' @import dplyr
-plotMdl <- function(mdl, predictor) {
+plotMdl <- function(mdl, predictor, shift = NULL) {
     # extract the coefficients from the model
     coef <- coef(mdl)
+    if(predictor == 'Intercept' && !is.null(shift)){
+      coef$sm[["Intercept(x)"]]$coef$value <- coef$sm[["Intercept(x)"]]$coef$value + shift
+    }
     # get the actual values into a dataframe
     df <- coef$sm[[paste0(predictor, "(x)")]]$coef
     # plot
