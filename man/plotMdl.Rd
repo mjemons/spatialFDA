@@ -59,5 +59,5 @@ mdl <- functionalGam(
         conditionOnset + s(patient_id, bs = "re"))
 )
 summary(mdl)
-plot_ls <- plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl, shift = mdl$coefficients[['(Intercept)']])
+plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl, shift = mdl$coefficients[['(Intercept)']])
 }

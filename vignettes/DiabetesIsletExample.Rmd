@@ -92,8 +92,13 @@ df_sub <- df %>%
     subset(image_name %in% c("E02", "E03", "E04", "E05"))
 p <- ggplot(df_sub, aes(x = cell_x, y = cell_y, color = cell_type)) +
     geom_point() +
-    facet_wrap(~image_name, scales = "free") +
-    theme_light()
+    facet_wrap(~image_name) +
+    theme_light() +
+    theme(legend.title.size = 20, legend.text.size = 20) +
+    coord_equal() +
+    xlab('x') +
+    ylab('y') +
+    labs(color = 'cell type')
 
 p
 ```

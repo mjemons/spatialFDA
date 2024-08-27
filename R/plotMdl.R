@@ -47,7 +47,7 @@
 #'         conditionOnset + s(patient_id, bs = "re"))
 #' )
 #' summary(mdl)
-#' plot_ls <- plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl, shift = mdl$coefficients[['(Intercept)']])
+#' plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl, shift = mdl$coefficients[['(Intercept)']])
 #' @import dplyr
 plotMdl <- function(mdl, predictor, shift = NULL) {
     # extract the coefficients from the model
@@ -59,11 +59,12 @@ plotMdl <- function(mdl, predictor, shift = NULL) {
     df <- coef$sm[[paste0(predictor, "(x)")]]$coef
     # plot
     p <- ggplot(df, aes(.data$x.vec, .data$value)) +
-        geom_line() +
-        # here, I implement a Wald CI - could be improved
+        geom_line(size = 1) +
+        # here, I implement a Wald CI - could be g improved
         geom_ribbon(data = df, aes(ymin = value - 1.96 * se, ymax = value + 1.96 * se), alpha = 0.3) +
-        geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+        geom_hline(yintercept = 0, linetype = "dashed", color = "red", size=1) +
         ggtitle(predictor) +
+        ylab('parameter value') +
         theme_light()
     return(p)
 }
