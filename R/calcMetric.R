@@ -93,7 +93,8 @@ extractMetric <- function(df,
                     X = pp,
                     i = selection[1],
                     j = selection[2],
-                    r = r_seq
+                    r = r_seq,
+                    ...
                 ))
             },
             error = function(e) {
@@ -152,7 +153,6 @@ extractMetric <- function(df,
 #' @import dplyr parallel
 calcMetricPerFov <- function(spe, selection, subsetby = NULL, fun, marks = NULL,
     r_seq = NULL, by = NULL, continuous = FALSE, ncores = 1, ...) {
-    # future::plan(multisession, gc = TRUE, workers = ncores)
     df <- .speToDf(spe)
     # we have one case for discrete cell types where we have one column to subset
     if (length(subsetby) == 1) {

@@ -19,7 +19,7 @@
 #'
 #' @importFrom SummarizedExperiment colData
 .dfToppp <- function(df, marks = NULL, continuous = FALSE, window = NULL) {
-    # is this definition of the window actually correct? Do I underestimate it?
+    # this definition of the window is quite conservative - can be set explicitly
     pp <- spatstat.geom::as.ppp(data.frame(x = df$x, y = df$y), W = spatstat.geom::owin(c(min(df$x) - 1, max(df$x) + 1), c(min(df$y) - 1, max(df$y) + 1)))
     # set the marks
     if (!continuous) {
