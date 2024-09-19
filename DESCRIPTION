@@ -16,7 +16,6 @@ RoxygenNote: 7.3.2
 Imports: 
     dplyr,
     ggplot2,
-    imcdatasets,
     parallel,
     patchwork,
     purrr,
@@ -24,12 +23,13 @@ Imports:
     SpatialExperiment,
     spatstat.explore,
     spatstat.geom,
-    stringr,
     SummarizedExperiment,
     tidyr
 biocViews: Software, Spatial, Transcriptomics
 VignetteBuilder: knitr
 Suggests: 
+    imcdatasets,
+    stringr,
     knitr,
     rmarkdown,
     BiocStyle,
