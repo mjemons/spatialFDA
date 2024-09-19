@@ -7,8 +7,10 @@
 <!-- badges: end -->
 
 spatialFDA is a tool to calculate spatial statistics functions on a
-``` SpatialExperiment`` object using the ```spatstat`library. It contains functions to plot these spatial statistics functions. In addition, users can compare the statial statistics functions using functional data analysis. Here, we use the`refund\`
-library.
+`SpatialExperiment` object using the `spatstat` library. It contains
+functions to plot these spatial statistics functions. In addition, users
+can compare the statial statistics functions using functional data
+analysis. Here, we use the `refund` library.
 
 ## Installation
 
