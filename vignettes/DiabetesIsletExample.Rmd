@@ -200,9 +200,9 @@ dat <- dat |> drop_na()
 
 # create meta info of the IDs
 split_data <- str_split(dat$ID, "x")
-dat$condition <- factor(sapply(split_data, `[`, 1))
-dat$patient_id <- factor(sapply(split_data, `[`, 2))
-dat$image_id <- factor(sapply(split_data, `[`, 3))
+dat$condition <- factor(sapply(split_data, function(x) x[1]))
+dat$patient_id <- factor(sapply(split_data, function(x) x[2]))
+dat$image_id <- factor(sapply(split_data, function(x) x[3]))
 # create a designmatrix
 condition <- dat$condition
 # relevel the condition - can set explicit contrasts here - default is treamtment
@@ -220,7 +220,7 @@ mdl <- functionalGam(
 )
 summary(mdl)
 
-plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl)
+plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl,  shift = mdl$coefficients[['(Intercept)']])
 wrap_plots(plot_ls, nrow = 3)
 ```
 
@@ -234,7 +234,7 @@ Another analysis that can be performed is functional principal componentent anal
 # calculate the fPCA
 pca <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
 # plot the biplot of the first two PCs
-plotFpca(dat = dat, res = pca, colourby = "condition", labelby = "patient_id")
+plotFpca(dat = dat, res = pca, colourby = "condition")
 ```
 
 In the biplot above we get a very basic differentiation of the $G$ curves. Long-duration T1D separates from non-diabetic and onset T1D along the first fPC. The second fPC describes less variation. The onset T1D samples are less clustered and more spread out along the first two fPCs than the non-diabetic samples.

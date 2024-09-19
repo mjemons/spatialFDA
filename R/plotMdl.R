@@ -29,9 +29,9 @@
 #'
 #' # create meta info of the IDs
 #' split_data <- str_split(dat$ID, "x")
-#' dat$condition <- factor(sapply(split_data, `[`, 1))
-#' dat$patient_id <- factor(sapply(split_data, `[`, 2))
-#' dat$image_id <- factor(sapply(split_data, `[`, 3))
+#' dat$condition <- factor(sapply(split_data, function(x) x[1]))
+#' dat$patient_id <- factor(sapply(split_data, function(x) x[2]))
+#' dat$image_id <- factor(sapply(split_data, function(x) x[3]))
 #' # create a designmatrix
 #' condition <- dat$condition
 #' # relevel the condition - can set explicit contrasts here
@@ -65,6 +65,7 @@ plotMdl <- function(mdl, predictor, shift = NULL) {
         geom_hline(yintercept = 0, linetype = "dashed", color = "red", size=1) +
         ggtitle(predictor) +
         ylab('parameter value') +
+        xlab('r') +
         theme_light()
     return(p)
 }

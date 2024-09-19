@@ -50,9 +50,9 @@ dat <- dat |> drop_na()
 
 # create meta info of the IDs
 split_data <- str_split(dat$ID, "x")
-dat$condition <- factor(sapply(split_data, `[`, 1))
-dat$patient_id <- factor(sapply(split_data, `[`, 2))
-dat$image_id <- factor(sapply(split_data, `[`, 3))
+dat$condition <- factor(sapply(split_data, function(x) x[1]))
+dat$patient_id <- factor(sapply(split_data, function(x) x[2]))
+dat$image_id <- factor(sapply(split_data, function(x) x[3]))
 # create a designmatrix
 condition <- dat$condition
 # relevel the condition - can set explicit contrasts here
@@ -68,5 +68,4 @@ mdl <- functionalGam(
         conditionOnset + s(patient_id, bs = "re"))
 )
 summary(mdl)
-plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl)
 }

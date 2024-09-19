@@ -45,9 +45,9 @@ dat <- prepData(metric_res, "r", "rs")
 dat <- dat |> drop_na()
 # create meta info of the IDs
 split_data <- str_split(dat$ID, "x")
-dat$condition <- factor(sapply(split_data, `[`, 1))
-dat$patient_id <- factor(sapply(split_data, `[`, 2))
-dat$image_id <- factor(sapply(split_data, `[`, 3))
+dat$condition <- factor(sapply(split_data, function(x) x[1]))
+dat$patient_id <- factor(sapply(split_data, function(x) x[2]))
+dat$image_id <- factor(sapply(split_data, function(x) x[3]))
 # calculate fPCA
 mdl <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
 p <- plotFpca(dat = dat, res = mdl, colourby = "condition", labelby = "patient_id")

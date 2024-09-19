@@ -32,9 +32,9 @@
 #' dat <- dat |> drop_na()
 #' # create meta info of the IDs
 #' split_data <- str_split(dat$ID, "x")
-#' dat$condition <- factor(sapply(split_data, `[`, 1))
-#' dat$patient_id <- factor(sapply(split_data, `[`, 2))
-#' dat$image_id <- factor(sapply(split_data, `[`, 3))
+#' dat$condition <- factor(sapply(split_data, function(x) x[1]))
+#' dat$patient_id <- factor(sapply(split_data, function(x) x[2]))
+#' dat$image_id <- factor(sapply(split_data, function(x) x[3]))
 #' # calculate fPCA
 #' mdl <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
 #' @import dplyr
@@ -78,9 +78,9 @@ functionalPCA <- function(dat, r, knots, pve = 0.95) {
 #' dat <- dat |> drop_na()
 #' # create meta info of the IDs
 #' split_data <- str_split(dat$ID, "x")
-#' dat$condition <- factor(sapply(split_data, `[`, 1))
-#' dat$patient_id <- factor(sapply(split_data, `[`, 2))
-#' dat$image_id <- factor(sapply(split_data, `[`, 3))
+#' dat$condition <- factor(sapply(split_data, function(x) x[1]))
+#' dat$patient_id <- factor(sapply(split_data, function(x) x[2]))
+#' dat$image_id <- factor(sapply(split_data, function(x) x[3]))
 #' # calculate fPCA
 #' mdl <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
 #' p <- plotFpca(dat = dat, res = mdl, colourby = "condition", labelby = "patient_id")
@@ -92,7 +92,9 @@ plotFpca <- function(dat, res, colourby = NULL, labelby = NULL) {
     p <- ggplot(scores_df, aes(scores_df[, 1], scores_df[, 2], colour = factor(dat[[colourby]]))) +
         geom_point() +
         coord_equal() +
-        theme_light()
+        theme_light() +
+        xlab('functional PC1') +
+        ylab('functional PC2')
     if (!is.null(labelby)) p <- p + geom_text(hjust = 0, vjust = 0, aes(label = factor(dat[[labelby]])))
     return(p)
 }
