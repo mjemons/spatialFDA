@@ -96,9 +96,9 @@ p <- ggplot(df_sub, aes(x = cell_x, y = cell_y, color = cell_type)) +
     theme_light() +
     theme(legend.title.size = 20, legend.text.size = 20) +
     coord_equal() +
-    xlab('x') +
-    ylab('y') +
-    labs(color = 'cell type')
+    xlab("x") +
+    ylab("y") +
+    labs(color = "cell type")
 
 p
 ```
@@ -220,7 +220,7 @@ mdl <- functionalGam(
 )
 summary(mdl)
 
-plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl,  shift = mdl$coefficients[['(Intercept)']])
+plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl, shift = mdl$coefficients[["(Intercept)"]])
 wrap_plots(plot_ls, nrow = 3)
 ```
 

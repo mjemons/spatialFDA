@@ -29,7 +29,7 @@
     }
     # if window exist, set is as new window and potentially exclude some points
     if (!is.null(window)) {
-      pp <- spatstat.geom::as.ppp(spatstat.geom::superimpose(pp, W = window))
+        pp <- spatstat.geom::as.ppp(spatstat.geom::superimpose(pp, W = window))
     }
 
     return(pp)

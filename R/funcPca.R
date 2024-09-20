@@ -93,8 +93,8 @@ plotFpca <- function(dat, res, colourby = NULL, labelby = NULL) {
         geom_point() +
         coord_equal() +
         theme_light() +
-        xlab('functional PC1') +
-        ylab('functional PC2')
+        xlab("functional PC1") +
+        ylab("functional PC2")
     if (!is.null(labelby)) p <- p + geom_text(hjust = 0, vjust = 0, aes(label = factor(dat[[labelby]])))
     return(p)
 }

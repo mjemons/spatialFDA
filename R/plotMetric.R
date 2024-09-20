@@ -14,8 +14,10 @@
 #' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 #' metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
 #'     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
-#'     r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id",
-#'     "image_number"),
+#'     r_seq = seq(0, 50, length.out = 50), by = c(
+#'         "patient_stage", "patient_id",
+#'         "image_number"
+#'     ),
 #'     ncores = 1
 #' )
 #' p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = "image_number", ID = "ID")
@@ -83,8 +85,10 @@ plotCrossFOV <- function(sub_fov, theo, correction, x, image_id, ID = NULL) {
 #' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 #' metric_res <- calcCrossMetricPerFov(spe, c("alpha", "beta", "delta"),
 #'     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
-#'     r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id",
-#'     "image_number"),
+#'     r_seq = seq(0, 50, length.out = 50), by = c(
+#'         "patient_stage", "patient_id",
+#'         "image_number"
+#'     ),
 #'     ncores = 1
 #' )
 #' metric_res <- subset(metric_res, image_number %in% c(138, 139, 140))
@@ -93,12 +97,13 @@ plotCrossFOV <- function(sub_fov, theo, correction, x, image_id, ID = NULL) {
 #'     x = "r", image_id = "image_number", ID = "ID"
 #' )
 #' print(p)
-plotCrossMetricPerFov <- function(metric_df,
-    theo = NULL,
-    correction = NULL,
-    x = NULL,
-    image_id = NULL,
-    ID = NULL) {
+plotCrossMetricPerFov <- function(
+        metric_df,
+        theo = NULL,
+        correction = NULL,
+        x = NULL,
+        image_id = NULL,
+        ID = NULL) {
     # Find all unique samples
     samples <- metric_df[[image_id]] |> unique()
 

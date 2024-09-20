@@ -26,20 +26,21 @@
 #'     by = c("patient_stage", "patient_id", "image_number")
 #' )
 #' @import spatstat.explore
-extractMetric <- function(df,
-    selection,
-    fun,
-    marks = NULL,
-    r_seq = NULL,
-    by = NULL,
-    continuous = FALSE,
-    window = NULL,
-    ...) {
+extractMetric <- function(
+        df,
+        selection,
+        fun,
+        marks = NULL,
+        r_seq = NULL,
+        by = NULL,
+        continuous = FALSE,
+        window = NULL,
+        ...) {
     pp <- .dfToppp(df, marks = marks, continuous = continuous, window = window)
     if (!continuous) {
         pp_sub <- subset(pp, marks %in% selection, drop = TRUE)
         meta_data <- df[, by] %>% unique()
-    } else{
+    } else {
         pp_sub <- pp
         meta_data <- df[, by] %>% unique()
         meta_data$gene <- names(df)[names(df) %in% marks]
@@ -114,7 +115,7 @@ extractMetric <- function(df,
         )
     }
     # is this needed?
-    #metric_res$image_id <- df$image_number %>% unique()
+    # metric_res$image_id <- df$image_number %>% unique()
     metric_res <- cbind(metric_res, meta_data)
     metric_res$npoints <- spatstat.geom::npoints(pp_sub)
     centroid <- spatstat.geom::centroid.owin(pp_sub$window)
@@ -146,13 +147,16 @@ extractMetric <- function(df,
 #' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 #' metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
 #'     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
-#'     r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id",
-#'     "image_number"),
+#'     r_seq = seq(0, 50, length.out = 50), by = c(
+#'         "patient_stage", "patient_id",
+#'         "image_number"
+#'     ),
 #'     ncores = 1
 #' )
 #' @import dplyr parallel
-calcMetricPerFov <- function(spe, selection, subsetby = NULL, fun, marks = NULL,
-    r_seq = NULL, by = NULL, continuous = FALSE, ncores = 1, ...) {
+calcMetricPerFov <- function(
+        spe, selection, subsetby = NULL, fun, marks = NULL,
+        r_seq = NULL, by = NULL, continuous = FALSE, ncores = 1, ...) {
     df <- .speToDf(spe)
     # we have one case for discrete cell types where we have one column to subset
     if (length(subsetby) == 1) {
@@ -204,13 +208,16 @@ calcMetricPerFov <- function(spe, selection, subsetby = NULL, fun, marks = NULL,
 #' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 #' metric_res <- calcCrossMetricPerFov(spe, c("alpha", "beta", "delta"),
 #'     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
-#'     r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id",
-#'     "image_number"),
+#'     r_seq = seq(0, 50, length.out = 50), by = c(
+#'         "patient_stage", "patient_id",
+#'         "image_number"
+#'     ),
 #'     ncores = 1
 #' )
-calcCrossMetricPerFov <- function(spe, selection, subsetby = NULL, fun,
-    marks = NULL, r_seq = NULL, by = NULL,
-    ncores = 1, continuous = FALSE, ...) {
+calcCrossMetricPerFov <- function(
+        spe, selection, subsetby = NULL, fun,
+        marks = NULL, r_seq = NULL, by = NULL,
+        ncores = 1, continuous = FALSE, ...) {
     # Special case of dot functions
     if (grepl("dot", fun)) {
         # one vs all other
