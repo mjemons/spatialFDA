@@ -20,6 +20,7 @@ vignette: >
   %\VignetteIndexEntry{Functional Data Analysis of Spatial Metrics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}  
+bibliography: ../spatialFDA.bib
 ---
 
 ```{r v1, include = FALSE}
@@ -32,7 +33,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-This vignette demonstrates how to use `r BiocStyle::Biocpkg('spatialFDA')` to perform functional data analysis on spatial statistics metrics. The main aim of this package is to detect differential spatial arrangements within and between celltypes given several samples/conditions. It does so by calculating spatial statistics metrics via the `r BiocStyle::CRANpkg('spatstat')` package and comparing for differences using functional additive mixed models as implemented in the `r BiocStyle::CRANpkg('refund')` package.
+This vignette demonstrates how to use `r BiocStyle::Biocpkg('spatialFDA')` to perform functional data analysis on spatial statistics metrics. The main aim of this package is to detect differential spatial arrangements within and between celltypes given several samples/conditions. It does so by calculating spatial statistics metrics via the `r BiocStyle::CRANpkg('spatstat')` package and comparing for differences using functional additive mixed models as implemented in the `r BiocStyle::CRANpkg('refund')` package [@spatstat2005; @refund2024].
 
 The package consists thus from two main steps.
 
@@ -120,7 +121,7 @@ All of these function have different implementations to correct for inhomogeneit
 
 ## Correlation
 
-With correlation metrics we assess the distances of all points to one another while normalising for effects of different density and of the window size $|W|$. Furthermore, spatial metrics are corrected for edge effects, the fact that points at the boarder of a fov have not a fully observed neighborhood [@baddeleySpatialPointPatterns, pp. 204].  
+With correlation metrics we assess the distances of all points to one another while normalising for effects of different density and of the window size $|W|$. Furthermore, spatial metrics are corrected for edge effects, the fact that points at the boarder of a fov have not a fully observed neighborhood [@baddeleySpatialPointPatterns, pp. 203 ff.].  
 
 A known metric is Ripley's $K$ function or its variance-stabilised transformation, the $L$ function. We can calculate a variant of the $L$ function with the function `calcMetricPerFov` between e.g $\alpha$ and $\beta$ cells. The output is a dataframe with the following most important columns:
 
@@ -181,7 +182,7 @@ In the nearest-neighbor distance function we see a strong difference between lon
 
 # Functional additive mixed models
 
-The $L$ function above showed no clear difference between the three conditions whereas the $G$ function showed a strong difference between long duration T1D and the two other conditions. In order to test these differences we will use functional additive mixed models. These are generalisations of standard additive mixed models to compare functions over their entire domain. The package that we use is the `r BiocStyle::CRANpkg('refund')` package [@scheiplFunctionalAdditiveMixed2013, @scheiplGeneralizedFunctionalAdditive2016].
+The $L$ function above showed no clear difference between the three conditions whereas the $G$ function showed a strong difference between long duration T1D and the two other conditions. In order to test these differences we will use functional additive mixed models. These are generalisations of standard additive mixed models to compare functions over their entire domain. The package that we use is the `r BiocStyle::CRANpkg('refund')` package [@scheiplFunctionalAdditiveMixed2015; @scheiplGeneralizedFunctionalAdditive2016].
 
 In this context we need to specify a design matrix and contrasts. 
 
@@ -228,7 +229,7 @@ We note that there is no difference in the $G$ function between non-diabetic and
 
 # Functional principal component analysis
 
-Another analysis that can be performed is functional principal componentent analysis (fPCA). This is a method to capture the main modes of variation in functional data [@ramsayPrincipalComponentsAnalysis2005][@illianPrincipalComponentAnalysis2006]. We use the `r BiocStyle::CRANpkg('refund')` implementation of fPCA. 
+Another analysis that can be performed is functional principal componentent analysis (fPCA). This is a method to capture the main modes of variation in functional data [@ramsayPrincipalComponentsAnalysis2005]. We use the `r BiocStyle::CRANpkg('refund')` implementation of fPCA. 
 
 ```{r fPCA}
 # calculate the fPCA
