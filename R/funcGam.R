@@ -45,7 +45,10 @@
 #' condition <- relevel(condition, "Non-diabetic")
 #' designmat <- model.matrix(~condition)
 #' # colnames don't work with the '-' sign
-#' colnames(designmat) <- c("Intercept", "conditionLong_duration", "conditionOnset")
+#' colnames(designmat) <- c(
+#'     "Intercept", "conditionLong_duration",
+#'     "conditionOnset"
+#' )
 #' # fit the model
 #' mdl <- functionalGam(
 #'     dat = dat, x = metric_res$r |> unique(),
@@ -67,13 +70,10 @@ functionalGam <- function(data, x, designmat, weights, formula) {
     # normalise the weights
     weights <- weights / mean(weights)
     # TODO write a test that the colnames of the designmat correspond to formula
-    startTime <- Sys.time()
     mdl <- refund::pffr(formula,
         yind = x,
         data = data,
         weights = weights
     )
-    endTime <- Sys.time()
-    print(endTime - startTime)
     return(mdl)
 }

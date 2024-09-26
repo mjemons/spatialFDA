@@ -26,16 +26,15 @@
 #'     by = c("patient_stage", "patient_id", "image_number")
 #' )
 #' @import spatstat.explore
-extractMetric <- function(
-        df,
-        selection,
-        fun,
-        marks = NULL,
-        r_seq = NULL,
-        by = NULL,
-        continuous = FALSE,
-        window = NULL,
-        ...) {
+extractMetric <- function(df,
+    selection,
+    fun,
+    marks = NULL,
+    r_seq = NULL,
+    by = NULL,
+    continuous = FALSE,
+    window = NULL,
+    ...) {
     pp <- .dfToppp(df, marks = marks, continuous = continuous, window = window)
     if (!continuous) {
         pp_sub <- subset(pp, marks %in% selection, drop = TRUE)
@@ -53,15 +52,17 @@ extractMetric <- function(
         )) > 1 &&
             sum(table(pp_sub$marks) > 0) > 1) ||
             length(selection) == 1)) {
-        # TODO: Here I just fix the r values in the range between 0 and 500 to have
-        # the same values to compare against in the library fda - that is not ideal
         metric_res <- tryCatch(
             {
-                metric_res <- do.call(fun, args = list(X = pp_sub, r = r_seq, ...))
+                metric_res <- do.call(fun,
+                    args = list(X = pp_sub, r = r_seq, ...)
+                )
             },
             warning = function(w) {
                 print(w)
-                metric_res <- do.call(fun, args = list(X = pp_sub, r = r_seq, ...))
+                metric_res <- do.call(fun,
+                    args = list(X = pp_sub, r = r_seq, ...)
+                )
             },
             error = function(e) {
                 print(e)
@@ -79,7 +80,8 @@ extractMetric <- function(
         length(selection) > 1) {
         metric_res <- tryCatch(
             {
-                # here we use pp, otherwise there are problems with the mark connection function
+                # here we use pp, otherwise there are problems with the
+                # mark connection function
                 metric_res <- do.call(fun, args = list(
                     X = pp,
                     i = selection[1],
@@ -154,15 +156,15 @@ extractMetric <- function(
 #'     ncores = 1
 #' )
 #' @import dplyr parallel
-calcMetricPerFov <- function(
-        spe, selection, subsetby = NULL, fun, marks = NULL,
-        r_seq = NULL, by = NULL, continuous = FALSE, ncores = 1, ...) {
+calcMetricPerFov <- function(spe, selection, subsetby = NULL, fun, marks = NULL,
+    r_seq = NULL, by = NULL, continuous = FALSE, ncores = 1, ...) {
     df <- .speToDf(spe)
     # we have one case for discrete cell types where we have one column to subset
     if (length(subsetby) == 1) {
         df_ls <- split(df, df[[subsetby]])
     } else {
-        df_ls <- purrr::map(subsetby, ~ df %>% select(all_of(setdiff(names(df), subsetby)), .x))
+        df_ls <- purrr::map(subsetby, ~ df %>%
+            select(all_of(setdiff(names(df), subsetby)), .x))
     }
     metric_df <- parallel::mclapply(df_ls, function(df_sub) {
         metric_res <- extractMetric(
@@ -185,7 +187,7 @@ calcMetricPerFov <- function(
 }
 
 
-#' Calculate cross spatial metrics for all combinations on a spatial experiment object per field of view
+#' Calculate cross spatial metrics for all combinations on a SPE object per fov
 #'
 #' @param spe a spatial experiment object
 #' @param selection the mark(s) you want to compare

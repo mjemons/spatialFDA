@@ -27,8 +27,10 @@ library("dplyr")
 spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 metric_res <- calcMetricPerFov(spe, c("alpha", "beta"),
     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
-    r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id",
-    "image_number"),
+    r_seq = seq(0, 50, length.out = 50), by = c(
+        "patient_stage", "patient_id",
+        "image_number"
+    ),
     ncores = 1
 )
 # create a unique ID for each row
@@ -50,7 +52,10 @@ condition <- dat$condition
 condition <- relevel(condition, "Non-diabetic")
 designmat <- model.matrix(~condition)
 # colnames don't work with the '-' sign
-colnames(designmat) <- c("Intercept", "conditionLong_duration", "conditionOnset")
+colnames(designmat) <- c(
+    "Intercept", "conditionLong_duration",
+    "conditionOnset"
+)
 # fit the model
 mdl <- functionalGam(
     dat = dat, x = metric_res$r |> unique(),
@@ -59,5 +64,8 @@ mdl <- functionalGam(
         conditionOnset + s(patient_id, bs = "re"))
 )
 summary(mdl)
-plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl, shift = mdl$coefficients[['(Intercept)']])
+plot_ls <- lapply(colnames(designmat), plotMdl,
+    mdl = mdl,
+    shift = mdl$coefficients[["(Intercept)"]]
+)
 }

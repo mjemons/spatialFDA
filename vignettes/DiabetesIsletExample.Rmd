@@ -20,7 +20,7 @@ vignette: >
   %\VignetteIndexEntry{Functional Data Analysis of Spatial Metrics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}  
-bibliography: ../spatialFDA.bib
+bibliography: spatialFDA.bib
 ---
 
 ```{r v1, include = FALSE}

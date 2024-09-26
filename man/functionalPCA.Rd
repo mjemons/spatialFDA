@@ -49,5 +49,8 @@ dat$condition <- factor(sapply(split_data, function(x) x[1]))
 dat$patient_id <- factor(sapply(split_data, function(x) x[2]))
 dat$image_id <- factor(sapply(split_data, function(x) x[3]))
 # calculate fPCA
-mdl <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
+mdl <- functionalPCA(
+    dat = dat, r = metric_res$r |> unique(),
+    knots = 30, pve = 0.99
+)
 }

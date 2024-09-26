@@ -20,21 +20,38 @@
 #'     ),
 #'     ncores = 1
 #' )
-#' p <- plotMetricPerFov(metric_res, correction = "rs", x = "r", image_id = "image_number", ID = "ID")
+#' p <- plotMetricPerFov(metric_res,
+#'     correction = "rs", x = "r",
+#'     image_id = "image_number", ID = "ID"
+#' )
 #' print(p)
 #' @import dplyr ggplot2
-plotMetricPerFov <- function(metric_df, theo = FALSE, correction = NULL, x = NULL, image_id = NULL, ID = NULL) {
-    p <- ggplot(metric_df, aes(x = .data[[x]], y = .data[[correction]], group = factor(.data[[image_id]])))
+plotMetricPerFov <- function(metric_df, theo = FALSE, correction = NULL,
+    x = NULL, image_id = NULL, ID = NULL) {
+    p <- ggplot(metric_df, aes(
+        x = .data[[x]], y = .data[[correction]],
+        group = factor(.data[[image_id]])
+    ))
     if (!is.null(ID)) {
-        p <- p + geom_line(aes(colour = factor(.data[[ID]]))) + facet_wrap(selection ~ ID)
+        p <- p +
+            geom_line(aes(colour = factor(.data[[ID]]))) +
+            facet_wrap(selection ~ ID)
     } else {
-        p <- p + geom_line(aes(colour = factor(.data[[image_id]])))
+        p <- p +
+            geom_line(aes(colour = factor(.data[[image_id]])))
     }
     p <- p +
         theme_minimal() +
         theme(legend.position = "none") +
-        labs(title = paste0(metric_df$fun, " metric for ", unique(metric_df$selection)))
-    if (theo == TRUE) p <- p + geom_line(aes(x = .data[[x]], y = theo), linetype = "dashed", color = "black")
+        labs(title = paste0(
+            metric_df$fun, " metric for ",
+            unique(metric_df$selection)
+        ))
+    if (theo == TRUE) {
+        p <- p + geom_line(aes(x = .data[[x]], y = theo),
+            linetype = "dashed", color = "black"
+        )
+    }
     return(p)
 }
 

@@ -36,11 +36,17 @@
 #' dat$patient_id <- factor(sapply(split_data, function(x) x[2]))
 #' dat$image_id <- factor(sapply(split_data, function(x) x[3]))
 #' # calculate fPCA
-#' mdl <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
+#' mdl <- functionalPCA(
+#'     dat = dat, r = metric_res$r |> unique(),
+#'     knots = 30, pve = 0.99
+#' )
 #' @import dplyr
 functionalPCA <- function(dat, r, knots, pve = 0.95) {
     # calculate the fPCA - this is a bit a pointless wrapper until now
-    res <- refund::fpca.face(Y = dat$Y, center = TRUE, argvals = r, knots = knots, pve = pve)
+    res <- refund::fpca.face(
+        Y = dat$Y, center = TRUE, argvals = r,
+        knots = knots, pve = pve
+    )
     return(res)
 }
 
@@ -82,19 +88,30 @@ functionalPCA <- function(dat, r, knots, pve = 0.95) {
 #' dat$patient_id <- factor(sapply(split_data, function(x) x[2]))
 #' dat$image_id <- factor(sapply(split_data, function(x) x[3]))
 #' # calculate fPCA
-#' mdl <- functionalPCA(dat = dat, r = metric_res$r |> unique(), knots = 30, pve = 0.99)
-#' p <- plotFpca(dat = dat, res = mdl, colourby = "condition", labelby = "patient_id")
+#' mdl <- functionalPCA(
+#'     dat = dat, r = metric_res$r |> unique(),
+#'     knots = 30, pve = 0.99
+#' )
+#' p <- plotFpca(
+#'     dat = dat, res = mdl, colourby = "condition",
+#'     labelby = "patient_id"
+#' )
 #' print(p)
 #' @import dplyr
 plotFpca <- function(dat, res, colourby = NULL, labelby = NULL) {
     scores_df <- res$scores %>% as.data.frame()
     # plot fCPA results - assumes same order of fPCA results and input data
-    p <- ggplot(scores_df, aes(scores_df[, 1], scores_df[, 2], colour = factor(dat[[colourby]]))) +
+    p <- ggplot(scores_df, aes(scores_df[, 1], scores_df[, 2],
+        colour = factor(dat[[colourby]])
+    )) +
         geom_point() +
         coord_equal() +
         theme_light() +
         xlab("functional PC1") +
         ylab("functional PC2")
-    if (!is.null(labelby)) p <- p + geom_text(hjust = 0, vjust = 0, aes(label = factor(dat[[labelby]])))
+    if (!is.null(labelby)) {
+        p <- p +
+            geom_text(hjust = 0, vjust = 0, aes(label = factor(dat[[labelby]])))
+    }
     return(p)
 }

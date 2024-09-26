@@ -2,7 +2,7 @@
 % Please edit documentation in R/calcMetric.R
 \name{calcCrossMetricPerFov}
 \alias{calcCrossMetricPerFov}
-\title{Calculate cross spatial metrics for all combinations on a spatial experiment object per field of view}
+\title{Calculate cross spatial metrics for all combinations on a SPE object per fov}
 \usage{
 calcCrossMetricPerFov(
   spe,
@@ -45,14 +45,16 @@ theoretical value of a Poisson process, the different border corrections
 the fov number, the number of points and the centroid of the image
 }
 \description{
-Calculate cross spatial metrics for all combinations on a spatial experiment object per field of view
+Calculate cross spatial metrics for all combinations on a SPE object per fov
 }
 \examples{
 spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 metric_res <- calcCrossMetricPerFov(spe, c("alpha", "beta", "delta"),
     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
-    r_seq = seq(0, 50, length.out = 50), by = c("patient_stage", "patient_id",
-    "image_number"),
+    r_seq = seq(0, 50, length.out = 50), by = c(
+        "patient_stage", "patient_id",
+        "image_number"
+    ),
     ncores = 1
 )
 }

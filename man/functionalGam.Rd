@@ -59,7 +59,10 @@ condition <- dat$condition
 condition <- relevel(condition, "Non-diabetic")
 designmat <- model.matrix(~condition)
 # colnames don't work with the '-' sign
-colnames(designmat) <- c("Intercept", "conditionLong_duration", "conditionOnset")
+colnames(designmat) <- c(
+    "Intercept", "conditionLong_duration",
+    "conditionOnset"
+)
 # fit the model
 mdl <- functionalGam(
     dat = dat, x = metric_res$r |> unique(),

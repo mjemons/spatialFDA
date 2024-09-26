@@ -1,14 +1,19 @@
 Package: spatialFDA
 Title: A Tool for Spatial Multi-sample Comparisons
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: c(
     person("Martin", "Emons", , "martin.emons@uzh.ch", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-5219-5311")),
     person("Samuel", "Gunz", ,role="aut",
            comment = c(ORCID = "0000-0002-8909-0932")),
-    person("Mark", "Robinson", , "mark.robinson@mls.uzh.ch", role = c("aut"),
+    person("Mark", "Robinson", , "mark.robinson@mls.uzh.ch", role = c("aut", "fnd"),
            comment = c(ORCID = "0000-0002-3048-5518")))
-Description: spatialFDA is a package to calculate spatial statistics metrics and compare them across samples/conditions using functional additive models. Furthermore, it provides exploratory visualisations using functional principal component analysis.
+URL: https://github.com/mjemons/spatialFDA
+BugReports: https://github.com/mjemons/spatialFDA/issues
+Description: spatialFDA is a package to calculate spatial statistics metrics. 
+            The package takes a SpatialExperiment object and calculates spatial statistics metrics using the package spatstat.
+            Then it compares the resulting functions across samples/conditions using functional additive models as implemented in the package refund. 
+            Furthermore, it provides exploratory visualisations using functional principal component analysis, as well implemented in refund.
 License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

@@ -20,7 +20,18 @@
 #' @importFrom SummarizedExperiment colData
 .dfToppp <- function(df, marks = NULL, continuous = FALSE, window = NULL) {
     # this definition of the window is quite conservative - can be set explicitly
-    pp <- spatstat.geom::as.ppp(data.frame(x = df$x, y = df$y), W = spatstat.geom::owin(c(min(df$x) - 1, max(df$x) + 1), c(min(df$y) - 1, max(df$y) + 1)))
+    pp <- spatstat.geom::as.ppp(data.frame(x = df$x, y = df$y),
+        W = spatstat.geom::owin(
+            c(
+                min(df$x) - 1,
+                max(df$x) + 1
+            ),
+            c(
+                min(df$y) - 1,
+                max(df$y) + 1
+            )
+        )
+    )
     # set the marks
     if (!continuous) {
         spatstat.geom::marks(pp) <- factor(df[[marks]])
@@ -48,6 +59,9 @@
 #' spe_sub <- subset(spe, , image_number == "138")
 #' df_sub <- .speToDf(spe_sub)
 .speToDf <- function(spe) {
-    df <- data.frame(x = SpatialExperiment::spatialCoords(spe)[, 1], y = SpatialExperiment::spatialCoords(spe)[, 2])
+    df <- data.frame(
+        x = SpatialExperiment::spatialCoords(spe)[, 1],
+        y = SpatialExperiment::spatialCoords(spe)[, 2]
+    )
     df <- cbind(df, colData(spe))
 }

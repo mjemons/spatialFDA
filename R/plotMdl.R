@@ -40,7 +40,10 @@
 #' condition <- relevel(condition, "Non-diabetic")
 #' designmat <- model.matrix(~condition)
 #' # colnames don't work with the '-' sign
-#' colnames(designmat) <- c("Intercept", "conditionLong_duration", "conditionOnset")
+#' colnames(designmat) <- c(
+#'     "Intercept", "conditionLong_duration",
+#'     "conditionOnset"
+#' )
 #' # fit the model
 #' mdl <- functionalGam(
 #'     dat = dat, x = metric_res$r |> unique(),
@@ -49,7 +52,10 @@
 #'         conditionOnset + s(patient_id, bs = "re"))
 #' )
 #' summary(mdl)
-#' plot_ls <- lapply(colnames(designmat), plotMdl, mdl = mdl, shift = mdl$coefficients[["(Intercept)"]])
+#' plot_ls <- lapply(colnames(designmat), plotMdl,
+#'     mdl = mdl,
+#'     shift = mdl$coefficients[["(Intercept)"]]
+#' )
 #' @import dplyr
 plotMdl <- function(mdl, predictor, shift = NULL) {
     # extract the coefficients from the model
@@ -62,9 +68,16 @@ plotMdl <- function(mdl, predictor, shift = NULL) {
     # plot
     p <- ggplot(df, aes(.data$x.vec, .data$value)) +
         geom_line(size = 1) +
-        # here, I implement a Wald CI - could be g improved
-        geom_ribbon(data = df, aes(ymin = value - 1.96 * se, ymax = value + 1.96 * se), alpha = 0.3) +
-        geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+        # here, I implement a Wald CI - could be improved
+        geom_ribbon(
+            data = df,
+            aes(ymin = value - 1.96 * se, ymax = value + 1.96 * se),
+            alpha = 0.3
+        ) +
+        geom_hline(
+            yintercept = 0,
+            linetype = "dashed", color = "red", size = 1
+        ) +
         ggtitle(predictor) +
         ylab("parameter value") +
         xlab("r") +
