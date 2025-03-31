@@ -1,3 +1,7 @@
+# spatialFDA 0.99.13
+* changed the example in the vignette to Gaussian with log link and smooth
+random intercept.
+
 # spatialFDA 0.99.12
 * Changed indexing of spatial coordinates to positional index. Names can differ
 between objects, e.g. "x" or "coord_x" etc. therefore, positional index 

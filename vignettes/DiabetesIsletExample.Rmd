@@ -46,7 +46,7 @@ This package is similar to other packages in `python` and `R`. The following tab
 | ------------------------------------ | --------------- | ------------------- |
 | `r BiocStyle::Biocpkg('spicyR')`     | $L$-function    | Scalar comparison   |
 | `GraphCompass`                       | Graph-based     | Graph and  scalar comparison | 
-| `r BiocStyle::CRANpkg('mxfda')`      | K-, G- and L- function | Function as input for survival modelling |
+| `r BiocStyle::CRANpkg('mxfda')`      | $K$-, $G$- and $L$- function | Function as input for survival modelling |
 | `r BiocStyle::Biocpkg('spatialFDA')` | most `r BiocStyle::CRANpkg('spatstat')` functions   | Functional comparison over domain |
 
 # Installation
@@ -164,7 +164,7 @@ metricRes <- calcMetricPerFov(spe = spe, selection = c("alpha", "Tc"),
 metricRes %>% head(3)
 ```
 
-We can visualise this metric with `plotMetricPerFov` function. Here, we need to specify which border correction we want to plot and what the x-axis is. Both can vary from function to function.
+We can visualise this metric with `plotMetricPerFov` function. Here, we need to specify which border correction we want to plot and what the $x$-axis is. Both can vary from function to function.
 
 ```{r plotLfunction, warning = FALSE, fig.width=8, fig.height=8}
 # create a unique plotting ID
@@ -172,10 +172,10 @@ metricRes$ID <- paste0(
     metricRes$patient_stage, "|", metricRes$patient_id
 )
 # change levels for plotting
-metricRes$ID <- factor(metricRes$ID, levels = c("Non-diabetic|6126", 
-                                                "Non-diabetic|6134", 
+metricRes$ID <- factor(metricRes$ID, levels = c("Non-diabetic|6126",
+                                                "Non-diabetic|6134",
                                                 "Onset|6228","Onset|6414",
-                                                "Long-duration|6089", 
+                                                "Long-duration|6089",
                                                 "Long-duration|6180"))
 # plot metrics
 plotMetricPerFov(metricRes, correction = "iso", x = "r",
@@ -212,10 +212,10 @@ metricRes$ID <- paste0(
     metricRes$patient_stage, "|", metricRes$patient_id
 )
 # change levels for plotting
-metricRes$ID <- factor(metricRes$ID, levels = c("Non-diabetic|6126", 
-                                                "Non-diabetic|6134", 
+metricRes$ID <- factor(metricRes$ID, levels = c("Non-diabetic|6126",
+                                                "Non-diabetic|6134",
                                                 "Onset|6228","Onset|6414",
-                                                "Long-duration|6089", 
+                                                "Long-duration|6089",
                                                 "Long-duration|6180"))
 # plot metrics
 plotMetricPerFov(metricRes, correction = "rs", x = "r",
@@ -242,6 +242,14 @@ collector <- plotFbPlot(metricRes, "r", "rs", "patient_stage")
 ```
 
 The functional boxplot shows that onset $G$-curves are more variable than the corresponding long-duration and non-diabetic curves. We note as well, that the variability is heteroscedastic along the domain (i.e., variance increases with radius), which is undesirable for our statistical modelling. Therefore, we can e.g. apply a variance stabilising transformation to our data or model this variance in the statistical model.
+
+```{r, variancetransform, warning = FALSE}
+# can determine with a boxcox transformation what is the ideal parameter
+# for the transformation
+metricRes$rs <- sqrt(metricRes$rs)
+
+collector <- plotFbPlot(metricRes, 'r', 'rs', 'patient_stage')
+```
 
 # Functional principal component analysis
 
@@ -284,8 +292,8 @@ p_efunction1 <- ggplot(data.frame(r = unique(metricRes$r),
     ylim(-0.3,0.3) +
     xlab("r [µm]")
 
-p_efunction2 <- ggplot(data.frame(r = unique(metricRes$r), 
-                                  phi2 = pca$efunctions[,2]), 
+p_efunction2 <- ggplot(data.frame(r = unique(metricRes$r),
+                                  phi2 = pca$efunctions[,2]),
                        aes(x = r, y = phi2)) +
     geom_line() +
     theme_light() +
@@ -295,6 +303,8 @@ p_efunction2 <- ggplot(data.frame(r = unique(metricRes$r),
 wrap_plots(list(p_mu, p_efunction1, p_efunction2), ncol = 3)
 # plot the biplot of the first two PCs
 plotFpca(dat = dat, res = pca, colourby = "condition")
+# print the eigenvalues
+evalues
 ```
 
 In the biplot above we get a very basic differentiation of the $G$ curves. Onset T1D shows most variability along the first fPC. The second fPC describes less variation. 
@@ -306,28 +316,25 @@ The $L$ function above showed no clear difference between the three conditions w
 The model implemented here is of the form:
 
 $$
-\mathbb{E}[y_i(r)] = g(\alpha(r) + \beta_{0,g(i)}(r) + \sum_{j=1}^J f_j(X_{ji},r) + \epsilon_i(r))
+\mathbb{E}[y_i(r)] = g(\alpha(r) + \beta_{0,g(i)}(r) + \sum_{j=1}^J f_j(X_{ji},r))
 $$
 
 With the following terms:
 
-- $y_i(r)$ the functional response, here the `r BiocStyle::CRANpkg('spatstat')` curves
+- $y_i(r)$: functional response, here the `r BiocStyle::CRANpkg('spatstat')` curves
 
-- $g$ optional link function 
+- $g$: optional link function 
 
-- $\alpha(r)$ a global functional intercept varying over the domain $r$
+- $\alpha(r)$: global functional intercept varying over the domain $r$
 
-- $\beta_{0,g(i)}(r)$ a random functional intercept varying over the domain $r$ per grouping variable $g(i)$.
+- $\beta_{0,g(i)}(r)$: random functional intercept varying over the domain $r$ per grouping variable $g(i)$.
 
-- $f_j(X_{ji},r)$ the additive predictors
+- $f_j(X_{ji},r)$: additive predictors
 
-- $\epsilon_i(r)$ residual zero-mean Gaussian errors
-
-For the family we will use a quasi-likelihood distribution where the variance is modeled as quadratic to the mean. We do this to account for the heteroscedastic variance along the domain.
+For the family we will use a normal distribution with a logarithmic link function. This distribution has a positive support, thereby modelling the strictly positive response of the spatial statistics functions. 
 
 In this context we need to specify a design matrix and contrasts. For the
-functional random intercepts we use a principal componend-based estimation 
-(pve = 0.995) from `refund` [@refund2024].
+functional random intercepts we define a smooth function for each patient ID as implemented in `refund` [@refund2024].
 
 ```{r funcGamG, fig.height=10, warning = FALSE}
 library('refund')
@@ -342,10 +349,8 @@ mdl <- functionalGam(
     data = dat, x = r,
     designmat = mm, weights = dat$npoints,
     formula = formula(Y ~ 1 + conditionLong_duration +
-                          conditionOnset + pcre(id=patient_id, 
-                                                efunctions=efunctions, 
-                                                evalues=evalues, yind=r)),
-    family = quasi(link = "identity", variance = "mu^2"),
+                          conditionOnset + s(patient_id, bs = "re")),
+    family = gaussian(link = "log"),
     algorithm = "gam"
 )
 summary(mdl)
@@ -363,26 +368,25 @@ We note that there is a small difference in the $G$ function between non-diabeti
 One open problem is the implementation of confidence bands that reflect the non-independently and non-identically distributed residuals. To visualise how much of a problem this is, we can plot the contours of the correlation/covariance and look at some model diagnostics.
 
 ```{r contour, warning = FALSE}
-resid(mdl) |> cor() |> filled.contour()
+resid(mdl) |> cor() |> filled.contour(levels = seq(-1, 1, l = 40))
 resid(mdl) |> cov() |> filled.contour()
+
 try(refund::pffr.check(mdl))
 ```
 
 In these model diagnostics, we note that there is still some variability in the residuals that is not considered by the model. The QQ plot indicates a good model fit. The residuals show a considerable structure that is in line with the structure in the auto-covariance / correlation plots.
 
-In the functional additive mixed model, we have a specified global intercept varying over the domain $r$ as well as functional random intercepts varying over the domain $r$ per grouping variable `patient_id`. We can plot these smooth estimates of the random intercepts.
+In the functional additive mixed model, we have specified global intercept varying over the domain $r$ as well as functional random intercepts varying over the domain $r$ per grouping variable `patient_id`. We can plot these smooth estimates of the random intercepts.
 
 ```{r intercept, warning = FALSE, eval = TRUE}
 # look at the smooth random intercepts per patient
-#data <- coef(mdl)$smterms$`s(patient_id)`$coef
-data <- coef(mdl)$smterms$`pcre(patient_id,efunctions,evalues,r)`$coef %>%
-  dplyr::rename(patient_id = "patient_id.vec")
+data <- coef(mdl)$smterms$`s(patient_id)`$coef
 
 data <- data %>% left_join(splitData %>% 
                              select(patient_id, condition) %>% unique)
 
-p <- ggplot(data, aes(x.vec, value, colour = patient_id)) +
-  geom_point(aes(shape=factor(condition))) +
+p <- ggplot(data, aes(x = x.vec, y = value, colour = condition, group = patient_id)) +
+  geom_line() +
   theme_light() + 
   geom_smooth(aes(group = 1), col = 'black') +
   xlab("r [µm]")
@@ -390,9 +394,7 @@ p <- ggplot(data, aes(x.vec, value, colour = patient_id)) +
 p
 ```
 
-In this implementation, we have used principal component based random errors as
-implemented in `pcre` from `refund`. These random errors are constrained to zero 
-over $t$. 
+We note that these random errors are not constrained to sum-to-zero over the domain $r$. This can lead to problems of identifiability between the global intercept and the functional random intercepts. 
 
 ```{r sessionInfo}
 sessionInfo()
