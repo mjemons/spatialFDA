@@ -1,3 +1,7 @@
+# spatialFDA 0.99.14
+* changed the example in the Vignette to scaled t-dist. with log link due to 
+lower AIC than Gaussian.
+
 # spatialFDA 0.99.13
 * changed the example in the vignette to Gaussian with log link and smooth
 random intercept.

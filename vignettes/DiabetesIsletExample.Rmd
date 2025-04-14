@@ -331,10 +331,9 @@ With the following terms:
 
 - $f_j(X_{ji},r)$: additive predictors
 
-For the family we will use a normal distribution with a logarithmic link function. This distribution has a positive support, thereby modelling the strictly positive response of the spatial statistics functions. 
+For the family we will use a scaled $t$-distribution with a logarithmic link function. This distribution has a positive support, thereby modelling the strictly positive response of the spatial statistics functions. 
 
-In this context we need to specify a design matrix and contrasts. For the
-functional random intercepts we define a smooth function for each patient ID as implemented in `refund` [@refund2024].
+In this context we need to specify a design matrix and contrasts. For the functional random intercepts we define a smooth function for each patient ID as implemented in `refund` [@refund2024].
 
 ```{r funcGamG, fig.height=10, warning = FALSE}
 library('refund')
@@ -350,7 +349,7 @@ mdl <- functionalGam(
     designmat = mm, weights = dat$npoints,
     formula = formula(Y ~ 1 + conditionLong_duration +
                           conditionOnset + s(patient_id, bs = "re")),
-    family = gaussian(link = "log"),
+    family = mgcv::scat(link = "log"),
     algorithm = "gam"
 )
 summary(mdl)
@@ -361,20 +360,21 @@ wrap_plots(plotLs, nrow = 3, axes = 'collect')
 ```
 
 
-We note that there is a small difference in the $G$ function between non-diabetic and long-duration T1D samples, but a strong difference between non-diabetic and onset T1D according to the model summary. The point wise confidence bands are a limitation of this method and could be improved with either bootstrapping or continuous confidence bands [@liebl2023fast]. Thus, we see not only that a spatial difference in co-localisation of $\alpha$ and cytotoxic T cells is statistically significant but also at which spatial scale this difference occurs.
+We note that there is a small non-significant difference in the $G$ function between non-diabetic and long-duration T1D samples, but a strong difference between non-diabetic and onset T1D according to the model summary. The point wise confidence bands are a limitation of this method and could be improved with either bootstrapping or continuous confidence bands [@liebl2023fast]. Thus, we see not only that a spatial difference in co-localisation of $\alpha$ and cytotoxic T cells is statistically significant but also at which spatial scale this difference occurs.
 
 ## Model evaluation
 
-One open problem is the implementation of confidence bands that reflect the non-independently and non-identically distributed residuals. To visualise how much of a problem this is, we can plot the contours of the correlation/covariance and look at some model diagnostics.
+One open problem is the implementation of confidence bands that reflect the non-independently and non-identically distributed residuals. To visualise how much of a problem this is, we can plot the contours of the correlation/covariance and look at model diagnostics.
 
 ```{r contour, warning = FALSE}
 resid(mdl) |> cor() |> filled.contour(levels = seq(-1, 1, l = 40))
 resid(mdl) |> cov() |> filled.contour()
 
-try(refund::pffr.check(mdl))
+qqnorm(resid(mdl), pch = 16)
+qqline(resid(mdl))
 ```
 
-In these model diagnostics, we note that there is still some variability in the residuals that is not considered by the model. The QQ plot indicates a good model fit. The residuals show a considerable structure that is in line with the structure in the auto-covariance / correlation plots.
+In these model diagnostics, we note that there is still some variability in the residuals that is not considered by the model. The Q-Q plot indicates a good but not perfect model fit. The residuals show a considerable structure that is in line with the structure in the auto-covariance / correlation plots.
 
 In the functional additive mixed model, we have specified global intercept varying over the domain $r$ as well as functional random intercepts varying over the domain $r$ per grouping variable `patient_id`. We can plot these smooth estimates of the random intercepts.
 

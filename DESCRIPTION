@@ -1,6 +1,6 @@
 Package: spatialFDA
 Title: A Tool for Spatial Multi-sample Comparisons
-Version: 0.99.13
+Version: 0.99.14
 Authors@R: c(
     person("Martin", "Emons", , "martin.emons@uzh.ch", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-5219-5311")),
@@ -44,5 +44,6 @@ Suggests:
     knitr,
     rmarkdown,
     BiocStyle,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    mgcv
 Config/testthat/edition: 3
