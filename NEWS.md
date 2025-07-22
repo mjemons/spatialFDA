@@ -1,3 +1,11 @@
+# spatialFDA 1.1.1
+* wrote a new convenience function `spatialInference` which makes the FDA estimation
+of the spatial statistics functions simpler
+* in order to do this various changes to `prepData` were introduced
+* furthermore, small syntactic changes for the retrieval of the functional
+intercept were added to `functionalGam` and `plotMdl`
+* The vignette was simplified to reflect the changes in `prepData`
+
 # spatialFDA 0.99.14
 * changed the example in the Vignette to scaled t-dist. with log link due to 
 lower AIC than Gaussian.

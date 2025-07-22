@@ -32,7 +32,7 @@ condition <- relevel(condition, "Non-diabetic")
 designmat <- model.matrix(~condition)
 # colnames don't work with the '-' sign
 colnames(designmat) <- c(
-  "Intercept", "conditionLong_duration",
+  "(Intercept)", "conditionLong_duration",
   "conditionOnset"
 )
 # fit the model

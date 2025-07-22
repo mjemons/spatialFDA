@@ -256,20 +256,16 @@ collector <- plotFbPlot(metricRes, 'r', 'rs', 'patient_stage')
 Another analysis that can be performed is functional principal componentent analysis (fPCA). This is a method to capture the main modes of variation in functional data [@ramsayPrincipalComponentsAnalysis2005]. We use the `r BiocStyle::CRANpkg('refund')` implementation of fPCA. 
 
 ```{r fPCA, warning = FALSE}
-# filter out all rows that have a constant zero part - all r<10
-metricRes <- metricRes %>% filter(r > 10)
+# filter out all rows that have a constant zero part - all r=<10
+metricRes <- metricRes %>% filter(r >= 10)
 
 # prepare dataframe from calcMetricRes to be in the correct format for pffr
-dat <- prepData(metricRes, "r", "rs")
+dat <- prepData(metricRes, "r", "rs", sample_id = "patient_id",
+ image_id = "image_number", condition = "patient_stage")
 
-# create meta info of the IDs
-splitData <- dat$ID %>%
-  str_replace("-","_") %>%
-  str_split_fixed("x", 3) %>% 
-  data.frame(stringsAsFactors = TRUE) %>%
-  setNames(c("condition", "patient_id", "imageId")) %>%
-  mutate(condition = relevel(condition,"Non_diabetic"))
-dat <- cbind(dat, splitData)
+dat$condition <- gsub("-","_", dat$patient_stage) %>% 
+  as.factor() %>%
+  relevel("Non_diabetic")
 
 # drop rows with NA
 dat <- dat |> drop_na()
@@ -339,7 +335,6 @@ In this context we need to specify a design matrix and contrasts. For the functi
 library('refund')
 # create a design matrix
 mm <- model.matrix(~condition, data = dat)
-colnames(mm)[1] <- "Intercept"
 mm %>% head()
 
 r <- metricRes$r |> unique()
@@ -382,7 +377,7 @@ In the functional additive mixed model, we have specified global intercept varyi
 # look at the smooth random intercepts per patient
 data <- coef(mdl)$smterms$`s(patient_id)`$coef
 
-data <- data %>% left_join(splitData %>% 
+data <- data %>% left_join(dat %>% 
                              select(patient_id, condition) %>% unique)
 
 p <- ggplot(data, aes(x = x.vec, y = value, colour = condition, group = patient_id)) +

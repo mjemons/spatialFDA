@@ -44,21 +44,20 @@ metricRes$ID <- paste0(
     "x", metricRes$image_number
 )
 
-dat <- prepData(metricRes, "r", "rs")
+dat <- prepData(metricRes, "r", "rs", sample_id = "patient_id",
+    image_id = "image_number", condition = "patient_stage")
 
-# create meta info of the IDs
-splitData <- str_split(dat$ID, "x")
-dat$condition <- factor(sapply(splitData, function(x) x[1]))
-dat$patient_id <- factor(sapply(splitData, function(x) x[2]))
-dat$image_id <- factor(sapply(splitData, function(x) x[3]))
+#' # drop rows with NA
+dat <- dat |> drop_na()
+
 # create a designmatrix
-condition <- dat$condition
+condition <- dat$patient_stage
 # relevel the condition - can set explicit contrasts here
 condition <- relevel(condition, "Non-diabetic")
 designmat <- model.matrix(~condition)
 # colnames don't work with the '-' sign
 colnames(designmat) <- c(
-    "Intercept", "conditionLong_duration",
+    "(Intercept)", "conditionLong_duration",
     "conditionOnset"
 )
 # fit the model

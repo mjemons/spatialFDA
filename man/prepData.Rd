@@ -4,7 +4,7 @@
 \alias{prepData}
 \title{Prepare data from calcMetricRes to be in the right format for FDA}
 \usage{
-prepData(metricRes, x, y)
+prepData(metricRes, x, y, sample_id = NULL, image_id = NULL, condition = NULL)
 }
 \arguments{
 \item{metricRes}{a dataframe as calculated by calcMetricRes - requires
@@ -13,6 +13,12 @@ the columns ID (unique identifier of each row)}
 \item{x}{the name of the x-axis of the spatial metric}
 
 \item{y}{the name of the y-axis of the spatial metric}
+
+\item{sample_id}{the spe \code{colData} variable to mark the sample}
+
+\item{image_id}{the spe \code{colData} variable to mark the image}
+
+\item{condition}{the spe \code{colData} variable to mark the condition}
 }
 \value{
 returns a list with three entries, the unique ID, the functional
@@ -38,5 +44,6 @@ metricRes$ID <- paste0(
     metricRes$patient_stage, "|", metricRes$patient_id,
     "|", metricRes$image_number
 )
-dat <- prepData(metricRes, "r", "rs")
+dat <- prepData(metricRes, "r", "rs", sample_id = "patient_id",
+image_id = "image_number", condition = "patient_stage")
 }
