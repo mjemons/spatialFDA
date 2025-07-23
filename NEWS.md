@@ -1,3 +1,7 @@
+# spatialFDA 1.1.2
+* wrote a new convenience function `crossSpatialInference` which makes the 
+estimation across a range of cell types easier.
+
 # spatialFDA 1.1.1
 * wrote a new convenience function `spatialInference` which makes the FDA estimation
 of the spatial statistics functions simpler

@@ -1,5 +1,4 @@
-#' Function to perform spatial function calculation and statistical inference
-#' in one go
+#' Statistical Inference on Spatial Statistics Functions
 #'
 #' A function to perform spatial statistical inference on spatial omics data.
 #' This function works so far only on functions of radius "r".
@@ -30,7 +29,9 @@
 #' @param ncores the number of cores to use for parallel processing, default = 1
 #' @param ... Other parameters passed to `spatstat.explore` functions
 #'
-#' @returns a fitted pffr object which inherits from gam
+#' @returns a list with three objects: i) the dataframe with the spatial
+#' statistics results, ii) the designmatrix of the inference and iii) the
+#' fitted pffr object
 #' @export
 #'
 #' @examples
