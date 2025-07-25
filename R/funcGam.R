@@ -14,9 +14,9 @@
 #' @param formula the formula for the model. The colnames of the designmatrix
 #' have to correspond to the variables in the formula.
 #' @param family the distributional family as implemented in `family.mgcv`. For
-#' fast computation the default is set to `gaussian`. If the covariance scales
-#' e.g. as a function of the domain, this estimation can be improved with
-#' `gaulss` - for more information see `family.mgcv`.
+#' fast computation the default is set to `gaussian` with a log link.
+#' other interesting options can be `betar` and `scat`
+#'  - for more information see `family.mgcv`.
 #' @param ... Other parameters passed to `pffr`
 #'
 #' @return a fitted pffr object which inherits from gam
@@ -67,7 +67,7 @@
 #' @importFrom methods is
 #' @importFrom stats terms
 functionalGam <- function(data, x, designmat, weights, formula,
-                          family = "gaussian", ...) {
+                          family = stats::gaussian(link = "log"), ...) {
     # type checking
     stopifnot(is(data, "data.frame"))
     stopifnot(is(x, "vector"))

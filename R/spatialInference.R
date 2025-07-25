@@ -63,7 +63,7 @@ spatialInference <- function(spe,
                              transformation = NULL,
                              eps = NULL,
                              delta = 0,
-                             family = "gaussian",
+                             family = stats::gaussian(link = "log"),
                              ncores = 1,
                              ...){
   #small assertion that the condition has to be a factor

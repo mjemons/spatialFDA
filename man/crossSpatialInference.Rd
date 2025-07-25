@@ -20,7 +20,7 @@ crossSpatialInference(
   transformation = NULL,
   eps = NULL,
   delta = 0,
-  family = "gaussian",
+  family = stats::gaussian(link = "log"),
   ncores = 1,
   ...
 )

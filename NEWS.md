@@ -1,3 +1,7 @@
+# spatialFDA 1.1.3
+* changed the default of the GAM estimation to be a Gaussian with log link for
+positivty of the response
+
 # spatialFDA 1.1.2
 * wrote a new convenience function `crossSpatialInference` which makes the 
 estimation across a range of cell types easier.
