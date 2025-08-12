@@ -1,3 +1,6 @@
+# spatialFDA 1.1.4
+* `functionalGAM` accepts flexible naming of the intercept column.
+
 # spatialFDA 1.1.3
 * changed the default of the GAM estimation to be a Gaussian with log link for
 positivty of the response
