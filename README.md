@@ -7,8 +7,6 @@
 
 <img src="inst/extdata/spatialFDA.png" style="width:20.0%" />
 
-%}
-
 spatialFDA is a tool to calculate spatial statistics functions on a
 `SpatialExperiment` object using the `spatstat` library. It contains
 functions to plot these spatial statistics functions. In addition, users

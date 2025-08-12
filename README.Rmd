@@ -20,8 +20,6 @@ knitr::opts_chunk$set(
 
 ![](inst/extdata/spatialFDA.png){width=20%}
 
-%}
-
 spatialFDA is a tool to calculate spatial statistics functions on a `SpatialExperiment`
 object using the `spatstat` library. It contains functions to plot these spatial statistics functions. In addition, users can compare the statial statistics functions using functional data analysis. Here, we use the `refund` library. 
 
