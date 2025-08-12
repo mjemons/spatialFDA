@@ -1,3 +1,8 @@
+# spatialFDA 1.1.5
+* New overview vignette, showing the usability of `spatialInference`
+* Plotting of a heatmap from extracted from `crossSpatialInference`
+* Adding of the package sticker to the README
+
 # spatialFDA 1.1.4
 * `functionalGAM` accepts flexible naming of the intercept column.
 

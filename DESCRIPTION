@@ -1,11 +1,13 @@
 Package: spatialFDA
 Title: A Tool for Spatial Multi-sample Comparisons
-Version: 1.1.4
+Version: 1.1.5
 Authors@R: c(
     person("Martin", "Emons", , "martin.emons@uzh.ch", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-5219-5311")),
     person("Samuel", "Gunz", ,role="aut",
            comment = c(ORCID = "0000-0002-8909-0932")),
+    person("Fabian", "Scheipl", , role="aut",
+            comment = c(ORCID = "0000-0001-8172-3603")),
     person("Mark D.", "Robinson", , "mark.robinson@mls.uzh.ch", role = c("aut", "fnd"),
            comment = c(ORCID = "0000-0002-3048-5518")))
 URL: https://github.com/mjemons/spatialFDA

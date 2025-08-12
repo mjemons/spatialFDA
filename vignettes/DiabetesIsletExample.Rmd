@@ -4,8 +4,11 @@ author:
   - name: "Martin Emons"
     affiliation:
       - &DMLS Department of Molecular Life Sciences, University of Zurich, Switzerland
-      - &SIB SIB Swiss Institute of Bioinformatics, University of Zurich, Switzerland
+      - &SIB SIB Swiss Institute of Bioinformatics, Lausanne, Switzerland
     email: "martin.emons@uzh.ch"
+  - name: Fabian Scheipl
+    affiliation:
+      - &LMU Department of Statistics, Ludwig-Maximilians-Universität München, Germany
   - name: Mark D. Robinson
     affiliation:
       - *DMLS
@@ -14,9 +17,7 @@ package: "`r BiocStyle::Biocpkg('spatialFDA')`"
 output:
   BiocStyle::html_document
 abstract: >
-  A package to calculate spatial statistics metrics, explore them with
-  functional principal component analysis and compare them with 
-  functional additive mixed models
+  This vignette shows how to perform a custom spatial analysis with the package `spatialFDA`. 
 vignette: >
   %\VignetteIndexEntry{Functional Data Analysis of Spatial Metrics}
   %\VignetteEncoding{UTF-8}  
@@ -79,7 +80,7 @@ In this vignette we will analyse a diabetes dataset acquired by imaging mass cyt
 
 ## Loading the data
 
-The @damondMapHumanType2019 dataset is easily loaded from `ExperimentHub` via a small reader function `.loadExample()`. The entire dataset can be loaded by setting `full = TRUE`. For computational reasons, one can reduce to three patients as well by setting this flag to `FALSE`. We will subset the entire dataset to two samples per condition in order to have a multi-condition/multi-sample setting. The package offers multiple datatypes, we will use the `r BiocStyle::Biocpkg('SpatialExperiment')` (SPE) object.
+The @damondMapHumanType2019 dataset is easily loaded from `ExperimentHub` via a small reader function `.loadExample()`. The entire dataset can be loaded by setting `full = TRUE`. For computational reasons, one can reduce to three patients as well by setting this flag to `FALSE`. We will subset the entire dataset to two samples per condition in order to have a multi-condition/multi-sample setting. The package offers multiple datatypes, we will use the `r BiocStyle::Biocpkg('SpatialExperiment')` (SPE) object [@righelli2022spatialexperiment].
 
 ```{r loading, warning = FALSE, message = FALSE}
 # retrieve example data from Damond et al. (2019)
