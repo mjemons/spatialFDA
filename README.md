@@ -5,7 +5,9 @@
 
 [![R-CMD-check](https://github.com/mjemons/spatialFDA/actions/workflows/R-CMD-check.yaml/badge.svg?branch=devel)](https://github.com/mjemons/spatialFDA/actions/workflows/R-CMD-check.yaml)
 
-![](inst/extdata/spatialFDA.png)
+<img src="inst/extdata/spatialFDA.png" style="width:20.0%" />
+
+%}
 
 spatialFDA is a tool to calculate spatial statistics functions on a
 `SpatialExperiment` object using the `spatstat` library. It contains
