@@ -85,7 +85,8 @@ functionalGam <- function(data, x, designmat, weights, formula,
     # with the exception of the intercept as this is inferred - there are
     # functional and constant intercepts
     # deselect "Intercept"
-    colNames <- colnames(designmat)[!colnames(designmat) == "(Intercept)"]
+    colNames <- colnames(designmat)[!colnames(designmat) %in% c("(Intercept)",
+                                                                "Intercept")]
     # stop if the rest terms of design mat are not in the formula
     stopifnot(colNames %in% attr(terms(formula), "term.labels"))
     mdl <- refund::pffr(formula,
