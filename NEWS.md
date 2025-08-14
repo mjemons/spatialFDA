@@ -1,3 +1,6 @@
+# spatialFDA 1.1.7
+* Fixing error in `plotCrossHeatmap` when the model is NULL.
+
 # spatialFDA 1.1.6
 * Error handling in `spatialInference` when one condition has no images with curves.
 * Wrote as well a new test for this case

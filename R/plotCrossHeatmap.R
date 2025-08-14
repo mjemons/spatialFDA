@@ -28,11 +28,13 @@
 extractCrossInferenceData <- function(resLs){
   df <- lapply(names(resLs), function(x){
     mdl <- resLs[[x]]$mdl
-    table <- summary(mdl)$s.table %>% as.data.frame()
-    table$condition <- rownames(table)
-    table$combination <- x
-    table <- table %>% separate(combination, c("cell1", "cell2"), sep = "_")
-    return(table)
+    if(!is.null(mdl)){
+      table <- summary(mdl)$s.table %>% as.data.frame()
+      table$condition <- rownames(table)
+      table$combination <- x
+      table <- table %>% separate(combination, c("cell1", "cell2"), sep = "_")
+      return(table)
+    }
   }) %>% dplyr::bind_rows()
   return(df)
 }
