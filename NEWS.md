@@ -1,3 +1,7 @@
+# spatialFDA 1.1.6
+* Error handling in `spatialInference` when one condition has no images with curves.
+* Wrote as well a new test for this case
+
 # spatialFDA 1.1.5
 * New overview vignette, showing the usability of `spatialInference`
 * Plotting of a heatmap from extracted from `crossSpatialInference`

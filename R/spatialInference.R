@@ -89,6 +89,7 @@ spatialInference <- function(spe,
     "|", metricRes[[image_id]]
   )
 
+  noConditionsPreFiltering <- (length(unique(metricRes[[condition]])))
   # #removing field of views that have as a curve only zeros - these are cases where
   # #there is no cells of one type
   metricRes <- metricRes %>% dplyr::group_by(ID) %>%
@@ -105,45 +106,49 @@ spatialInference <- function(spe,
   }
 
   metricRes <- metricRes %>% filter(r >= delta)
+  noConditionsPostFiltering <- (length(unique(metricRes[[condition]])))
+  if(noConditionsPreFiltering == noConditionsPostFiltering){
+    # prepare data for FDA
+    dat <- prepData(metricRes, "r", correction, sample_id,
+                    image_id, condition)
 
-  # prepare data for FDA
-  dat <- prepData(metricRes, "r", correction, sample_id,
-                  image_id, condition)
+    # drop rows with NA
+    dat <- dat |> drop_na()
+    #create the designmatrix - condition needs to be a factor with the correct
+    #level at position one for the reference category
+    condition <- dat[[condition]]
+    print(paste0("Creating design matrix with ", levels(condition)[[1]],
+                 " as reference"))
+    mm <- stats::model.matrix(~condition)
+    #make sure that the colnames don't have "-" instead of "_"
+    colnames(mm) <- gsub("-","_", colnames(mm))
+    #create a formula without the first intercept column
+    formula <- stats::as.formula(paste("Y ~", paste(colnames(mm)[c(-1)],
+                                                    collapse="+")))
 
-  # drop rows with NA
-  dat <- dat |> drop_na()
-  #create the designmatrix - condition needs to be a factor with the correct
-  #level at position one for the reference category
-  condition <- dat[[condition]]
-  print(paste0("Creating design matrix with ", levels(condition)[[1]],
-               " as reference"))
-  mm <- stats::model.matrix(~condition)
-  #make sure that the colnames don't have "-" instead of "_"
-  colnames(mm) <- gsub("-","_", colnames(mm))
+    if(!is.null(sample_id)){
+      formula <- stats::as.formula(paste("Y ~",
+                                  paste(c(colnames(mm)[c(-1)],
+                                          paste0("s(",sample_id,", bs = 're')")),
+                                        collapse="+")))
+    }
 
-  #create a formula without the first intercept column
-  formula <- stats::as.formula(paste("Y ~", paste(colnames(mm)[c(-1)],
-                                                  collapse="+")))
+    #due to the removal of delta, rSeq can be less as well
+    r <- metricRes$r |> unique()
 
-  if(!is.null(sample_id)){
-    formula <- stats::as.formula(paste("Y ~",
-                                paste(c(colnames(mm)[c(-1)],
-                                        paste0("s(",sample_id,", bs = 're')")),
-                                      collapse="+")))
+    #third, run functionalGam
+    mdl <- functionalGam(
+      data = dat, x = r,
+      designmat = mm, weights = dat$npoints,
+      formula = formula,
+      family = family,
+      ...
+    )
+  }else{
+    print("Can not fit a model if one condition has no images with curves")
+    mdl = NULL
+    mm = NULL
   }
-
-  #due to the removal of delta, rSeq can be less as well
-  r <- metricRes$r |> unique()
-
-  #third, run functionalGam
-  mdl <- functionalGam(
-    data = dat, x = r,
-    designmat = mm, weights = dat$npoints,
-    formula = formula,
-    family = family,
-    ...
-  )
-
   #return pffr object and calcMetricPerFov dataframe in a named list
   return(list(metricRes = metricRes, designmat = mm, mdl = mdl))
 }

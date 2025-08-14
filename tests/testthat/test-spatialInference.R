@@ -63,3 +63,16 @@ mdl2 <- res$mdl
 test_that("wrapper function gives same result as manual computation", {
   expect_true(identical(mdl1$coefficients, mdl2$coefficients))
 })
+
+resBeta <- spatialInference(spe, "beta",
+                        subsetby = "image_number", fun = "Gest", marks = "cell_type",
+                        rSeq = seq(0, 50, length.out = 50), correction = "rs",
+                        sample_id = "patient_id",
+                        image_id = "image_number", condition = "patient_stage",
+                        ncores = 1
+)
+
+test_that("spatialInference handels case when one condition has no images with
+          calculated curves ", {
+  expect_true(is.null(resBeta$mdl) && is.null(resBeta$designmat))
+})
