@@ -1,3 +1,7 @@
+# spatialFDA 1.1.8
+* adding a constant to the log in `plotCrossHeatmap` to avoid NULL values being
+plotted
+
 # spatialFDA 1.1.7
 * Fixing error in `plotCrossHeatmap` when the model is NULL.
 

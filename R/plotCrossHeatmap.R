@@ -69,7 +69,7 @@ extractCrossInferenceData <- function(resLs){
 #'
 plotCrossHeatmap <- function(resLs){
  df <- extractCrossInferenceData(resLs)
- p <- ggplot(df, aes(.data[["cell1"]], .data[["cell2"]], fill = -log10(.data[["p-value"]]))) +
+ p <- ggplot(df, aes(.data[["cell1"]], .data[["cell2"]], fill = -log10(.data[["p-value"]] + 0.001))) +
    geom_tile(colour="white", size=0.2) +
    facet_wrap(~.data[["condition"]]) +
    theme_light()
