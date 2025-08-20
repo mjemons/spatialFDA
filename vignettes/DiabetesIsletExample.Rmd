@@ -246,8 +246,8 @@ The functional boxplot shows that onset $G$-curves are more variable than the co
 
 ```{r, variancetransform, warning = FALSE}
 # can determine with a boxcox transformation what is the ideal parameter
-# for the transformation
-metricRes$rs <- sqrt(metricRes$rs)
+# for the transformation use Fisher's variance-stabilising transformation
+metricRes$rs <- asin(sqrt(metricRes$rs))
 
 collector <- plotFbPlot(metricRes, 'r', 'rs', 'patient_stage')
 ```

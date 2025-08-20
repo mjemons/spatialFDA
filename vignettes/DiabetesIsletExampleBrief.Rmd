@@ -143,7 +143,7 @@ res <- spatialInference(
     rSeq = seq(0, 50, length.out = 50), 
     correction = "rs",
     sample_id = "patient_id",
-    transformation = 0.5,
+    transformation = "Fisher",
     eps = 0,
     delta = 10,
     family = mgcv::scat(link = "log"),

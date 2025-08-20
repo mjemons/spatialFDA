@@ -20,6 +20,7 @@
 #' defaults to FALSE
 #' @param assay the assay which is used if `continuous = TRUE`
 #' @param transformation the transformation to be applied as exponential e.g. 1/2 for sqrt
+#' or Fisher's variance-stabilising transformation if "Fisher"
 #' @param eps some distributional families fail if the response is zero,
 #' therefore, zeros can be replaced with a very small value eps
 #' @param delta the delta value to remove from the beginning of the spatial
@@ -96,9 +97,14 @@ spatialInference <- function(spe,
     dplyr::filter(sum(.data[[correction]]) >= 1)
   # if a transformation should be applied to the output
   if(!is.null(transformation)){
+    if(transformation == "Fisher"){
+      metricRes[[correction]] <- pmax(asin(sqrt(metricRes[[correction]])),
+                                      eps)
+    }else{
     stopifnot(is(transformation, "numeric"))
     metricRes[[correction]] <- pmax((metricRes[[correction]])^(transformation),
                                     eps)
+    }
   }
   # else just set zeros to eps if lower than eps.
   else if(!is.null(eps)){

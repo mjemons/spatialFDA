@@ -1,3 +1,7 @@
+# spatialFDA 1.1.9
+* enabling Fisher's variance-stabilising transformation in `spatialInference`
+as it is recommended for $G$ functions.
+
 # spatialFDA 1.1.8
 * adding a constant to the log in `plotCrossHeatmap` to avoid NULL values being
 plotted

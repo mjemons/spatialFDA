@@ -54,7 +54,8 @@ defaults to FALSE}
 
 \item{assay}{the assay which is used if \code{continuous = TRUE}}
 
-\item{transformation}{the transformation to be applied as exponential e.g. 1/2 for sqrt}
+\item{transformation}{the transformation to be applied as exponential e.g. 1/2 for sqrt
+or Fisher's variance-stabilising transformation if "Fisher"}
 
 \item{eps}{some distributional families fail if the response is zero,
 therefore, zeros can be replaced with a very small value eps}
