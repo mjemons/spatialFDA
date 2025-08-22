@@ -4,13 +4,21 @@
 \alias{plotCrossHeatmap}
 \title{Plotting the Result of a Cross Spatial Inference}
 \usage{
-plotCrossHeatmap(resLs)
+plotCrossHeatmap(resLs, adj.pvalue = "BH", coefficientsToPlot = NULL, ...)
 }
 \arguments{
 \item{resLs}{a list of objects created by the function \code{spatialInference}
 with three objects: i) the dataframe with the spatial
 statistics results, ii) the designmatrix of the inference and iii) the
 fitted pffr object}
+
+\item{adj.pvalue}{a pvalue adjustment method as passed to stats::p.adjust
+defaults to Benjamini-Hochberg correction of the false discovery rate.}
+
+\item{coefficientsToPlot}{list of which coefficients to plot in the heatmap
+defaults to NULL in which case all coefficients are plotted}
+
+\item{...}{other parameters passed to \code{ggplot2} functions}
 }
 \value{
 a ggplot2 object
@@ -34,6 +42,6 @@ resLs <- crossSpatialInference(spe, selection,
                       image_id = "image_number", condition = "patient_stage",
                       ncores = 1
                   )
-p <- plotCrossHeatmap(resLs)
+p <- plotCrossHeatmap(resLs, adj.pvalue = "BH")
 
 }

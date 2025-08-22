@@ -30,9 +30,9 @@ extractCrossInferenceData <- function(resLs){
     mdl <- resLs[[x]]$mdl
     if(!is.null(mdl)){
       table <- summary(mdl)$s.table %>% as.data.frame()
-      table$condition <- rownames(table)
+      table$coefficient <- rownames(table)
       table$combination <- x
-      table <- table %>% separate(combination, c("cell1", "cell2"), sep = "_")
+      table <- table %>% separate(.data[["combination"]], c("cell1", "cell2"), sep = "_")
       return(table)
     }
   }) %>% dplyr::bind_rows()
@@ -45,6 +45,11 @@ extractCrossInferenceData <- function(resLs){
 #' with three objects: i) the dataframe with the spatial
 #' statistics results, ii) the designmatrix of the inference and iii) the
 #' fitted pffr object
+#' @param adj.pvalue a pvalue adjustment method as passed to stats::p.adjust
+#' defaults to Benjamini-Hochberg correction of the false discovery rate.
+#' @param coefficientsToPlot list of which coefficients to plot in the heatmap
+#' defaults to NULL in which case all coefficients are plotted
+#' @param ... other parameters passed to `ggplot2` functions
 #'
 #' @returns a ggplot2 object
 #' @export
@@ -65,13 +70,29 @@ extractCrossInferenceData <- function(resLs){
 #'                       image_id = "image_number", condition = "patient_stage",
 #'                       ncores = 1
 #'                   )
-#' p <- plotCrossHeatmap(resLs)
+#' p <- plotCrossHeatmap(resLs, adj.pvalue = "BH")
 #'
-plotCrossHeatmap <- function(resLs){
+plotCrossHeatmap <- function(resLs,
+                             adj.pvalue = "BH",
+                             coefficientsToPlot = NULL,
+                             ...){
  df <- extractCrossInferenceData(resLs)
- p <- ggplot(df, aes(.data[["cell1"]], .data[["cell2"]], fill = -log10(.data[["p-value"]] + 0.001))) +
-   geom_tile(colour="white", size=0.2) +
-   facet_wrap(~.data[["condition"]]) +
-   theme_light()
+ if(!is.null(coefficientsToPlot)){
+   df <- df %>% filter(.data[["coefficient"]] %in% coefficientsToPlot)
+ }
+ if(is.null(adj.pvalue)){
+   p <- ggplot(df, aes(.data[["cell1"]], .data[["cell2"]],
+                       fill = -log10(.data[["p-value"]] + 0.001))) +
+     geom_tile(colour="white", size=0.2) +
+     facet_wrap(~.data[["coefficient"]]) +
+     theme_light()
+ }else{
+   df[["adj.p-value"]] <- stats::p.adjust(df[["p-value"]], method = adj.pvalue)
+   p <- ggplot(df, aes(.data[["cell1"]], .data[["cell2"]],
+                       fill = -log10(.data[["adj.p-value"]] + 0.001))) +
+     geom_tile(colour="white", size=0.2, ...) +
+     facet_wrap(~.data[["coefficient"]], ...) +
+     theme_light()
+ }
  return(p)
 }

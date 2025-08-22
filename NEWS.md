@@ -1,3 +1,7 @@
+# spatialFDA 1.1.10
+* p-value adjustment option in `plotCrossHeatmap` and filtering of coefficients
+for the heatmap. Fix some small global variable defintion errors
+
 # spatialFDA 1.1.9
 * enabling Fisher's variance-stabilising transformation in `spatialInference`
 as it is recommended for $G$ functions.

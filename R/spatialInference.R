@@ -93,7 +93,7 @@ spatialInference <- function(spe,
   noConditionsPreFiltering <- (length(unique(metricRes[[condition]])))
   # #removing field of views that have as a curve only zeros - these are cases where
   # #there is no cells of one type
-  metricRes <- metricRes %>% dplyr::group_by(ID) %>%
+  metricRes <- metricRes %>% dplyr::group_by(.data[["ID"]]) %>%
     dplyr::filter(sum(.data[[correction]]) >= 1)
   # if a transformation should be applied to the output
   if(!is.null(transformation)){
