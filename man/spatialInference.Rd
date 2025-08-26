@@ -18,6 +18,7 @@ spatialInference(
   continuous = FALSE,
   assay = "exprs",
   transformation = NULL,
+  weights = "total",
   eps = NULL,
   delta = 0,
   family = stats::gaussian(link = "log"),
@@ -56,6 +57,11 @@ defaults to FALSE}
 
 \item{transformation}{the transformation to be applied as exponential e.g. 1/2 for sqrt
 or Fisher's variance-stabilising transformation if "Fisher"}
+
+\item{weights}{the weighting to be applied to the functional GAM. Either NULL
+(equal weights), total (npoints of total pattern), min (npoints of the smaller
+subpattern) or max (npoints of the larger subpattern) or a user defined value
+of same length as the number of curves to be estimated}
 
 \item{eps}{some distributional families fail if the response is zero,
 therefore, zeros can be replaced with a very small value eps}

@@ -21,6 +21,10 @@
 #' @param assay the assay which is used if `continuous = TRUE`
 #' @param transformation the transformation to be applied as exponential e.g. 1/2 for sqrt
 #' or Fisher's variance-stabilising transformation if "Fisher"
+#' @param weights the weighting to be applied to the functional GAM. Either NULL
+#' (equal weights), total (npoints of total pattern), min (npoints of the smaller
+#' subpattern) or max (npoints of the larger subpattern) or a user defined value
+#' of same length as the number of curves to be estimated
 #' @param eps some distributional families fail if the response is zero,
 #' therefore, zeros can be replaced with a very small value eps
 #' @param delta the delta value to remove from the beginning of the spatial
@@ -62,6 +66,7 @@ spatialInference <- function(spe,
                              continuous = FALSE,
                              assay = "exprs",
                              transformation = NULL,
+                             weights = "total",
                              eps = NULL,
                              delta = 0,
                              family = stats::gaussian(link = "log"),
@@ -142,10 +147,24 @@ spatialInference <- function(spe,
     #due to the removal of delta, rSeq can be less as well
     r <- metricRes$r |> unique()
 
+    # define the weights
+    if(is.null(weights)){
+      # give each observation weight one if no weights are passed
+      weights = seq.int(from = 1, to = 1, length.out = nrow(dat))
+    }else if(weights == "total"){
+      weights = dat$npoints
+    }else if(weights == "min"){
+      weights = dat$npointsmin
+    }else if(weights == "max"){
+      weights = dat$npointsmax
+    }else{
+      stopifnot(length(weights) == nrow(dat))
+      weights = weights
+    }
     #third, run functionalGam
     mdl <- functionalGam(
       data = dat, x = r,
-      designmat = mm, weights = dat$npoints,
+      designmat = mm, weights = weights,
       formula = formula,
       family = family,
       ...

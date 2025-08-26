@@ -76,3 +76,65 @@ test_that("spatialInference handels case when one condition has no images with
           calculated curves ", {
   expect_true(is.null(resBeta$mdl) && is.null(resBeta$designmat))
 })
+
+res <- spatialInference(spe, c("alpha", "beta"),
+                        subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+                        rSeq = seq(0, 50, length.out = 50), correction = "rs",
+                        sample_id = "patient_id",
+                        weights = "min",
+                        image_id = "image_number", condition = "patient_stage",
+                        ncores = 1
+)
+
+#order
+metricRes <- res$metricRes %>% arrange(patient_id)
+
+manual_weights <- metricRes$npointsmin / mean(metricRes$npointsmin)
+
+modelframe <- res$mdl$model %>% arrange(patient_id)
+
+test_that("weights of the model are really the min weights expected", {
+  expect_equal(sort(modelframe$`(weights)`), sort(manual_weights))
+})
+
+res <- spatialInference(spe, c("alpha", "beta"),
+                        subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+                        rSeq = seq(0, 50, length.out = 50), correction = "rs",
+                        sample_id = "patient_id",
+                        weights = "max",
+                        image_id = "image_number", condition = "patient_stage",
+                        ncores = 1
+)
+
+#order
+metricRes <- res$metricRes %>% arrange(patient_id)
+
+manual_weights <- metricRes$npointsmax / mean(metricRes$npointsmax)
+
+modelframe <- res$mdl$model %>% arrange(patient_id)
+
+test_that("weights of the model are really the max weights expected", {
+  expect_equal(sort(modelframe$`(weights)`), sort(manual_weights))
+})
+
+res <- spatialInference(spe, c("alpha", "beta"),
+                        subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+                        rSeq = seq(0, 50, length.out = 50), correction = "rs",
+                        sample_id = "patient_id",
+                        weights = NULL,
+                        image_id = "image_number", condition = "patient_stage",
+                        ncores = 1
+)
+
+#order
+metricRes <- res$metricRes %>% arrange(patient_id)
+
+manual_weights <- seq.int(from = 1, to = 1, length.out = nrow(metricRes))
+
+modelframe <- res$mdl$model %>% arrange(patient_id)
+
+test_that("weights of the model are really the max weights expected", {
+  expect_equal(sort(modelframe$`(weights)`), sort(manual_weights))
+})
+
+

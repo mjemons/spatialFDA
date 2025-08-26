@@ -127,7 +127,29 @@
         )
     }
     metricRes <- cbind(metricRes, metaData)
+    #add the total number of points as weights
     metricRes$npoints <- spatstat.geom::npoints(ppSub)
+    #add the individual number of points of the marked pattern if multitype
+    if(spatstat.geom::is.multitype(ppSub)){
+      #first, split the point pattern
+      ppSubSplit <- split(ppSub)
+      if(length(ppSubSplit)>1){
+        npoints1 <- spatstat.geom::npoints(ppSubSplit[[1]])
+        npoints2 <- spatstat.geom::npoints(ppSubSplit[[2]])
+        metricRes$npointsmin <- base::pmin(npoints1, npoints2)
+        metricRes$npointsmax <- base::pmax(npoints1, npoints2)
+      }#else if the pattern is multitype but only one point pattern is in it
+      #min is the same as total and max
+      else{
+        metricRes$npointsmin <- metricRes$npoints
+        metricRes$npointsmax <- metricRes$npoints
+      }
+    }# else if the pattern is not multitype, min is the same thing as max
+    # and total
+    else{
+      metricRes$npointsmin <- metricRes$npoints
+      metricRes$npointsmax <- metricRes$npoints
+    }
     centroid <- spatstat.geom::centroid.owin(ppSub$window)
     metricRes$centroidx <- centroid$x
     metricRes$centroidy <- centroid$y

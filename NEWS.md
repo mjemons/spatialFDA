@@ -1,3 +1,13 @@
+# spatialFDA 1.1.11
+* Change in the weighting procedure in `spatialInference` and no calculatioin of 
+weights in `calcMetricPerFov`. It is now possible to define custom weights, 
+by equal weights, by the total number points, and for multitype processes by the 
+smaller point pattern (min) and the larger point pattern (max)
+* Option to extract the mean functional coefficient of the functional GAM over
+the domain $r$ as a measure of the effect size in `extractCrossInferenceData`
+* `plotCrossHeatmap` creates now a bubble plot with the effect size being the
+colour and the size of the bubble being the p-value
+
 # spatialFDA 1.1.10
 * p-value adjustment option in `plotCrossHeatmap` and filtering of coefficients
 for the heatmap. Fix some small global variable defintion errors

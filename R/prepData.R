@@ -51,7 +51,7 @@ prepData <- function(metricRes, x, y, sample_id = NULL, image_id = NULL,
     dat$Y <- t(mat)
     # extract the number of points as weights
     weights <- metricRes %>%
-      dplyr::select("ID", "npoints") %>%
+      dplyr::select("ID", "npoints", "npointsmin", "npointsmax") %>%
       unique()
     # add the weights to the data.frame
     dat <- dat %>% dplyr::left_join(weights, by = "ID")

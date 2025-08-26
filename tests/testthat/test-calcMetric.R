@@ -173,3 +173,22 @@ test_that("Numeric results are correct for Gcross", {
   expect_equal(object = resObserved[complete.cases(resObserved), ],
                expected = resExpected[complete.cases(resExpected), ])
 })
+
+test_that("Min Points + Max Points = Total Points", {
+  selection <- c("alpha", "Tc")
+  metricRes <- calcMetricPerFov(spe = spe,
+                                selection,
+                                subsetby = "image_number",
+                                fun = "Gcross",
+                                marks = "cell_type",
+                                rSeq = seq(0, 50, length.out = 50),
+                                by = c("patient_stage", "patient_id",
+                                       "image_number"),
+                                ncores = 1)
+  minPoints <- metricRes$npointsmin
+  maxPoints <- metricRes$npointsmax
+  totalPoints <- metricRes$npoints
+
+  expect_equal(object = minPoints + maxPoints,
+               expected = totalPoints)
+})
