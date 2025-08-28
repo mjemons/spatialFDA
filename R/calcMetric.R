@@ -25,7 +25,7 @@
 #' spe <- .loadExample()
 #' speSub <- subset(spe, , image_number == "138")
 #' dfSub <- .speToDf(speSub)
-#' metricRes <- .extractMetric(dfSub, c("alpha", "beta"),
+#' metricRes <- .extractMetric(dfSub, c("alpha", "Tc"),
 #'     fun = "Gcross",
 #'     marks = "cell_type", rSeq = seq(0, 1000, length.out = 100),
 #'     by = c("patient_stage", "patient_id", "image_number")
@@ -62,7 +62,8 @@
         ((length(unique(
             spatstat.geom::marks(ppSub)
         )) > 1 &&
-            base::sum(base::table(ppSub$marks) > 0) > 1) ||
+            #small QC to only consider points with more than 1 points in general
+            base::sum(base::table(ppSub$marks) > 1) > 1) ||
             base::length(selection) == 1)) {
         metricRes <- tryCatch(
             {
@@ -192,7 +193,7 @@
 #' @examples
 #' # retrieve example data from Damond et al. (2019)
 #' spe <- .loadExample()
-#' metricRes <- calcMetricPerFov(spe, c("alpha", "beta"),
+#' metricRes <- calcMetricPerFov(spe, c("alpha", "Tc"),
 #'     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
 #'     rSeq = seq(0, 50, length.out = 50), by = c(
 #'         "patient_stage", "patient_id",
@@ -291,7 +292,7 @@ calcMetricPerFov <- function(spe, selection, subsetby, fun, marks = NULL,
 #' @examples
 #' # retrieve example data from Damond et al. (2019)
 #' spe <- .loadExample()
-#' metricRes <- calcCrossMetricPerFov(spe, c("alpha", "beta"),
+#' metricRes <- calcCrossMetricPerFov(spe, c("alpha", "Tc"),
 #'     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
 #'     rSeq = seq(0, 50, length.out = 50), by = c(
 #'         "patient_stage", "patient_id",

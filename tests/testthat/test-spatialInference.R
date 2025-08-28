@@ -3,8 +3,8 @@ library("tidyr")
 library("dplyr")
 # retrieve example data from Damond et al. (2019)
 spe <- .loadExample()
-# calculate the Gcross metric for alpha and beta cells
-metricRes <- calcMetricPerFov(spe, c("alpha", "beta"),
+# calculate the Gcross metric for alpha and Tc cells
+metricRes <- calcMetricPerFov(spe, c("alpha", "Tc"),
                               subsetby = "image_number", fun = "Gcross",
                               marks = "cell_type", rSeq = seq(0, 50, length.out = 50),
                               c("patient_stage", "patient_id", "image_number"), ncores = 1
@@ -50,7 +50,7 @@ colData(spe)[["patient_stage"]] <- factor(colData(spe)[["patient_stage"]])
 #relevel to have non-diabetic as the reference category
 colData(spe)[["patient_stage"]] <- relevel(colData(spe)[["patient_stage"]],
                                            "Non-diabetic")
-res <- spatialInference(spe, c("alpha", "beta"),
+res <- spatialInference(spe, c("alpha", "Tc"),
                         subsetby = "image_number", fun = "Gcross", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
@@ -77,7 +77,7 @@ test_that("spatialInference handels case when one condition has no images with
   expect_true(is.null(resBeta$mdl) && is.null(resBeta$designmat))
 })
 
-res <- spatialInference(spe, c("alpha", "beta"),
+res <- spatialInference(spe, c("alpha", "Tc"),
                         subsetby = "image_number", fun = "Gcross", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
@@ -97,7 +97,7 @@ test_that("weights of the model are really the min weights expected", {
   expect_equal(sort(modelframe$`(weights)`), sort(manual_weights))
 })
 
-res <- spatialInference(spe, c("alpha", "beta"),
+res <- spatialInference(spe, c("alpha", "Tc"),
                         subsetby = "image_number", fun = "Gcross", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
@@ -117,7 +117,7 @@ test_that("weights of the model are really the max weights expected", {
   expect_equal(sort(modelframe$`(weights)`), sort(manual_weights))
 })
 
-res <- spatialInference(spe, c("alpha", "beta"),
+res <- spatialInference(spe, c("alpha", "Tc"),
                         subsetby = "image_number", fun = "Gcross", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",

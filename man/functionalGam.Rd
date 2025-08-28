@@ -52,8 +52,8 @@ library("tidyr")
 library("dplyr")
 # retrieve example data from Damond et al. (2019)
 spe <- .loadExample()
-# calculate the Gcross metric for alpha and beta cells
-metricRes <- calcMetricPerFov(spe, c("alpha", "beta"),
+# calculate the Gcross metric for alpha and Tc cells
+metricRes <- calcMetricPerFov(spe, c("alpha", "Tc"),
     subsetby = "image_number", fun = "Gcross",
     marks = "cell_type", rSeq = seq(0, 50, length.out = 50),
     c("patient_stage", "patient_id", "image_number"), ncores = 1

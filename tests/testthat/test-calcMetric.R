@@ -40,7 +40,7 @@ test_that("Output contains correction for continuous single mark", {
 })
 
 test_that("Output contains correction for two marks", {
-  metricRes <- calcMetricPerFov(spe, c("alpha", "beta"),
+  metricRes <- calcMetricPerFov(spe, c("alpha", "Tc"),
                                 subsetby = "image_number", fun = "Gcross",
                                 marks = "cell_type",
                                 rSeq = rSeq, by = c(

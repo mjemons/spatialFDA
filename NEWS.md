@@ -1,5 +1,14 @@
+# spatialFDA 1.1.12
+* changed the thresholding in `calcMetricPerFov` from having at least 1 point
+per (sub)point pattern to at least two in order to avoid having images with 
+way to uncertain curves. In order to accommodate for this change some tests and
+examples had to be adapted
+* `spatialInference` now prints the adjusted R squared to quickly assess overall
+model fit. As this is just one summary, still rigorous assessment via qq plots
+and autocorrelation should be performed.
+
 # spatialFDA 1.1.11
-* Change in the weighting procedure in `spatialInference` and no calculatioin of 
+* Change in the weighting procedure in `spatialInference` and no calculation of 
 weights in `calcMetricPerFov`. It is now possible to define custom weights, 
 by equal weights, by the total number points, and for multitype processes by the 
 smaller point pattern (min) and the larger point pattern (max)

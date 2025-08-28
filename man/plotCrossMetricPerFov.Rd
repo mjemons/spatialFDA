@@ -49,7 +49,7 @@ function to all samples.
 \examples{
 # retrieve example data from Damond et al. (2019)
 spe <- .loadExample()
-metricRes <- calcCrossMetricPerFov(spe, c("alpha", "beta"),
+metricRes <- calcCrossMetricPerFov(spe, c("alpha", "Tc"),
     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
     rSeq = seq(0, 50, length.out = 50), by = c(
         "patient_stage", "patient_id",

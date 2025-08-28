@@ -92,7 +92,7 @@ colData(spe)[["patient_stage"]] <- factor(colData(spe)[["patient_stage"]])
 #relevel to have non-diabetic as the reference category
 colData(spe)[["patient_stage"]] <- relevel(colData(spe)[["patient_stage"]],
 "Non-diabetic")
-res <- spatialInference(spe, c("alpha", "beta"),
+res <- spatialInference(spe, c("alpha", "Tc"),
     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
     rSeq = seq(0, 50, length.out = 50), correction = "rs",
     sample_id = "patient_id",

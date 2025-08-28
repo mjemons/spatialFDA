@@ -51,7 +51,7 @@ object.
 spe <- .loadExample()
 speSub <- subset(spe, , image_number == "138")
 dfSub <- .speToDf(speSub)
-metricRes <- .extractMetric(dfSub, c("alpha", "beta"),
+metricRes <- .extractMetric(dfSub, c("alpha", "Tc"),
     fun = "Gcross",
     marks = "cell_type", rSeq = seq(0, 1000, length.out = 100),
     by = c("patient_stage", "patient_id", "image_number")

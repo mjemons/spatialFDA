@@ -46,7 +46,7 @@
 #' #relevel to have non-diabetic as the reference category
 #' colData(spe)[["patient_stage"]] <- relevel(colData(spe)[["patient_stage"]],
 #' "Non-diabetic")
-#' res <- spatialInference(spe, c("alpha", "beta"),
+#' res <- spatialInference(spe, c("alpha", "Tc"),
 #'     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
 #'     rSeq = seq(0, 50, length.out = 50), correction = "rs",
 #'     sample_id = "patient_id",
@@ -169,11 +169,16 @@ spatialInference <- function(spe,
       family = family,
       ...
     )
+
+    Rsq.adj <- summary(mdl)$r.sq
+    print(paste0("The adjusted R-squared of the model is ", Rsq.adj))
+
   }else{
     print("Can not fit a model if one condition has no images with curves")
     mdl = NULL
     mm = NULL
   }
+
   #return pffr object and calcMetricPerFov dataframe in a named list
   return(list(metricRes = metricRes, designmat = mm, mdl = mdl))
 }
