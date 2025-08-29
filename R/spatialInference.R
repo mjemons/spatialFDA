@@ -29,7 +29,8 @@
 #' therefore, zeros can be replaced with a very small value eps
 #' @param delta the delta value to remove from the beginning of the spatial
 #' statistics functions. Can be reasonable if e.g. cells are always spaced
-#' by 10 µm.
+#' by 10 µm. If set to "minNnDist" it will take the mean of the minimum nearest
+#' neighbour distance across all images for this cell type pair.
 #' @param family the distributional family for the functional GAM
 #' @param ncores the number of cores to use for parallel processing, default = 1
 #' @param ... Other parameters passed to `spatstat.explore` functions
@@ -116,6 +117,10 @@ spatialInference <- function(spe,
     metricRes[[correction]] <- pmax(metricRes[[correction]], eps)
   }
 
+  if(delta == "minNnDist"){
+    delta <- stats::weighted.mean(x=metricRes[["minDist"]],
+                                  w = metricRes[["npoints"]])
+  }
   metricRes <- metricRes %>% filter(r >= delta)
   noConditionsPostFiltering <- (length(unique(metricRes[[condition]])))
   if(noConditionsPreFiltering == noConditionsPostFiltering){
@@ -173,12 +178,30 @@ spatialInference <- function(spe,
     Rsq.adj <- summary(mdl)$r.sq
     print(paste0("The adjusted R-squared of the model is ", Rsq.adj))
 
+    #another QC metric of the model fit is inspecting the residuals per condition
+    #we compare the mean residuals per condition over the functional domain
+    #and print the sum over the functional domain giving one value as
+    #sum(mean(residuals(mdl)_condition))
+
+    residualPffr <- as.data.frame(stats::residuals(mdl))
+    residualPffr$condition <- condition
+
+    residualDf <- residualPffr %>%
+      group_by(.data[["condition"]]) %>%
+      summarise(across(seq_along(1:ncol(dat$Y)), mean), .groups = "drop")  %>%
+      rowwise() %>%
+      mutate(sum = sum(c_across(-.data[["condition"]])))
+
   }else{
     print("Can not fit a model if one condition has no images with curves")
     mdl = NULL
     mm = NULL
+    residualDf = NULL
   }
 
   #return pffr object and calcMetricPerFov dataframe in a named list
-  return(list(metricRes = metricRes, designmat = mm, mdl = mdl))
+  return(list(metricRes = metricRes,
+              designmat = mm,
+              mdl = mdl,
+              residuals = residualDf))
 }

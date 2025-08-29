@@ -128,8 +128,14 @@
         )
     }
     metricRes <- cbind(metricRes, metaData)
+
     #add the total number of points as weights
     metricRes$npoints <- spatstat.geom::npoints(ppSub)
+    #has to be more than 1 point in order to find a nn
+    if(unique(metricRes$npoints)>1){
+      #add the minimum distance from one point to the nearest neighbour
+      metricRes$minDist <- min(spatstat.geom::nndist(ppSub, k = 1))
+    }
     #add the individual number of points of the marked pattern if multitype
     if(spatstat.geom::is.multitype(ppSub)){
       #first, split the point pattern

@@ -61,7 +61,8 @@ therefore, zeros can be replaced with a very small value eps}
 
 \item{delta}{the delta value to remove from the beginning of the spatial
 statistics functions. Can be reasonable if e.g. cells are always spaced
-by 10 µm.}
+by 10 µm. If set to "minNnDist" it will take the mean of the minimum nearest
+neighbour distance across all images for this cell type pair.}
 
 \item{family}{the distributional family for the functional GAM}
 

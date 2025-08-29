@@ -1,3 +1,10 @@
+# spatialFDA 1.1.13
+* provide the condition-wise sum of mean residuals across the curves. This is a 
+measure to judge the quality of the fitted functional GAM by condition.
+* allow for an automated threshold selection `delta` in `spatialInference`
+based on the mean over all images of the minimum nearest neighbour distance
+between points. Added test for this use case
+
 # spatialFDA 1.1.12
 * changed the thresholding in `calcMetricPerFov` from having at least 1 point
 per (sub)point pattern to at least two in order to avoid having images with 

@@ -192,3 +192,20 @@ test_that("Min Points + Max Points = Total Points", {
   expect_equal(object = minPoints + maxPoints,
                expected = totalPoints)
 })
+
+test_that("spatstat.geom::nndist has a working check if only 1 point is available",{
+  selection <- "beta"
+  metricRes <- calcMetricPerFov(spe = spe,
+                                selection,
+                                subsetby = "image_number",
+                                fun = "Gest",
+                                marks = "cell_type",
+                                rSeq = seq(0, 50, length.out = 50),
+                                by = c("patient_stage", "patient_id",
+                                       "image_number"),
+                                ncores = 1)
+
+  metricResSub <- metricRes %>% subset(patient_id == 6180)
+
+  expect_true(sum(is.na(metricResSub$minDist))==nrow(metricResSub))
+})
