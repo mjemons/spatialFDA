@@ -1,3 +1,11 @@
+# spatialFDA 1.1.14
+* change the sum of mean residuals per condition to be the residual standard
+error. The main reason is to have a more comparable estimator of model fit
+by dividing by the degrees of freedom per condition. The degrees of freedom
+are the no. of data points per condition (no. of curves * data points per curve)
+- the sum of the estimated degrees of freedom of the parameters per condition as
+provided by the summary.pffr() output.
+
 # spatialFDA 1.1.13
 * provide the condition-wise sum of mean residuals across the curves. This is a 
 measure to judge the quality of the fitted functional GAM by condition.

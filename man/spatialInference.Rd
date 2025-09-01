@@ -78,9 +78,11 @@ neighbour distance across all images for this cell type pair.}
 \item{...}{Other parameters passed to \code{spatstat.explore} functions}
 }
 \value{
-a list with three objects: i) the dataframe with the spatial
+a list with four objects: i) the dataframe with the spatial
 statistics results, ii) the designmatrix of the inference and iii) the
-fitted pffr object
+fitted pffr object iv) the residual standard error per condition defined as
+the residual sum of squares divided by the number of datapoints - sum of the
+estimated degrees of freedom for the model parameters
 }
 \description{
 A function to perform spatial statistical inference on spatial omics data.

@@ -35,9 +35,12 @@
 #' @param ncores the number of cores to use for parallel processing, default = 1
 #' @param ... Other parameters passed to `spatstat.explore` functions
 #'
-#' @returns a list with three objects: i) the dataframe with the spatial
+#' @returns a list with four objects: i) the dataframe with the spatial
 #' statistics results, ii) the designmatrix of the inference and iii) the
-#' fitted pffr object
+#' fitted pffr object iv) the residual standard error per condition defined as
+#' the residual sum of squares divided by the number of datapoints - sum of the
+#' estimated degrees of freedom for the model parameters
+#'
 #' @export
 #'
 #' @examples
@@ -121,6 +124,7 @@ spatialInference <- function(spe,
     delta <- stats::weighted.mean(x=metricRes[["minDist"]],
                                   w = metricRes[["npoints"]])
   }
+
   metricRes <- metricRes %>% filter(r >= delta)
   noConditionsPostFiltering <- (length(unique(metricRes[[condition]])))
   if(noConditionsPreFiltering == noConditionsPostFiltering){
@@ -132,6 +136,7 @@ spatialInference <- function(spe,
     dat <- dat |> drop_na()
     #create the designmatrix - condition needs to be a factor with the correct
     #level at position one for the reference category
+    conditionVariable <- condition
     condition <- dat[[condition]]
     print(paste0("Creating design matrix with ", levels(condition)[[1]],
                  " as reference"))
@@ -179,16 +184,51 @@ spatialInference <- function(spe,
     print(paste0("The adjusted R-squared of the model is ", Rsq.adj))
 
     #another QC metric of the model fit is inspecting the residuals per condition
-    #we compare the mean residuals per condition over the functional domain
-    #and print the sum over the functional domain giving one value as
-    #sum(mean(residuals(mdl)_condition))
+    #we compare the residual standard error which is the sqrt residual sum of
+    #squares divided by the degrees of freedom of the residuals per condition
 
     residualPffr <- as.data.frame(stats::residuals(mdl))
-    residualPffr$condition <- condition
+    residualPffr[[conditionVariable]] <- condition
 
+    #we need condition specific residual degrees of freedom
+    #take the rows of dat as this is filtered. Since we need to have not only
+    #the number of curves but also the values per curve, we multiply nrow of dat
+    #with the length of the functional domain r
+
+    #Furthermore, we need to get condition specific estimated degrees of freedom
+    #of the model parameters. These are in the model summary
+
+    df.edf <- summary(mdl)[["s.table"]] %>% as.data.frame()
+
+    #if it is a mixed model, we need to remove the random effect column
+    if(!is.null(sample_id)){
+      df.edf <- df.edf %>% filter(!grepl(sample_id, rownames(df.edf)))
+    }
+    #this assumes that the order of the levels is the same as the order of the
+    #summary output
+    df.edf[[conditionVariable]] <- levels(condition)
+
+    #select only the edf and the condition variable
+    df.edf <- df.edf %>% select(.data[["edf"]], .data[[conditionVariable]])
+
+    #subtract from each condition wise number of curves * number of datapoints
+    #per curve the condition wise edf from the summary(mdl) output above
+    df.residual <- dat %>% group_by(.data[[conditionVariable]]) %>%
+      summarise(no.datapoints = n() * length(r)) %>%
+      left_join(df.edf, by = conditionVariable) %>%
+      mutate(df.residual.condition = .data[["no.datapoints"]] - .data[["edf"]])
+
+    residualPffr <- residualPffr %>% left_join(df.residual, by = conditionVariable)
+    #calculate the grouped RSS and divide by the grouped condition wise residuals
+    #and take the sqrt of this
     residualDf <- residualPffr %>%
-      group_by(.data[["condition"]]) %>%
-      summarise(residual_sum_of_squares = sum(across(where(is.numeric))^2))
+      group_by(.data[[conditionVariable]]) %>%
+      reframe(residual_standard_errors = sqrt(sum(across(where(is.numeric) &
+                                                           !c(.data[["df.residual.condition"]],
+                                                              .data[["edf"]],
+                                                              .data[["no.datapoints"]]))**2)
+                                               /.data[["df.residual.condition"]])) %>%
+      unique()
 
   }else{
     print("Can not fit a model if one condition has no images with curves")
@@ -201,5 +241,5 @@ spatialInference <- function(spe,
   return(list(metricRes = metricRes,
               designmat = mm,
               mdl = mdl,
-              residuals = residualDf))
+              residual_standard_errors = residualDf))
 }
