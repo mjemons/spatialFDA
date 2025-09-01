@@ -188,9 +188,7 @@ spatialInference <- function(spe,
 
     residualDf <- residualPffr %>%
       group_by(.data[["condition"]]) %>%
-      summarise(across(seq_along(1:ncol(dat$Y)), mean), .groups = "drop")  %>%
-      rowwise() %>%
-      mutate(sum = sum(c_across(-.data[["condition"]])))
+      summarise(residual_sum_of_squares = sum(across(where(is.numeric))^2))
 
   }else{
     print("Can not fit a model if one condition has no images with curves")
