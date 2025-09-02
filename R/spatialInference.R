@@ -187,9 +187,6 @@ spatialInference <- function(spe,
     #we compare the residual standard error which is the sqrt residual sum of
     #squares divided by the degrees of freedom of the residuals per condition
 
-    residualPffr <- as.data.frame(stats::residuals(mdl))
-    residualPffr[[conditionVariable]] <- condition
-
     #we need condition specific residual degrees of freedom
     #take the rows of dat as this is filtered. Since we need to have not only
     #the number of curves but also the values per curve, we multiply nrow of dat
@@ -206,28 +203,57 @@ spatialInference <- function(spe,
     }
     #this assumes that the order of the levels is the same as the order of the
     #summary output
-    df.edf[[conditionVariable]] <- levels(condition)
+    df.edf[["coefficient"]] <- rownames(df.edf)
 
     #select only the edf and the condition variable
-    df.edf <- df.edf %>% select(.data[["edf"]], .data[[conditionVariable]])
+    df.edf <- df.edf %>% select(.data[["edf"]], .data[["coefficient"]])
 
     #subtract from each condition wise number of curves * number of datapoints
     #per curve the condition wise edf from the summary(mdl) output above
-    df.residual <- dat %>% group_by(.data[[conditionVariable]]) %>%
+
+    #rename the conditions to be the same as in the summary output
+    df.residual <- dat %>%
+      mutate(coefficient =
+               paste0("condition",
+                      gsub("-","_", .data[[conditionVariable]]),"(x)")) %>%
+      #rename the reference category to be Intercept
+      mutate(coefficient =
+               case_when(coefficient ==
+                           paste0("condition",
+                                  gsub("-","_",levels(condition)[[1]]), "(x)")
+                         ~ "Intercept(x)", TRUE ~ coefficient)) %>%
+      group_by(.data[["coefficient"]]) %>%
       summarise(no.datapoints = n() * length(r)) %>%
-      left_join(df.edf, by = conditionVariable) %>%
+      left_join(df.edf, by = "coefficient") %>%
       mutate(df.residual.condition = .data[["no.datapoints"]] - .data[["edf"]])
 
-    residualPffr <- residualPffr %>% left_join(df.residual, by = conditionVariable)
+    #now we extract the residuals
+
+    residualPffr <- as.data.frame(stats::residuals(mdl))
+    residualPffr[[conditionVariable]] <- dat[[conditionVariable]]
+
+    residualPffr <- residualPffr %>%
+      mutate(coefficient = paste0("condition",
+                                  gsub("-","_",
+                                       .data[[conditionVariable]]),"(x)")) %>%
+      #rename the reference category to be Intercept
+      mutate(coefficient = case_when(coefficient == paste0("condition",
+                                                           gsub("-","_",
+                                                                levels(condition)[[1]]), "(x)")
+                                     ~ "Intercept(x)",
+                                     TRUE ~ coefficient))
+    # combine the residuals with the degrees of freedom
+    residualPffr <- residualPffr %>% left_join(df.residual, by = "coefficient")
     #calculate the grouped RSS and divide by the grouped condition wise residuals
     #and take the sqrt of this
     residualDf <- residualPffr %>%
-      group_by(.data[[conditionVariable]]) %>%
+      group_by(.data[["coefficient"]]) %>%
       reframe(residual_standard_errors = sqrt(sum(across(where(is.numeric) &
                                                            !c(.data[["df.residual.condition"]],
                                                               .data[["edf"]],
                                                               .data[["no.datapoints"]]))**2)
-                                               /.data[["df.residual.condition"]])) %>%
+                                               /.data[["df.residual.condition"]]),
+              edf = .data[["edf"]]) %>%
       unique()
 
   }else{

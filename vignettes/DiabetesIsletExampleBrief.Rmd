@@ -145,7 +145,7 @@ res <- spatialInference(
     sample_id = "patient_id",
     transformation = "Fisher",
     eps = 0,
-    delta = 10,
+    delta = "minNnDist",
     family = mgcv::scat(link = "log"),
     image_id = "image_number", 
     condition = "patient_stage",
@@ -155,7 +155,7 @@ res <- spatialInference(
 names(res)
 ```
 
-The output is a list of three objects: The dataframe with the calculated spatial statistics curves from `r BiocStyle::CRANpkg('spatstat')`, the design matrix for the statistical inference, as well as the output of the `pffr` function from `r BiocStyle::CRANpkg('refund')` [@baddeleySpatialPointPatterns; @spatstat2005; @refund2024; @scheiplFunctionalAdditiveMixed2015].
+The output is a list of four objects: The dataframe with the calculated spatial statistics curves from `r BiocStyle::CRANpkg('spatstat')`, the design matrix for the statistical inference, the output of the `pffr` function from `r BiocStyle::CRANpkg('refund')`, as well as the residual standard error per condition [@baddeleySpatialPointPatterns; @spatstat2005; @refund2024; @scheiplFunctionalAdditiveMixed2015].
 
 ## Spatial Statistics Curves
 

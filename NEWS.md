@@ -1,3 +1,9 @@
+# spatialFDA 1.1.15
+* added a test to check the edf values and order from the RSE calculation. 
+Made the RSE code more robust.
+* added progressbar in `crossSpatialInference`.
+* adapted the overview vignette to reflect the recent changes.
+
 # spatialFDA 1.1.14
 * change the sum of mean residuals per condition to be the residual standard
 error. The main reason is to have a more comparable estimator of model fit

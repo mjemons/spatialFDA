@@ -133,8 +133,43 @@ manual_weights <- seq.int(from = 1, to = 1, length.out = nrow(metricRes))
 
 modelframe <- res$mdl$model %>% arrange(patient_id)
 
-test_that("weights of the model are really the max weights expected", {
+test_that("weights of the model are equal weight", {
   expect_equal(sort(modelframe$`(weights)`), sort(manual_weights))
 })
+
+test_that("edf values correspond between RSE and mdl summary",{
+  mdlEdf <-  as_tibble(summary(res$mdl)$s.table[,"edf"])
+  expect_true(
+    sum(res$residual_standard_errors[,"edf"] ==
+          mdlEdf[-nrow(mdlEdf),]) == nrow(res$residual_standard_errors)
+  )
+})
+
+#relevel to have non-diabetic as the reference category
+colData(spe)[["patient_stage"]] <- relevel(colData(spe)[["patient_stage"]],
+                                           "Onset")
+
+res <- spatialInference(spe, c("alpha", "Tc"),
+                        subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+                        rSeq = seq(0, 50, length.out = 50), correction = "rs",
+                        sample_id = "patient_id",
+                        weights = NULL,
+                        image_id = "image_number", condition = "patient_stage",
+                        ncores = 1
+)
+
+test_that("edf values correspond between RSE and mdl summary as well
+          after permutation of levels",{
+  mdlDf <-  (as_tibble(summary(res$mdl)$s.table))
+  mdlDf$coefficient <- rownames(summary(res$mdl)$s.table)
+  mdlDf <- mdlDf %>% arrange(coefficient)
+
+  mdlEdf <- as_tibble(mdlDf[,"edf"])
+  expect_true(
+    sum(res$residual_standard_errors[,"edf"] ==
+          mdlEdf[-nrow(mdlEdf),]) == nrow(res$residual_standard_errors)
+  )
+})
+
 
 

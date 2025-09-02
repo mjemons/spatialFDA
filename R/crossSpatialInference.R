@@ -80,10 +80,10 @@ crossSpatialInference <- function(spe,
   ### code adapted from calcCrossMetricPerFov written by Samuel Gunz
   ls <- apply(base::expand.grid(selection, selection), 1, function(x) {
     return(c(x[1], x[2]))
-  }) %>% t()
-
+  }, simplify = FALSE)
+  p <- progress::progress_bar$new(total = length(ls))
   # calculate the metric per FOV
-  resLs <- apply(ls, 1, function(x) {
+  resLs <- lapply(ls, function(x) {
     res <- spatialInference(spe = spe,
                            selection = x,
                            subsetby = subsetby,
@@ -102,9 +102,11 @@ crossSpatialInference <- function(spe,
                            family = family,
                            ncores = ncores,
                            ...)
+    p$tick()
     return(res)
   })
-  cellTypes <- paste0(ls[,1], "_", ls[,2])
+  mat <- do.call("cbind",ls) %>% t()
+  cellTypes <- paste0(mat[,1], "_", mat[,2])
   names(resLs) <- cellTypes
 
   return(resLs)
