@@ -40,7 +40,8 @@ mdl <- functionalGam(
   data = dat, x = metricRes$r |> unique(),
   designmat = designmat, weights = dat$npoints,
   formula = formula(Y ~ conditionLong_duration +
-                      conditionOnset + s(patient_id, bs = "re"))
+                      conditionOnset + s(patient_id, bs = "re")),
+  algorithm = "bam"
 )
 
 test_that("Output is of correct type", {
@@ -56,7 +57,8 @@ test_that("Fails if designmat and formula arguments don't correspond", {
     data = dat, x = metricRes$r |> unique(),
     designmat = designmat, weights = dat$npoints,
     formula = formula(Y ~ conditionLong_duration_diabetes +
-                        conditionOnset_diabetes + s(patient_id, bs = "re"))
+                        conditionOnset_diabetes + s(patient_id, bs = "re")),
+    algorithm = "bam"
   ))
 })
 
@@ -66,7 +68,8 @@ test_that("Can handle missingnis in response - still pffr object", {
     data = dat, x = metricRes$r |> unique(),
     designmat = designmat, weights = dat$npoints,
     formula = formula(Y ~ conditionLong_duration +
-                        conditionOnset + s(patient_id, bs = "re"))
+                        conditionOnset + s(patient_id, bs = "re")),
+    algorithm = "bam"
   )
   expect_equal(is(mdl), "pffr")
   expect_true(!is.null(mdl$coefficients))
@@ -81,6 +84,7 @@ test_that("Should fail if weights contain NA", {
     data = dat, x = metricRes$r |> unique(),
     designmat = designmat, weights = dat$npoints,
     formula = formula(Y ~ conditionLong_duration +
-                        conditionOnset + s(patient_id, bs = "re"))
+                        conditionOnset + s(patient_id, bs = "re")),
+    algorithm = "bam"
   ))
 })

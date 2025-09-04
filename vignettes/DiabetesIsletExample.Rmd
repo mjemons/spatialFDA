@@ -346,7 +346,7 @@ mdl <- functionalGam(
     formula = formula(Y ~ 1 + conditionLong_duration +
                           conditionOnset + s(patient_id, bs = "re")),
     family = mgcv::scat(link = "log"),
-    algorithm = "gam"
+    algorithm = "bam"
 )
 summary(mdl)
 

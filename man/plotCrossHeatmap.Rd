@@ -4,19 +4,34 @@
 \alias{plotCrossHeatmap}
 \title{Plotting the Result of a Cross Spatial Inference}
 \usage{
-plotCrossHeatmap(resLs, adj.pvalue = "BH", coefficientsToPlot = NULL, ...)
+plotCrossHeatmap(
+  resLs,
+  adj.pvalue = "BH",
+  coefficientsToPlot = NULL,
+  QCThreshold = 1e-05,
+  QCMetric = "medianMinIntensity",
+  ...
+)
 }
 \arguments{
-\item{resLs}{a list of objects created by the function \code{spatialInference}
-with three objects: i) the dataframe with the spatial
-statistics results, ii) the designmatrix of the inference and iii) the
-fitted pffr object}
+\item{resLs}{a list with four objects: i) the dataframe with the spatial
+statistics results transformed and filtered as used for fitting,
+ii) the raw spatial statistics results, iii) the designmatrix of the
+inference and iv) the fitted pffr object v) the residual standard error per
+condition defined as the residual sum of squares divided by the number of
+datapoints - sum of the estimated degrees of freedom for the model parameters
+as well as other QC metrics}
 
 \item{adj.pvalue}{a pvalue adjustment method as passed to stats::p.adjust
 defaults to Benjamini-Hochberg correction of the false discovery rate.}
 
 \item{coefficientsToPlot}{list of which coefficients to plot in the heatmap
 defaults to NULL in which case all coefficients are plotted}
+
+\item{QCThreshold}{the threshold on the Quality control metric. Depends
+on the function used.}
+
+\item{QCMetric}{the metric to relate the quality of the fit too.}
 
 \item{...}{other parameters passed to \code{ggplot2} functions}
 }
@@ -40,6 +55,7 @@ resLs <- crossSpatialInference(spe, selection,
                       rSeq = seq(0, 50, length.out = 50), correction = "rs",
                       sample_id = "patient_id",
                       image_id = "image_number", condition = "patient_stage",
+                      algorithm = "bam",
                       ncores = 1
                   )
 p <- plotCrossHeatmap(resLs, adj.pvalue = "BH")

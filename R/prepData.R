@@ -57,7 +57,7 @@ prepData <- function(metricRes, x, y, sample_id = NULL, image_id = NULL,
     dat <- dat %>% dplyr::left_join(weights, by = "ID")
     # extract the coordinates and meta data and convert to factor
     meta <- metricRes %>%
-        dplyr::select("ID", "centroidx", "centroidy", sample_id,
+        dplyr::select("ID", "centroidx", "centroidy", "minIntensity", sample_id,
                       image_id, condition) %>%
         unique() %>%
         mutate(across(c(sample_id,

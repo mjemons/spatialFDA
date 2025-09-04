@@ -115,16 +115,18 @@
             error = function(e) {
                 print(e)
                 metricRes <- data.frame(
-                  r = 0,
-                  fun = fun
+                  r = rSeq,
+                  fun = fun,
+                  row.names = seq_along(rSeq)
                 )
             }
         )
     } else {
       # TODO: the row.names are off and do funny things - need to fix this still
         metricRes <- data.frame(
-            r = 0,
-            fun = fun
+            r = rSeq,
+            fun = fun,
+            row.names = seq_along(rSeq)
         )
     }
     metricRes <- cbind(metricRes, metaData)
@@ -160,6 +162,7 @@
     centroid <- spatstat.geom::centroid.owin(ppSub$window)
     metricRes$centroidx <- centroid$x
     metricRes$centroidy <- centroid$y
+    metricRes$minIntensity <- base::min(spatstat.geom::intensity(ppSub))
     metricRes$pplevels <- paste(levels(spatstat.geom::marks(ppSub)),
                                 collapse = " to ")
     # small assertion that the order of the levels in `ppSub`

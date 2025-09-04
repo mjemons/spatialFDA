@@ -14,7 +14,8 @@ res <- spatialInference(spe, c("alpha"),
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
-                        ncores = 1
+                        ncores = 1,
+                        algorithm = "bam"
 )
 
 mdl1 <- res$mdl
@@ -24,7 +25,8 @@ resLs <- crossSpatialInference(spe, c("alpha", "acinar"),
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
-                        ncores = 1
+                        ncores = 1,
+                        algorithm = "bam"
 )
 
 mdl2 <- resLs$alpha_alpha$mdl

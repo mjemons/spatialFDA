@@ -149,7 +149,8 @@ res <- spatialInference(
     family = mgcv::scat(link = "log"),
     image_id = "image_number", 
     condition = "patient_stage",
-    ncores = 1
+    ncores = 1,
+    algorithm = "bam"
 )
 
 names(res)
@@ -162,20 +163,23 @@ The output is a list of four objects: The dataframe with the calculated spatial 
 We can visualise the spatial statistics curves per image with the function `plotMetricPerFov`. Note that these curves are square-root transformed, since we added a transformation parameter above. 
 
 ```{r, plotFunction}
+#filtered and stabilised curves
 metricRes <- res$metricRes
+#raw spatial statistics curves
+metricResRaw <- res$metricResRaw
 
 # create a unique plotting ID
-metricRes$ID <- paste0(
-    metricRes$patient_stage, "|", metricRes$patient_id
+metricResRaw$ID <- paste0(
+    metricResRaw$patient_stage, "|", metricResRaw$patient_id
 )
 # change levels for plotting
-metricRes$ID <- factor(metricRes$ID, levels = c("Non-diabetic|6126",
+metricResRaw$ID <- factor(metricResRaw$ID, levels = c("Non-diabetic|6126",
                                                 "Non-diabetic|6134",
                                                 "Onset|6228","Onset|6414",
                                                 "Long-duration|6089",
                                                 "Long-duration|6180"))
 # plot metrics
-plotMetricPerFov(metricRes, correction = "rs", x = "r",
+plotMetricPerFov(metricResRaw, correction = "rs", x = "r",
                  imageId = "image_number", ID = "ID", ncol = 2)
 ``` 
 
@@ -196,7 +200,7 @@ metricRes$ID <- paste0(
 collector <- plotFbPlot(metricRes, "r", "rs", "patient_stage")
 ```
 
-The functional boxplot provides a convenient summary of the spatial statistics curves. We see that the median curve for onset samples plateaus at a higher level and that non-diabetic and long-duration functional boxplots are in general very similar. There are some outlier curves but since they are not far off the envelopes, we do not filter them out.
+The functional boxplot provides a convenient summary of the spatial statistics curves. We see that the median curve for onset samples plateaus at a higher level and that non-diabetic and long-duration functional boxplots are in general very similar. There are some outlier curves but since they are not far off the envelopes, we do not filter them out. In comparison to the raw spatial statistics curves we note that the transformations stabilise the variance along the domain $r$
 
 ## Functional GAM
 

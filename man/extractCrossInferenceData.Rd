@@ -4,13 +4,25 @@
 \alias{extractCrossInferenceData}
 \title{Reshaping the Result of a Cross Spatial Inference to a Dataframe}
 \usage{
-extractCrossInferenceData(resLs)
+extractCrossInferenceData(
+  resLs,
+  QCMetric = "medianMinIntensity",
+  QCThreshold = 0.1
+)
 }
 \arguments{
-\item{resLs}{a list of objects created by the function \code{spatialInference}
-with three objects: i) the dataframe with the spatial
-statistics results, ii) the designmatrix of the inference and iii) the
-fitted pffr object}
+\item{resLs}{a list with four objects: i) the dataframe with the spatial
+statistics results transformed and filtered as used for fitting,
+ii) the raw spatial statistics results, iii) the designmatrix of the
+inference and iv) the fitted pffr object v) the residual standard error per
+condition defined as the residual sum of squares divided by the number of
+datapoints - sum of the estimated degrees of freedom for the model parameters
+as well as other QC metrics}
+
+\item{QCMetric}{the metric to relate the quality of the fit too.}
+
+\item{QCThreshold}{the threshold on the QC metric. Depends
+on the function used.}
 }
 \value{
 a dataframe for plotting with ggplot2
@@ -32,6 +44,7 @@ resLs <- crossSpatialInference(spe, selection,
                       rSeq = seq(0, 50, length.out = 50), correction = "rs",
                       sample_id = "patient_id",
                       image_id = "image_number", condition = "patient_stage",
+                      algorithm = "bam",
                       ncores = 1
                   )
 df <- extractCrossInferenceData(resLs)

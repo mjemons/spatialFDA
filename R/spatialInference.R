@@ -36,10 +36,12 @@
 #' @param ... Other parameters passed to `spatstat.explore` functions
 #'
 #' @returns a list with four objects: i) the dataframe with the spatial
-#' statistics results, ii) the designmatrix of the inference and iii) the
-#' fitted pffr object iv) the residual standard error per condition defined as
-#' the residual sum of squares divided by the number of datapoints - sum of the
-#' estimated degrees of freedom for the model parameters
+#' statistics results transformed and filtered as used for fitting,
+#' ii) the raw spatial statistics results, iii) the designmatrix of the
+#' inference and iv) the fitted pffr object v) the residual standard error per
+#' condition defined as the residual sum of squares divided by the number of
+#' datapoints - sum of the estimated degrees of freedom for the model parameters
+#'  as well as other QC metrics
 #'
 #' @export
 #'
@@ -55,7 +57,8 @@
 #'     rSeq = seq(0, 50, length.out = 50), correction = "rs",
 #'     sample_id = "patient_id",
 #'     image_id = "image_number", condition = "patient_stage",
-#'     ncores = 1
+#'     ncores = 1,
+#'     algorithm = "bam"
 #' )
 spatialInference <- function(spe,
                              selection,
@@ -80,7 +83,7 @@ spatialInference <- function(spe,
   stopifnot(is(colData(spe)[[condition]], "factor"))
 
   #first, run calcMetricPerFov
-  metricRes <- calcMetricPerFov(spe = spe,
+  metricResRaw <- calcMetricPerFov(spe = spe,
                                 selection = selection,
                                 subsetby = subsetby,
                                 fun = fun,
@@ -94,15 +97,15 @@ spatialInference <- function(spe,
   #the model definitions etc should come from calcMetricPerFov in principle and
   #one of those has to be a factor with correct levels
 
-  metricRes$ID <- paste0(
-    metricRes[[condition]], "|", metricRes[[sample_id]],
-    "|", metricRes[[image_id]]
+  metricResRaw$ID <- paste0(
+    metricResRaw[[condition]], "|", metricResRaw[[sample_id]],
+    "|", metricResRaw[[image_id]]
   )
 
-  noConditionsPreFiltering <- (length(unique(metricRes[[condition]])))
+  noConditionsPreFiltering <- (length(unique(metricResRaw[[condition]])))
   # #removing field of views that have as a curve only zeros - these are cases where
   # #there is no cells of one type
-  metricRes <- metricRes %>% dplyr::group_by(.data[["ID"]]) %>%
+  metricRes <- metricResRaw %>% dplyr::group_by(.data[["ID"]]) %>%
     dplyr::filter(sum(.data[[correction]]) >= 1)
   # if a transformation should be applied to the output
   if(!is.null(transformation)){
@@ -179,9 +182,30 @@ spatialInference <- function(spe,
       family = family,
       ...
     )
+    ### Calculation of metrics assessing the quality of the model fit
 
+    # adj R-squared of the entire model
     Rsq.adj <- summary(mdl)$r.sq
     print(paste0("The adjusted R-squared of the model is ", Rsq.adj))
+
+    ##rename the conditions to be the same as in the summary output
+    dat <- dat %>%
+      mutate(coefficient =
+               paste0("condition",
+                      gsub("-","_", .data[[conditionVariable]]),"(x)")) %>%
+      #rename the reference category to be Intercept
+      mutate(coefficient =
+               case_when(coefficient ==
+                           paste0("condition",
+                                  gsub("-","_",levels(condition)[[1]]), "(x)")
+                         ~ "Intercept(x)", TRUE ~ coefficient))
+
+    # calculate the median intensity per condition
+    dfIntensity <- dat %>%
+      group_by(.data[["coefficient"]]) %>%
+      mutate(medianMinIntensity = stats::median(.data[["minIntensity"]])) %>%
+      select(.data[["coefficient"]], .data[["medianMinIntensity"]]) %>%
+      unique()
 
     #another QC metric of the model fit is inspecting the residuals per condition
     #we compare the residual standard error which is the sqrt residual sum of
@@ -211,17 +235,7 @@ spatialInference <- function(spe,
     #subtract from each condition wise number of curves * number of datapoints
     #per curve the condition wise edf from the summary(mdl) output above
 
-    #rename the conditions to be the same as in the summary output
     df.residual <- dat %>%
-      mutate(coefficient =
-               paste0("condition",
-                      gsub("-","_", .data[[conditionVariable]]),"(x)")) %>%
-      #rename the reference category to be Intercept
-      mutate(coefficient =
-               case_when(coefficient ==
-                           paste0("condition",
-                                  gsub("-","_",levels(condition)[[1]]), "(x)")
-                         ~ "Intercept(x)", TRUE ~ coefficient)) %>%
       group_by(.data[["coefficient"]]) %>%
       summarise(no.datapoints = n() * length(r)) %>%
       left_join(df.edf, by = "coefficient") %>%
@@ -256,16 +270,21 @@ spatialInference <- function(spe,
               edf = .data[["edf"]]) %>%
       unique()
 
+    #assemble all QC scores
+    QCDf <- residualDf %>%
+      left_join(dfIntensity, by = "coefficient")
+
   }else{
     print("Can not fit a model if one condition has no images with curves")
     mdl = NULL
     mm = NULL
-    residualDf = NULL
+    QCDf = NULL
   }
 
   #return pffr object and calcMetricPerFov dataframe in a named list
   return(list(metricRes = metricRes,
+              metricResRaw = metricResRaw,
               designmat = mm,
               mdl = mdl,
-              residual_standard_errors = residualDf))
+              curveFittingQC = QCDf))
 }

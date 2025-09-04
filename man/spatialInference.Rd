@@ -79,10 +79,12 @@ neighbour distance across all images for this cell type pair.}
 }
 \value{
 a list with four objects: i) the dataframe with the spatial
-statistics results, ii) the designmatrix of the inference and iii) the
-fitted pffr object iv) the residual standard error per condition defined as
-the residual sum of squares divided by the number of datapoints - sum of the
-estimated degrees of freedom for the model parameters
+statistics results transformed and filtered as used for fitting,
+ii) the raw spatial statistics results, iii) the designmatrix of the
+inference and iv) the fitted pffr object v) the residual standard error per
+condition defined as the residual sum of squares divided by the number of
+datapoints - sum of the estimated degrees of freedom for the model parameters
+as well as other QC metrics
 }
 \description{
 A function to perform spatial statistical inference on spatial omics data.
@@ -100,6 +102,7 @@ res <- spatialInference(spe, c("alpha", "Tc"),
     rSeq = seq(0, 50, length.out = 50), correction = "rs",
     sample_id = "patient_id",
     image_id = "image_number", condition = "patient_stage",
-    ncores = 1
+    ncores = 1,
+    algorithm = "bam"
 )
 }

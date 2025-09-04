@@ -1,3 +1,13 @@
+# spatialFDA 1.1.16
+* adjusted that all failed `calcMetricPerFov` output NA in the dimension
+of rSeq, clearly stating which values in `metricRes` where NA. 
+* return the raw non-filtered `metricResRaw` in `spatialInference` as well as 
+the filtered `metricRes` for comparison.
+* implemented option to add different QC metrics of the functional model and
+plot them with different shapes in `plotCrossHeatmap`
+* adapted the overview vignette to plot the raw spatial statistics curves 
+* accelerated all examples and tests with functional GAM via `algorithm = "bam"`
+
 # spatialFDA 1.1.15
 * added a test to check the edf values and order from the RSE calculation. 
 Made the RSE code more robust.

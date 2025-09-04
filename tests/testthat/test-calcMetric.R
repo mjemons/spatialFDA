@@ -91,12 +91,10 @@ test_that("Cross function output has correct dimensions", {
                                      ),
                                      ncores = 1
   )
-  # for some cases the calculations failed and those have only one row instead
-  # of length(rSeq)
-  naCols <- colSums(is.na(metricRes))[['theo']]
+
   expect_length(metricRes$rs,
                 (length(rSeq) * length(unique(spe$image_name))
-                * (length(selection)^2))-((length(rSeq) - 1)*naCols))
+                * (length(selection)^2)))
 })
 
 test_that("Cross function output has correct dimensions for Kdot", {
@@ -111,12 +109,10 @@ test_that("Cross function output has correct dimensions for Kdot", {
                                      correction = "border",
                                      ncores = 1
   )
-  # for some cases the calculations failed and those have only one row instead
-  # of length(rSeq)
-  naCols <- colSums(is.na(metricRes))[['theo']]
+
   expect_length(metricRes$border,
                 length(rSeq) * (length(unique(spe$image_name)))
-                * (length(selection)) - ((length(rSeq) - 1)*naCols))
+                * (length(selection)))
 })
 
 test_that("Numeric results are correct for Lcross image 148", {

@@ -83,7 +83,8 @@ mdl <- functionalGam(
     data = dat, x = metricRes$r |> unique(),
     designmat = designmat, weights = dat$npoints,
     formula = formula(Y ~ conditionLong_duration +
-        conditionOnset + s(patient_id, bs = "re"))
+        conditionOnset + s(patient_id, bs = "re")),
+        algorithm = "bam"
 )
 summary(mdl)
 }

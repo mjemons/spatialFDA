@@ -95,6 +95,7 @@ resLs <- crossSpatialInference(spe, selection,
                       rSeq = seq(0, 50, length.out = 50), correction = "rs",
                       sample_id = "patient_id",
                       image_id = "image_number", condition = "patient_stage",
+                      algorithm = "bam",
                       ncores = 1
                   )
 
