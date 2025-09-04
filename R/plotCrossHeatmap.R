@@ -122,10 +122,13 @@ plotCrossHeatmap <- function(resLs,
  df <- extractCrossInferenceData(resLs = resLs,
                                  QCMetric = QCMetric,
                                  QCThreshold = QCThreshold)
+ #make below QC bin NA so that we can colour it as black later on
+ df[["mean_coefficient"]] = ifelse(df[["QCBin"]] ==
+                                     paste0(QCMetric," > ", QCThreshold),
+                                   df[["mean_coefficient"]], NA_real_)
  if(!is.null(coefficientsToPlot)){
    df <- df %>% filter(.data[["coefficient"]] %in% coefficientsToPlot)
  }
- print(df)
  if(is.null(adj.pvalue)){
    p <- ggplot(df, aes(x = .data[["cell1"]], y = .data[["cell2"]])) +
      geom_point(aes(size = -log10(.data[["p-value"]] + 0.001),
@@ -138,11 +141,10 @@ plotCrossHeatmap <- function(resLs,
    p <- ggplot(df, aes(x = .data[["cell1"]], y = .data[["cell2"]])) +
      geom_point(aes(size = -log10(.data[["adj.p-value"]] + 0.001),
                     shape = .data[["QCBin"]],
-                    color = .data[["mean_coefficient"]])) +
+                    color = .data[["mean_coefficient"]]))+
      geom_point(aes(size = -log10(.data[["adj.p-value"]] + 0.001)),
                 shape = 1,colour = "black")
  }
- print(p)
  p <- p + scale_x_discrete(guide = guide_axis(angle = 50)) +
    scale_shape_manual(values = c(13,16)) +
    facet_wrap(~.data[["coefficient"]]) +
@@ -150,6 +152,7 @@ plotCrossHeatmap <- function(resLs,
    scale_colour_gradient2(midpoint = 0,
                           high = scales::muted("red"),
                           mid = "white",
-                          low = scales::muted("blue"))
+                          low = scales::muted("blue"),
+                          na.value = "black")
  return(p)
 }
