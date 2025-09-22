@@ -79,6 +79,19 @@ test_that("Function fails if marks not in ColData", {
   ))
 })
 
+test_that("Function fails if max rSeq is greater than Window", {
+  spe_alphabeta <- subset(spe, ,cell_type %in% c("alpha","beta"))
+  expect_error(calcMetricPerFov(spe_alphabeta, c("alpha", "beta"),
+                                subsetby = "image_number", fun = "Gcross",
+                                marks = "cell_type",
+                                rSeq =  seq(0, 200, length.out = 50), by = c(
+                                  "patient_stage", "patient_id",
+                                  "image_number"
+                                ),
+                                ncores = 1
+  ))
+})
+
 # Test function calcCrossMetricPerFov
 test_that("Cross function output has correct dimensions", {
   selection <- c("alpha", "beta", "delta")

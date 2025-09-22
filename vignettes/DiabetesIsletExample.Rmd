@@ -140,6 +140,16 @@ In a first step, we calculate a spatial statistic curve as implemented by `r Bio
 
 Note that all of these functions have different implementations to correct for inhomogeneity and for comparison between two marks (cross functions) [@baddeleySpatialPointPatterns].
 
+All spatial statistics metrics are a function of radius $r$. As such, we have to determine the maximum radius sequence to consider. [@baddeleySpatialPointPatterns] recommend to take a maximum radius $r$ that is not larger than $1/4$ of the window length. As the window can be non-convex, we calculate the half of the minimum bounding radius of the observation window as heuristic.
+
+```{r}
+p <- rMaxHeuristic(spe,
+subsetby = "image_number", marks = "cell_type"
+)
+p
+```
+
+We will consider a rMax of $50$ for analysing shorter-range interactions.
 
 ## Correlation
 

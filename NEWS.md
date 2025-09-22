@@ -1,3 +1,10 @@
+# spatialFDA 1.1.17
+* added an assertion that the maximum radius considered must always be smaller
+than the maximum window length of each image.
+* added a test for this case
+* add a heuristic to check for a convenient and good rMax to consider
+* added heuristic to the vignettes
+
 # spatialFDA 1.1.16
 * adjusted that all failed `calcMetricPerFov` output NA in the dimension
 of rSeq, clearly stating which values in `metricRes` where NA. 

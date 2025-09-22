@@ -27,7 +27,7 @@
 #' dfSub <- .speToDf(speSub)
 #' metricRes <- .extractMetric(dfSub, c("alpha", "Tc"),
 #'     fun = "Gcross",
-#'     marks = "cell_type", rSeq = seq(0, 1000, length.out = 100),
+#'     marks = "cell_type", rSeq = seq(0, 50, length.out = 50),
 #'     by = c("patient_stage", "patient_id", "image_number")
 #' )
 #' @import spatstat.explore
@@ -44,6 +44,8 @@
     # type checking
     stopifnot(is(df, "data.frame"))
     pp <- .dfToppp(df, marks = marks, continuous = continuous, window = window)
+    stopifnot("Window size must be greater than the maximum radius length considered"
+              =spatstat.geom::boundingradius(pp) >= max(rSeq))
     if (!continuous) {
         ppSub <- pp[pp$marks %in% selection, drop = TRUE]
         spatstat.geom::marks(ppSub) <- factor(spatstat.geom::marks(ppSub),
