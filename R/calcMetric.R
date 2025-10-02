@@ -271,7 +271,7 @@ calcMetricPerFov <- function(spe, selection, subsetby, fun, marks = NULL,
     }, mc.cores = ncores) %>% dplyr::bind_rows()
     # store metadata of the calculation in the dataframe
     metricDf$fun <- fun
-    metricDf$selection <- paste(selection, collapse = " and ")
+    metricDf$selection <- paste(selection, collapse = " to ")
     return(metricDf)
 }
 
