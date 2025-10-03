@@ -82,7 +82,6 @@ crossSpatialInference <- function(spe,
   ls <- apply(base::expand.grid(selection, selection), 1, function(x) {
     return(c(x[1], x[2]))
   }, simplify = FALSE)
-  p <- progress::progress_bar$new(total = length(ls))
   # calculate the metric per FOV
   resLs <- lapply(ls, function(x) {
     res <- spatialInference(spe = spe,
@@ -103,7 +102,6 @@ crossSpatialInference <- function(spe,
                            family = family,
                            ncores = ncores,
                            ...)
-    p$tick()
     return(res)
   })
   mat <- do.call("cbind",ls) %>% t()

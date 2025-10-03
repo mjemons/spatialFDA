@@ -138,14 +138,14 @@ In order to perform the spatial inference, we have to pass the `r BiocStyle::Bio
 
 Furthermore, for the functional data analysis part we can provide the sample_id if there are replicates (`sample_id`, will lead to a mixed effects model), the transformation to apply to the output of the spatial statistics metric (here, we apply a square root transformation to stabilise the variance), the image ID (`image_id`) as well as the conditions (`conditions`)
 
-```{r, spatialInference}
+```{r, crossSpatialInference, results='hide', message = FALSE}
 colData(spe)[["patient_stage"]] <- factor(colData(spe)[["patient_stage"]])
 #relevel to have non-diabetic as the reference category
 colData(spe)[["patient_stage"]] <- relevel(colData(spe)[["patient_stage"]],
 "Non-diabetic")
 
 #run the spatial statistics inference
-res <- spatialInference(
+resLs <- crossSpatialInference(
     spe, 
     selection = c("alpha", "Tc"),
     subsetby = "image_number", 
@@ -164,6 +164,23 @@ res <- spatialInference(
     algorithm = "bam"
 )
 
+names(resLs)
+```
+
+We first consider the combination of cell types defined in `selection` as an overview bubble plot of the $F$-test results. This gives us a general indication of which cell types are co-localising and a notion of significance of the $F$-test.
+
+```{r, bubblePlot, results='hide', message = FALSE, eval=TRUE}
+p <- plotCrossHeatmap(resLs, coefficientsToPlot = c("conditionLong_duration(x)", "conditionOnset(x)"), QCThreshold = 0, QCMetric = "medianMinIntensity")
+p <- p + theme(legend.position = "bottom") + guides(shape = "none") + 
+  facet_wrap(~factor(coefficient, levels = c("conditionOnset(x)", "conditionLong_duration(x)"), labels = c("conditionOnset(x)" = "Onset", "conditionLong_duration(x)" = "Long-Duration")))
+
+p
+```
+
+We notice that there is a strong co-localisation of cytoxic T-cells with pancreatic alpha cells in onset diabetes. We will consider the interaction of alpha cells and cytoxic T-cells in more detail.
+
+```{r, resSelection, eval=TRUE}
+res <- resLs$alpha_Tc
 names(res)
 ```
 
@@ -173,7 +190,7 @@ The output is a list of four objects: The dataframe with the calculated spatial 
 
 We can visualise the spatial statistics curves per image with the function `plotMetricPerFov`. Note that these curves are square-root transformed, since we added a transformation parameter above. 
 
-```{r, plotFunction}
+```{r, plotFunction, message = FALSE, warning = FALSE,}
 #filtered and stabilised curves
 metricRes <- res$metricRes
 #raw spatial statistics curves
@@ -245,11 +262,11 @@ The point wise confidence bands are a limitation of this method and could be imp
 The functional GAMs provide coefficients that we could plot above. In order to judge the confidence we can have in these coefficients, we look to quantify the model fit. First, we look at the correlation and check the qq plot of the model residuals.
 
 ```{r contour, warning = FALSE}
-resid(mdl) |> cor() |> filled.contour(levels = seq(-1, 1, l = 40))
-resid(mdl) |> cov() |> filled.contour()
+residuals(mdl) |> cor() |> filled.contour(levels = seq(-1, 1, l = 40))
+residuals(mdl) |> cov() |> filled.contour()
 
-qqnorm(resid(mdl), pch = 16)
-qqline(resid(mdl))
+qqnorm(mdl$residuals, pch = 16)
+qqline(mdl$residuals)
 ```
 
 In these model diagnostics, we note that there is still some variability in the residuals that is not considered by the model. The Q-Q plot indicates a good but not perfect model fit. The residuals show a considerable structure that is in line with the structure in the auto-covariance / correlation plots.

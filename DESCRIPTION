@@ -39,8 +39,7 @@ Imports:
     graphics,
     magrittr,
     ExperimentHub,
-    scales,
-    progress
+    scales
 biocViews: Software, Spatial, Transcriptomics
 VignetteBuilder: knitr
 Suggests: 

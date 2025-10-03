@@ -81,7 +81,7 @@ plotMdl <- function(mdl, predictor, shift = NULL) {
     df <- coef$sm[[paste0(predictor, "(x)")]]$coef
     # plot
     p <- ggplot(df, aes(.data$x.vec, .data$value)) +
-        geom_line(size = 1) +
+        geom_line(linewidth = 1) +
         # here, I implement a Wald CI - could be improved
         geom_ribbon(
             data = df,
@@ -91,7 +91,7 @@ plotMdl <- function(mdl, predictor, shift = NULL) {
         ) +
         geom_hline(
             yintercept = 0,
-            linetype = "dashed", color = "red", size = 1
+            linetype = "dashed", color = "red", linewidth = 1
         ) +
         ggtitle(predictor) +
         ylab("parameter value") +

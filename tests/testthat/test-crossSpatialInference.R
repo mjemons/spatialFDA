@@ -20,7 +20,7 @@ res <- spatialInference(spe, c("alpha"),
 
 mdl1 <- res$mdl
 
-resLs <- crossSpatialInference(spe, c("alpha", "acinar"),
+resLs <- crossSpatialInference(spe, c("alpha", "Tc"),
                         subsetby = "image_number", fun = "Gcross", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
@@ -35,4 +35,27 @@ test_that("cross function with one element is identical to the single
           function call", {
   expect_true(identical(mdl1$coefficients, mdl2$coefficients))
 })
+
+res <- spatialInference(spe, c("alpha", "Tc"),
+                        subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+                        rSeq = seq(0, 50, length.out = 50), correction = "rs",
+                        sample_id = "patient_id",
+                        image_id = "image_number", condition = "patient_stage",
+                        ncores = 1,
+                        algorithm = "bam"
+)
+
+mdl3 <- res$mdl
+
+mdl4 <- resLs$alpha_Tc$mdl
+
+test_that("cross function with one element is identical to the single
+          function call", {
+            expect_true(identical(mdl3$coefficients, mdl4$coefficients))
+          })
+
+test_that("cross function with one element is identical to the single
+          function call in the residuals", {
+            expect_true(identical(mdl3$residuals, mdl4$residuals))
+          })
 
