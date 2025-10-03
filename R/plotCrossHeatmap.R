@@ -145,9 +145,14 @@ plotCrossHeatmap <- function(resLs,
      geom_point(aes(size = -log10(.data[["adj.p-value"]] + 0.001)),
                 shape = 1,colour = "black")
  }
- p <- p + scale_x_discrete(guide = guide_axis(angle = 50)) +
-   scale_shape_manual(values = c(13,16)) +
-   facet_wrap(~.data[["coefficient"]]) +
+ p <- p + scale_x_discrete(guide = guide_axis(angle = 50))
+ if(any(df[["QCBin"]] == paste0(QCMetric," <= ", QCThreshold), na.rm = TRUE)){
+   p <- p + scale_shape_manual(values = c(13,16))
+ }else{
+   p <- p + scale_shape_manual(values = c(16,13))
+ }
+
+ p <- p + facet_wrap(~.data[["coefficient"]]) +
    theme_light() +
    scale_colour_gradient2(midpoint = 0,
                           high = scales::muted("red"),
