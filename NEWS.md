@@ -1,3 +1,11 @@
+# spatialFDA 1.1.18
+* removed the argument `subsetby` from `spatialInference` and 
+`crossSpatialInference` as this will always be the same as `image_id` in this 
+function
+* indicated in the documentation that `...` in `spatialInference` and 
+`crossSpatialInference` is passed to both `spatstat.explore` functions and
+to `refund::pffr`. 
+
 # spatialFDA 1.1.17
 * added an assertion that the maximum radius considered must always be smaller
 than the maximum window length of each image.

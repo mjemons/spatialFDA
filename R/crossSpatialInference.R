@@ -7,8 +7,6 @@
 #' @param spe a `SpatialExperiment` object
 #' @param selection the mark(s) you want to compare. NOTE: This is directional.
 #' c(A,B) is not the same result as c(B,A).
-#' @param subsetby the spe `colData` variable to subset the data by. This
-#' variable has to be provided, even if there is only one sample.
 #' @param fun the `spatstat` function to compute on the point pattern object
 #' @param marks the marks to consider e.g. cell types
 #' @param rSeq the range of r values to compute the function over
@@ -29,7 +27,9 @@
 #' neighbour distance across all images for this cell type pair.
 #' @param family the distributional family for the functional GAM
 #' @param ncores the number of cores to use for parallel processing, default = 1
-#' @param ... Other parameters passed to `spatstat.explore` functions
+#' @param ... Other parameters passed to `spatstat.explore` functions for
+#' parameters concerning the spatial function calculation and to `refund::pffr`
+#' for the functional additive mixed model inference
 #'
 #' @returns a list of objects created by the function `spatialInference`
 #' with three objects: i) the dataframe with the spatial
@@ -46,10 +46,9 @@
 #' "Non-diabetic")
 #'
 #' selection <- c("acinar", "ductal")
-#' resLs <- crossSpatialInference(spe, selection,
-#'                      subsetby = "image_number", fun = "Gcross", marks = "cell_type",
-#'                       rSeq = seq(0, 50, length.out = 50), correction = "rs",
-#'                       sample_id = "patient_id",
+#' resLs <- crossSpatialInference(spe, selection, fun = "Gcross",
+#'                       marks = "cell_type", rSeq = seq(0, 50, length.out = 50),
+#'                       correction = "rs", sample_id = "patient_id",
 #'                       image_id = "image_number", condition = "patient_stage",
 #'                       algorithm = "bam",
 #'                       ncores = 1
@@ -57,7 +56,6 @@
 #'
 crossSpatialInference <- function(spe,
                                   selection = NULL,
-                                  subsetby,
                                   fun,
                                   marks = NULL,
                                   rSeq = NULL,
@@ -86,7 +84,6 @@ crossSpatialInference <- function(spe,
   resLs <- lapply(ls, function(x) {
     res <- spatialInference(spe = spe,
                            selection = x,
-                           subsetby = subsetby,
                            fun = fun,
                            marks = marks,
                            rSeq = rSeq,

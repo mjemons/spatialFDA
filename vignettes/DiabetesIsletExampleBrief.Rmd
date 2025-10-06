@@ -139,16 +139,13 @@ In order to perform the spatial inference, we have to pass the `r BiocStyle::Bio
 Furthermore, for the functional data analysis part we can provide the sample_id if there are replicates (`sample_id`, will lead to a mixed effects model), the transformation to apply to the output of the spatial statistics metric (here, we apply a square root transformation to stabilise the variance), the image ID (`image_id`) as well as the conditions (`conditions`)
 
 ```{r, crossSpatialInference, results='hide', message = FALSE, warning = FALSE}
-colData(spe)[["patient_stage"]] <- factor(colData(spe)[["patient_stage"]])
 #relevel to have non-diabetic as the reference category
-colData(spe)[["patient_stage"]] <- relevel(colData(spe)[["patient_stage"]],
-"Non-diabetic")
+spe$patient_stage <- relevel(factor(spe$patient_stage), "Non-diabetic")
 
 #run the spatial statistics inference
 resLs <- crossSpatialInference(
     spe, 
     selection = c("alpha", "Tc"),
-    subsetby = "image_number", 
     fun = "Gcross", 
     marks = "cell_type",
     rSeq = seq(0, 50, length.out = 50), 

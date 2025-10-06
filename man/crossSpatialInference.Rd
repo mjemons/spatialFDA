@@ -7,7 +7,6 @@
 crossSpatialInference(
   spe,
   selection = NULL,
-  subsetby,
   fun,
   marks = NULL,
   rSeq = NULL,
@@ -30,9 +29,6 @@ crossSpatialInference(
 
 \item{selection}{the mark(s) you want to compare. NOTE: This is directional.
 c(A,B) is not the same result as c(B,A).}
-
-\item{subsetby}{the spe \code{colData} variable to subset the data by. This
-variable has to be provided, even if there is only one sample.}
 
 \item{fun}{the \code{spatstat} function to compute on the point pattern object}
 
@@ -68,7 +64,9 @@ neighbour distance across all images for this cell type pair.}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
 
-\item{...}{Other parameters passed to \code{spatstat.explore} functions}
+\item{...}{Other parameters passed to \code{spatstat.explore} functions for
+parameters concerning the spatial function calculation and to \code{refund::pffr}
+for the functional additive mixed model inference}
 }
 \value{
 a list of objects created by the function \code{spatialInference}
@@ -90,10 +88,9 @@ colData(spe)[["patient_stage"]] <- relevel(colData(spe)[["patient_stage"]],
 "Non-diabetic")
 
 selection <- c("acinar", "ductal")
-resLs <- crossSpatialInference(spe, selection,
-                     subsetby = "image_number", fun = "Gcross", marks = "cell_type",
-                      rSeq = seq(0, 50, length.out = 50), correction = "rs",
-                      sample_id = "patient_id",
+resLs <- crossSpatialInference(spe, selection, fun = "Gcross",
+                      marks = "cell_type", rSeq = seq(0, 50, length.out = 50),
+                      correction = "rs", sample_id = "patient_id",
                       image_id = "image_number", condition = "patient_stage",
                       algorithm = "bam",
                       ncores = 1
