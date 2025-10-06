@@ -1,3 +1,6 @@
+# spatialFDA 1.1.19
+* fixing `plotFbPlot` ylims across conditions to have the same range-
+
 # spatialFDA 1.1.18
 * removed the argument `subsetby` from `spatialInference` and 
 `crossSpatialInference` as this will always be the same as `image_id` in this 
