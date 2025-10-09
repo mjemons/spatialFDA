@@ -232,8 +232,8 @@ calcMetricPerFov <- function(spe, selection, subsetby, fun, marks = NULL,
       expr <- SummarizedExperiment::assay(spe, assay)[marks, , drop=FALSE] %>%
         as.matrix() %>%
         t() %>%
-        data.frame() %>%
-        magrittr::set_colnames(marks)
+        data.frame()
+      colnames(expr) <- marks
 
       colData(spe) <- colData(spe) %>% cbind(expr)
     }

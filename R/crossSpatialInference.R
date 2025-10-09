@@ -71,6 +71,10 @@ crossSpatialInference <- function(spe,
                                   family = stats::gaussian(link = "log"),
                                   ncores = 1,
                                   ...){
+  #for computational reasons, remove the assays as we don't need them
+  SummarizedExperiment::assays(spe) <- list()
+  #for computational reasons, remove the rowData as we don't need them
+  SummarizedExperiment::rowData(spe) <- S4Vectors::DataFrame(row.names = rownames(spe))
   #first, create a list of all the celltypes if selection = NULL
   if(is.null(selection)){
     selection <- colData(spe)[[marks]] %>% unique()

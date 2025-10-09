@@ -1,3 +1,7 @@
+# spatialFDA 1.1.20
+* only returning the transformed curves in `spatialInference` plus removing
+the assays and the rowData for faster computations.
+
 # spatialFDA 1.1.19
 * fixing `plotFbPlot` ylims across conditions to have the same range-
 

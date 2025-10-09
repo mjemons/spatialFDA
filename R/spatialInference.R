@@ -78,6 +78,10 @@ spatialInference <- function(spe,
                              family = stats::gaussian(link = "log"),
                              ncores = 1,
                              ...){
+  #for computational reasons, remove the assays as we don't need them
+  SummarizedExperiment::assays(spe) <- list()
+  #for computational reasons, remove the rowData as we don't need them
+  SummarizedExperiment::rowData(spe) <- S4Vectors::DataFrame(row.names = rownames(spe))
   #small assertion that the condition has to be a factor
   stopifnot(is(colData(spe)[[condition]], "factor"))
 
@@ -282,7 +286,6 @@ spatialInference <- function(spe,
 
   #return pffr object and calcMetricPerFov dataframe in a named list
   return(list(metricRes = metricRes,
-              metricResRaw = metricResRaw,
               designmat = mm,
               mdl = mdl,
               curveFittingQC = QCDf))
