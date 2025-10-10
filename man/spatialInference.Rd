@@ -21,6 +21,7 @@ spatialInference(
   eps = NULL,
   delta = 0,
   family = stats::gaussian(link = "log"),
+  verbose = TRUE,
   ncores = 1,
   ...
 )
@@ -68,6 +69,8 @@ by 10 µm. If set to "minNnDist" it will take the mean of the minimum nearest
 neighbour distance across all images for this cell type pair.}
 
 \item{family}{the distributional family for the functional GAM}
+
+\item{verbose}{logical indicating whether to print all information or not}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
 

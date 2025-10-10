@@ -74,13 +74,13 @@
                 )
             },
             warning = function(w) {
-                print(w)
+                message(w)
                 metricRes <- do.call(fun,
                     args = list(X = ppSub, r = rSeq, ...)
                 )
             },
             error = function(e) {
-                print(e)
+                message(e)
                 metricRes <- data.frame(
                   r = rSeq,
                   fun = fun,
@@ -105,7 +105,7 @@
                 ))
             },
             warning = function(w) {
-                print(w)
+                message(w)
                 metricRes <- do.call(fun, args = list(
                     X = pp,
                     i = selection[1],
@@ -115,7 +115,7 @@
                 ))
             },
             error = function(e) {
-                print(e)
+                message(e)
                 metricRes <- data.frame(
                   r = rSeq,
                   fun = fun,
@@ -193,6 +193,7 @@
 #' @param continuous A boolean indicating whether the marks are continuous
 #' defaults to FALSE
 #' @param assay the assay which is used if `continuous = TRUE`
+#' @param verbose logical indicating whether to print all information or not
 #' @param ncores the number of cores to use for parallel processing, default = 1
 #' @param ... Other parameters passed to `spatstat.explore` functions
 #'
@@ -216,7 +217,7 @@
 #' @importFrom methods is
 calcMetricPerFov <- function(spe, selection, subsetby, fun, marks = NULL,
     rSeq = NULL, by = NULL, continuous = FALSE, assay = "exprs", ncores = 1,
-    ...) {
+    verbose = TRUE, ...) {
     # type checking of input
     stopifnot(is(spe, "SpatialExperiment"))
     stopifnot(is(fun, "character"))
@@ -240,13 +241,17 @@ calcMetricPerFov <- function(spe, selection, subsetby, fun, marks = NULL,
     df <- .speToDf(spe)
     if(length(selection)>1){
       # printing the combination calculated
-      print(paste0("Calculating ", fun, " from ",
-                   selection[1], " to ",
-                   selection[2]))
+        if(verbose){
+            message(paste0("Calculating ", fun, " from ",
+                            selection[1], " to ",
+                            selection[2]))
+        }
     }
     else{
       # printing the combination calculated
-      print(paste0("Calculating ", fun, " of ", selection[1]))
+        if(verbose){
+            message(paste0("Calculating ", fun, " of ", selection[1]))
+        }
     }
     # we have one case for discrete cell types where we have one column to subset
     if (length(subsetby) == 1) {
@@ -329,7 +334,7 @@ calcCrossMetricPerFov <- function(
         ls <- unique(selection)
         # calculate the metric per FOV
         resLs <- lapply(ls, function(x) {
-            print(x)
+            message(x)
             calcMetricPerFov(
                 spe = spe, selection = x, subsetby = subsetby, fun = fun,
                 marks = marks, rSeq = rSeq, by = by, ncores = ncores,

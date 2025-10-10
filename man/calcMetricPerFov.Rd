@@ -15,6 +15,7 @@ calcMetricPerFov(
   continuous = FALSE,
   assay = "exprs",
   ncores = 1,
+  verbose = TRUE,
   ...
 )
 }
@@ -41,6 +42,8 @@ defaults to FALSE}
 \item{assay}{the assay which is used if \code{continuous = TRUE}}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
+
+\item{verbose}{logical indicating whether to print all information or not}
 
 \item{...}{Other parameters passed to \code{spatstat.explore} functions}
 }

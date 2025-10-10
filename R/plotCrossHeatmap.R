@@ -24,7 +24,7 @@
 #'
 #' selection <- c("acinar", "ductal")
 #' resLs <- crossSpatialInference(spe, selection,
-#'                      subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+#'                       fun = "Gcross", marks = "cell_type",
 #'                       rSeq = seq(0, 50, length.out = 50), correction = "rs",
 #'                       sample_id = "patient_id",
 #'                       image_id = "image_number", condition = "patient_stage",
@@ -104,7 +104,7 @@ extractCrossInferenceData <- function(resLs,
 #'
 #' selection <- c("acinar", "ductal")
 #' resLs <- crossSpatialInference(spe, selection,
-#'                      subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+#'                       fun = "Gcross", marks = "cell_type",
 #'                       rSeq = seq(0, 50, length.out = 50), correction = "rs",
 #'                       sample_id = "patient_id",
 #'                       image_id = "image_number", condition = "patient_stage",

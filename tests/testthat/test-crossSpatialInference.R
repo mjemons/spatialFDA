@@ -10,7 +10,7 @@ colData(spe)[["patient_stage"]] <- factor(colData(spe)[["patient_stage"]])
 colData(spe)[["patient_stage"]] <- relevel(colData(spe)[["patient_stage"]],
                                            "Non-diabetic")
 res <- spatialInference(spe, c("alpha"),
-                        subsetby = "image_number", fun = "Gest", marks = "cell_type",
+                        fun = "Gest", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
@@ -21,7 +21,7 @@ res <- spatialInference(spe, c("alpha"),
 mdl1 <- res$mdl
 
 resLs <- crossSpatialInference(spe, c("alpha", "Tc"),
-                        subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+                        fun = "Gcross", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
@@ -37,7 +37,7 @@ test_that("cross function with one element is identical to the single
 })
 
 res <- spatialInference(spe, c("alpha", "Tc"),
-                        subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+                        fun = "Gcross", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",

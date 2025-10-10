@@ -1,3 +1,7 @@
+# spatialFDA 1.1.21
+* allowing for the explicit passing of `correction` in `spatialInference`
+and `crossSpatialInference` to fix issues with calculating `Lcross`.
+
 # spatialFDA 1.1.20
 * only returning the transformed curves in `spatialInference` plus removing
 the assays and the rowData for faster computations.

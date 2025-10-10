@@ -26,6 +26,7 @@
 #' by 10 µm. If set to "minNnDist" it will take the mean of the minimum nearest
 #' neighbour distance across all images for this cell type pair.
 #' @param family the distributional family for the functional GAM
+#' @param verbose logical indicating whether to print all information or not
 #' @param ncores the number of cores to use for parallel processing, default = 1
 #' @param ... Other parameters passed to `spatstat.explore` functions for
 #' parameters concerning the spatial function calculation and to `refund::pffr`
@@ -69,6 +70,7 @@ crossSpatialInference <- function(spe,
                                   eps = NULL,
                                   delta = 0,
                                   family = stats::gaussian(link = "log"),
+                                  verbose = TRUE,
                                   ncores = 1,
                                   ...){
   #for computational reasons, remove the assays as we don't need them
@@ -101,6 +103,7 @@ crossSpatialInference <- function(spe,
                            eps = eps,
                            delta = delta,
                            family = family,
+                           verbose = verbose,
                            ncores = ncores,
                            ...)
     return(res)

@@ -5,8 +5,7 @@ library("dplyr")
 spe <- .loadExample()
 # calculate the Gcross metric for alpha and Tc cells
 metricRes <- calcMetricPerFov(spe, c("alpha", "Tc"),
-                              subsetby = "image_number", fun = "Gcross",
-                              marks = "cell_type", rSeq = seq(0, 50, length.out = 50),
+                              subsetby = "image_number", fun = "Gcross", marks = "cell_type", rSeq = seq(0, 50, length.out = 50),
                               c("patient_stage", "patient_id", "image_number"), ncores = 1
 )
 
@@ -52,7 +51,7 @@ colData(spe)[["patient_stage"]] <- factor(colData(spe)[["patient_stage"]])
 colData(spe)[["patient_stage"]] <- relevel(colData(spe)[["patient_stage"]],
                                            "Non-diabetic")
 res <- spatialInference(spe, c("alpha", "Tc"),
-                        subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+                        fun = "Gcross", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
@@ -67,7 +66,7 @@ test_that("wrapper function gives same result as manual computation", {
 })
 
 resBeta <- spatialInference(spe, "beta",
-                        subsetby = "image_number", fun = "Gest", marks = "cell_type",
+                        fun = "Gest", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
@@ -81,7 +80,7 @@ test_that("spatialInference handels case when one condition has no images with
 })
 
 res <- spatialInference(spe, c("alpha", "Tc"),
-                        subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+                        fun = "Gcross", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
                         weights = "min",
@@ -102,7 +101,7 @@ test_that("weights of the model are really the min weights expected", {
 })
 
 res <- spatialInference(spe, c("alpha", "Tc"),
-                        subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+                        fun = "Gcross", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
                         weights = "max",
@@ -123,7 +122,7 @@ test_that("weights of the model are really the max weights expected", {
 })
 
 res <- spatialInference(spe, c("alpha", "Tc"),
-                        subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+                        fun = "Gcross", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
                         weights = NULL,
@@ -156,7 +155,7 @@ colData(spe)[["patient_stage"]] <- relevel(colData(spe)[["patient_stage"]],
                                            "Onset")
 
 res <- spatialInference(spe, c("alpha", "Tc"),
-                        subsetby = "image_number", fun = "Gcross", marks = "cell_type",
+                        fun = "Gcross", marks = "cell_type",
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
                         weights = NULL,

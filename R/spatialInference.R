@@ -31,6 +31,7 @@
 #' neighbour distance across all images for this cell type pair.
 #' @param family the distributional family for the functional GAM
 #' @param ncores the number of cores to use for parallel processing, default = 1
+#' @param verbose logical indicating whether to print all information or not
 #' @param ... Other parameters passed to `spatstat.explore` functions for
 #' parameters concerning the spatial function calculation and to `refund::pffr`
 #' for the functional additive mixed model inference
@@ -76,6 +77,7 @@ spatialInference <- function(spe,
                              eps = NULL,
                              delta = 0,
                              family = stats::gaussian(link = "log"),
+                             verbose = TRUE,
                              ncores = 1,
                              ...){
   #for computational reasons, remove the assays as we don't need them
@@ -93,7 +95,10 @@ spatialInference <- function(spe,
                                 marks =marks,
                                 rSeq = rSeq,
                                 by = c(sample_id, image_id, condition),
-                                ncores = ncores
+                                verbose = verbose,
+                                ncores = ncores,
+                                correction = correction,
+                                ...
   )
 
   #second, build the dataframes for pffr and designmatrix
@@ -144,8 +149,10 @@ spatialInference <- function(spe,
     #level at position one for the reference category
     conditionVariable <- condition
     condition <- dat[[condition]]
-    print(paste0("Creating design matrix with ", levels(condition)[[1]],
+    if(verbose){
+      message(paste0("Creating design matrix with ", levels(condition)[[1]],
                  " as reference"))
+    }
     mm <- stats::model.matrix(~condition)
     #make sure that the colnames don't have "-" instead of "_"
     colnames(mm) <- gsub("-","_", colnames(mm))
@@ -189,7 +196,9 @@ spatialInference <- function(spe,
 
     # adj R-squared of the entire model
     Rsq.adj <- summary(mdl)$r.sq
-    print(paste0("The adjusted R-squared of the model is ", Rsq.adj))
+    if(verbose){
+      message(paste0("The adjusted R-squared of the model is ", Rsq.adj))
+    }
 
     ##rename the conditions to be the same as in the summary output
     dat <- dat %>%
@@ -278,7 +287,9 @@ spatialInference <- function(spe,
       left_join(dfIntensity, by = "coefficient")
 
   }else{
-    print("Can not fit a model if one condition has no images with curves")
+    if(verbose){
+      message("Can not fit a model if one condition has no images with curves")
+    }
     mdl = NULL
     mm = NULL
     QCDf = NULL
