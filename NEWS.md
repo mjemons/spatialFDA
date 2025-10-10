@@ -1,6 +1,8 @@
 # spatialFDA 1.1.21
 * allowing for the explicit passing of `correction` in `spatialInference`
 and `crossSpatialInference` to fix issues with calculating `Lcross`.
+* passing messages with verbose logical for better usage
+* bug fix in tests with removed `subsetby` argument
 
 # spatialFDA 1.1.20
 * only returning the transformed curves in `spatialInference` plus removing
