@@ -104,11 +104,17 @@ spatialInference <- function(spe,
   #second, build the dataframes for pffr and designmatrix
   #the model definitions etc should come from calcMetricPerFov in principle and
   #one of those has to be a factor with correct levels
-
-  metricResRaw$ID <- paste0(
-    metricResRaw[[condition]], "|", metricResRaw[[sample_id]],
-    "|", metricResRaw[[image_id]]
-  )
+  if(!is.null(sample_id)){
+    metricResRaw$ID <- paste0(
+      metricResRaw[[condition]], "|", metricResRaw[[sample_id]],
+      "|", metricResRaw[[image_id]]
+    )
+  }else{
+    metricResRaw$ID <- paste0(
+      metricResRaw[[condition]], "|",
+      "|", metricResRaw[[image_id]]
+    )
+  }
 
   noConditionsPreFiltering <- (length(unique(metricResRaw[[condition]])))
   # #removing field of views that have as a curve only zeros - these are cases where
