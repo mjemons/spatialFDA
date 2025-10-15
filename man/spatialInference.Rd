@@ -22,6 +22,7 @@ spatialInference(
   delta = 0,
   family = stats::gaussian(link = "log"),
   verbose = TRUE,
+  ridgepenalty = 0,
   ncores = 1,
   ...
 )
@@ -71,6 +72,9 @@ neighbour distance across all images for this cell type pair.}
 \item{family}{the distributional family for the functional GAM}
 
 \item{verbose}{logical indicating whether to print all information or not}
+
+\item{ridgepenalty}{a numeric value defining a ridge penalty parameter
+which is added to the matrix \code{H} as defined in \code{mgcv::gam}}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
 

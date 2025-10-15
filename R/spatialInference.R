@@ -32,6 +32,8 @@
 #' @param family the distributional family for the functional GAM
 #' @param ncores the number of cores to use for parallel processing, default = 1
 #' @param verbose logical indicating whether to print all information or not
+#' @param ridgepenalty a numeric value defining a ridge penalty parameter 
+#' which is added to the matrix `H` as defined in `mgcv::gam`
 #' @param ... Other parameters passed to `spatstat.explore` functions for
 #' parameters concerning the spatial function calculation and to `refund::pffr`
 #' for the functional additive mixed model inference
@@ -78,6 +80,7 @@ spatialInference <- function(spe,
                              delta = 0,
                              family = stats::gaussian(link = "log"),
                              verbose = TRUE,
+                             ridgepenalty = 0,
                              ncores = 1,
                              ...){
   #for computational reasons, remove the assays as we don't need them
@@ -190,12 +193,15 @@ spatialInference <- function(spe,
       stopifnot(length(weights) == nrow(dat))
       weights = weights
     }
+    #add the ridge penatly
+    H <- diag(ridgepenalty, ncol(mm))
     #third, run functionalGam
     mdl <- functionalGam(
       data = dat, x = r,
       designmat = mm, weights = weights,
       formula = formula,
       family = family,
+      H = H,
       ...
     )
     ### Calculation of metrics assessing the quality of the model fit
