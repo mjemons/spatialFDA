@@ -11,6 +11,7 @@ functionalGam(
   weights,
   formula,
   family = stats::gaussian(link = "log"),
+  H = NULL,
   ...
 )
 }
@@ -34,6 +35,8 @@ other interesting options can be \code{betar} and \code{scat}
 \itemize{
 \item for more information see \code{family.mgcv}.
 }}
+
+\item{H}{the ridge penalty matrix passed to \code{mgcv::gam}}
 
 \item{...}{Other parameters passed to \code{pffr}}
 }
