@@ -193,8 +193,20 @@ spatialInference <- function(spe,
       stopifnot(length(weights) == nrow(dat))
       weights = weights
     }
-    #add the ridge penatly
-    H <- diag(ridgepenalty, ncol(mm))
+    
+    #generate a pre-fit of the model without fitting
+    G <- functionalGam(
+      data = dat, x = r,
+      designmat = mm, weights = weights,
+      formula = formula,
+      family = family,
+      fit = FALSE
+    )
+    #extract the number of parameters for the penalty matrix
+    p <- ncol(G$X)
+    #add the ridge penalty
+    H <- diag(ridgepenalty, p)
+
     #third, run functionalGam
     mdl <- functionalGam(
       data = dat, x = r,
@@ -204,6 +216,7 @@ spatialInference <- function(spe,
       H = H,
       ...
     )
+
     ### Calculation of metrics assessing the quality of the model fit
 
     # adj R-squared of the entire model

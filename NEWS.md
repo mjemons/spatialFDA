@@ -1,6 +1,6 @@
 # spatialFDA 1.1.22
 * fix sample_id call if model is a GAM instead of GAMM.
-* added the option to define a ridge penalty parameter which is added to the matrix $H$ as defined in `mgcv::gam`
+* added the option to define a ridge penalty parameter which is added to the matrix $H$ as defined in `mgcv::gam`. In order to do this we need the number of parameters `p` from a prefit of the model.
 
 # spatialFDA 1.1.21
 * allowing for the explicit passing of `correction` in `spatialInference`
