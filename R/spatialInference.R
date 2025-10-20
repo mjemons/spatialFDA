@@ -132,7 +132,7 @@ spatialInference <- function(spe,
   if(!is.null(upperDeltaProb) && (fun == "Gest" || fun == "Gcross")){
     res <-metricRes |> 
       filter(round(.data[[correction]], 2) == 1) |> 
-      group_by(.data["ID"]) |> 
+      group_by(.data[["ID"]]) |> 
       mutate(lowerRQuartile = stats::quantile(r, probs = upperDeltaProb))
     upperDelta <- stats::median(res$lowerRQuartile)
     message(upperDelta)
