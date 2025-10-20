@@ -124,6 +124,18 @@ spatialInference <- function(spe,
   # #there is no cells of one type
   metricRes <- metricResRaw %>% dplyr::group_by(.data[["ID"]]) %>%
     dplyr::filter(sum(.data[[correction]]) >= 1)
+
+  #filter the upper part of the curve 
+  if(fun == "Gest" || fun == "Gcross"){
+    res <-metricRes |> 
+      filter(round(.data[[correction]], 2) == 1) |> 
+      group_by(ID) |> 
+      mutate(lowerRQuartile = quantile(r, probs = 0.1))
+    upperDelta <- median(res$lowerRQuartile)
+    message(upperDelta)
+    metricRes <- metricRes %>% filter(r < upperDelta)
+  }
+
   # if a transformation should be applied to the output
   if(!is.null(transformation)){
     if(transformation == "Fisher"){
@@ -144,6 +156,7 @@ spatialInference <- function(spe,
     delta <- stats::weighted.mean(x=metricRes[["minDist"]],
                                   w = metricRes[["npoints"]])
   }
+
 
   metricRes <- metricRes %>% filter(r >= delta)
   noConditionsPostFiltering <- (length(unique(metricRes[[condition]])))
