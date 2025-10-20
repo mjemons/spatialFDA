@@ -135,7 +135,6 @@ spatialInference <- function(spe,
       group_by(.data[["ID"]]) |> 
       mutate(lowerRQuartile = stats::quantile(r, probs = upperDeltaProb))
     upperDelta <- stats::median(res$lowerRQuartile)
-    message(upperDelta)
     metricRes <- metricRes %>% filter(r < upperDelta)
   }
 
