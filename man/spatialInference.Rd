@@ -23,6 +23,7 @@ spatialInference(
   family = stats::gaussian(link = "log"),
   verbose = TRUE,
   ridgepenalty = 0,
+  upperDeltaProb = NULL,
   ncores = 1,
   ...
 )
@@ -75,6 +76,9 @@ neighbour distance across all images for this cell type pair.}
 
 \item{ridgepenalty}{a numeric value defining a ridge penalty parameter
 which is added to the matrix \code{H} as defined in \code{mgcv::gam}}
+
+\item{upperDeltaProb}{the quantile to filter out the constant 1 part for \code{Gest}
+and \code{Gcross}. If \code{NULL} no upper filtering is applied.}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
 

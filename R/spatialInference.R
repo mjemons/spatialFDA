@@ -34,6 +34,8 @@
 #' @param verbose logical indicating whether to print all information or not
 #' @param ridgepenalty a numeric value defining a ridge penalty parameter 
 #' which is added to the matrix `H` as defined in `mgcv::gam`
+#' @param upperDeltaProb the quantile to filter out the constant 1 part for `Gest`
+#' and `Gcross`. If `NULL` no upper filtering is applied.
 #' @param ... Other parameters passed to `spatstat.explore` functions for
 #' parameters concerning the spatial function calculation and to `refund::pffr`
 #' for the functional additive mixed model inference
@@ -81,6 +83,7 @@ spatialInference <- function(spe,
                              family = stats::gaussian(link = "log"),
                              verbose = TRUE,
                              ridgepenalty = 0,
+                             upperDeltaProb = NULL,
                              ncores = 1,
                              ...){
   #for computational reasons, remove the assays as we don't need them
@@ -126,12 +129,12 @@ spatialInference <- function(spe,
     dplyr::filter(sum(.data[[correction]]) >= 1)
 
   #filter the upper part of the curve 
-  if(fun == "Gest" || fun == "Gcross"){
+  if(!is.null(upperDeltaProb) && (fun == "Gest" || fun == "Gcross")){
     res <-metricRes |> 
       filter(round(.data[[correction]], 2) == 1) |> 
       group_by(ID) |> 
-      mutate(lowerRQuartile = quantile(r, probs = 0.1))
-    upperDelta <- median(res$lowerRQuartile)
+      mutate(lowerRQuartile = stats::quantile(r, probs = upperDeltaProb))
+    upperDelta <- stats::median(res$lowerRQuartile)
     message(upperDelta)
     metricRes <- metricRes %>% filter(r < upperDelta)
   }
