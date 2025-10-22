@@ -25,6 +25,7 @@ spatialInference(
   ridgepenalty = 0,
   upperDeltaProb = NULL,
   shapeConstraint = NULL,
+  AR1.rho = 0,
   ncores = 1,
   ...
 )
@@ -84,6 +85,9 @@ and \code{Gcross}. If \code{NULL} no upper filtering is applied.}
 \item{shapeConstraint}{the new spline basis indicating how to constrain e.g.
 the monotonicity of the curve to be estimated. This is a sensible
 option for $G$, $L$ and $K$ functions. If \code{NULL} no shape constraint will be added}
+
+\item{AR1.rho}{numeric between -1 and 1 indicating the autocorrelation between nearby
+values. Works only for \code{gaussian(link = "identity")} if other than 0.}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
 

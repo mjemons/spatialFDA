@@ -39,6 +39,8 @@
 #' @param shapeConstraint the new spline basis indicating how to constrain e.g.
 #' the monotonicity of the curve to be estimated. This is a sensible
 #' option for $G$, $L$ and $K$ functions. If `NULL` no shape constraint will be added
+#' @param AR1.rho numeric between -1 and 1 indicating the autocorrelation between nearby
+#' values. Works only for `gaussian(link = "identity")` if other than 0.
 #' @param ... Other parameters passed to `spatstat.explore` functions for
 #' parameters concerning the spatial function calculation and to `refund::pffr`
 #' for the functional additive mixed model inference
@@ -88,6 +90,7 @@ spatialInference <- function(spe,
                              ridgepenalty = 0,
                              upperDeltaProb = NULL,
                              shapeConstraint = NULL,
+                             AR1.rho = 0,
                              ncores = 1,
                              ...){
   #for computational reasons, remove the assays as we don't need them
@@ -233,7 +236,8 @@ spatialInference <- function(spe,
 
       mdl <- scam::scam(scam_formula, 
                   data=G$mf, 
-                  family = family)
+                  family = family,
+                  AR1.rho = AR1.rho)
 
     }else{
       #third, run functionalGam
