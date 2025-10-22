@@ -39,7 +39,9 @@ Imports:
     graphics,
     ExperimentHub,
     scales,
-    S4Vectors
+    S4Vectors,
+    scam,
+    formula.tools
 biocViews: Software, Spatial, Transcriptomics
 VignetteBuilder: knitr
 Suggests: 

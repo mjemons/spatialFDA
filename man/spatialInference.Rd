@@ -24,6 +24,7 @@ spatialInference(
   verbose = TRUE,
   ridgepenalty = 0,
   upperDeltaProb = NULL,
+  shapeConstraint = NULL,
   ncores = 1,
   ...
 )
@@ -79,6 +80,10 @@ which is added to the matrix \code{H} as defined in \code{mgcv::gam}}
 
 \item{upperDeltaProb}{the quantile to filter out the constant 1 part for \code{Gest}
 and \code{Gcross}. If \code{NULL} no upper filtering is applied.}
+
+\item{shapeConstraint}{the new spline basis indicating how to constrain e.g.
+the monotonicity of the curve to be estimated. This is a sensible
+option for $G$, $L$ and $K$ functions. If \code{NULL} no shape constraint will be added}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
 

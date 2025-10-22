@@ -36,6 +36,9 @@
 #' which is added to the matrix `H` as defined in `mgcv::gam`
 #' @param upperDeltaProb the quantile to filter out the constant 1 part for `Gest`
 #' and `Gcross`. If `NULL` no upper filtering is applied.
+#' @param shapeConstraint the new spline basis indicating how to constrain e.g.
+#' the monotonicity of the curve to be estimated. This is a sensible
+#' option for $G$, $L$ and $K$ functions. If `NULL` no shape constraint will be added
 #' @param ... Other parameters passed to `spatstat.explore` functions for
 #' parameters concerning the spatial function calculation and to `refund::pffr`
 #' for the functional additive mixed model inference
@@ -84,6 +87,7 @@ spatialInference <- function(spe,
                              verbose = TRUE,
                              ridgepenalty = 0,
                              upperDeltaProb = NULL,
+                             shapeConstraint = NULL,
                              ncores = 1,
                              ...){
   #for computational reasons, remove the assays as we don't need them
@@ -221,17 +225,27 @@ spatialInference <- function(spe,
     p <- ncol(G$X)
     #add the ridge penalty
     H <- diag(ridgepenalty, p)
+    #if a monotonicty constraint is indicated, change the intercept 
+    #smooth to be constrained and fit the model with `scam::scam()`
+    if(!is.null(shapeConstraint)){
+      #extract the model formula and adapt it such that the intercept is shape-constrained to be monotonically increasing
+      scam_formula <- exchangeSplineBasis(mdl = G, var = "x.vec", bs = shapeConstraint)
 
-    #third, run functionalGam
-    mdl <- functionalGam(
-      data = dat, x = r,
-      designmat = mm, weights = weights,
-      formula = formula,
-      family = family,
-      H = H,
-      ...
-    )
+      mdl <- scam::scam(scam_formula, 
+                  data=G$mf, 
+                  family = family)
 
+    }else{
+      #third, run functionalGam
+      mdl <- functionalGam(
+        data = dat, x = r,
+        designmat = mm, weights = weights,
+        formula = formula,
+        family = family,
+        H = H,
+        ...
+      )
+    }
     ### Calculation of metrics assessing the quality of the model fit
 
     # adj R-squared of the entire model
@@ -340,4 +354,77 @@ spatialInference <- function(spe,
               designmat = mm,
               mdl = mdl,
               curveFittingQC = QCDf))
+}
+
+
+#' Exchange the spline basis of the smooth intercept 
+#'
+#' @param mdl mdl object from `refund::pffr()` 
+#' @param var the variable to find in the string match, for our purpose
+#' this will be `x.vec`
+#' @param bs the new spline basis to constrain by
+#'
+#' @returns a formula object for fitting with `scam::scam()`
+#'
+#' @export
+#' @examples
+#' # load the pancreas dataset
+#' library("tidyr")
+#' library("dplyr")
+#' # retrieve example data from Damond et al. (2019)
+#' spe <- .loadExample()
+#' # calculate the Gcross metric for alpha and Tc cells
+#' metricRes <- calcMetricPerFov(spe, c("alpha", "Tc"),
+#'     subsetby = "image_number", fun = "Gcross",
+#'     marks = "cell_type", rSeq = seq(0, 50, length.out = 50),
+#'     c("patient_stage", "patient_id", "image_number"), ncores = 1
+#' )
+#' metricRes$ID <- paste0(
+#'   metricRes$patient_stage, "|", metricRes$patient_id,
+#'   "|", metricRes$image_number
+#' )
+#' dat <- prepData(metricRes, "r", "rs", sample_id = "patient_id",
+#'     image_id = "image_number", condition = "patient_stage")
+#'
+#'#' # drop rows with NA
+#' dat <- dat |> drop_na()
+#'
+#' # create a designmatrix
+#' condition <- dat$patient_stage
+#' # relevel the condition - can set explicit contrasts here
+#' condition <- relevel(condition, "Non-diabetic")
+#' designmat <- model.matrix(~condition)
+#' # colnames don't work with the '-' sign
+#' colnames(designmat) <- c(
+#'     "(Intercept)", "conditionLong_duration",
+#'     "conditionOnset"
+#' )
+#' # fit the model
+#' mdl <- functionalGam(
+#'     data = dat, x = metricRes$r |> unique(),
+#'     designmat = designmat, weights = dat$npoints,
+#'     formula = formula(Y ~ conditionLong_duration +
+#'         conditionOnset + s(patient_id, bs = "re")),
+#'         fit = FALSE
+#' )
+#' newFormula <- exchangeSplineBasis(mdl = mdl, var = "x.vec", bs = "mpi")
+
+exchangeSplineBasis <- function(mdl, var, bs){
+    #deparse the formula
+    formulaDeparsed <- paste(deparse(stats::formula(mdl)), collapse = " ")
+    #extract all smooths with the variable `var`. The idea is to only
+    #extract smooths of `x = x.vec` which should be only the smooth intercept
+    pattern <- paste0("s\\([^)]*\\b","x = ", var, "\\b[^)]*\\))")
+  
+    allMatches <- regmatches(formulaDeparsed, gregexpr(pattern, formulaDeparsed))[[1]]
+  
+    # Replace existing bs=... with desired bs
+    newIntercept <- sub("bs\\s*=\\s*([^,\\)]+)", paste0("bs='", bs, "'"), allMatches)
+ 
+    formulaVars <- formula.tools::rhs.vars(mdl$formula)
+    formulaVars[1] <- newIntercept
+  
+    newFormula <- stats::as.formula(paste("Y ~ ", paste(formulaVars, collapse = "+")))
+
+    return(newFormula)
 }
