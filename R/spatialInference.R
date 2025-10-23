@@ -141,6 +141,11 @@ spatialInference <- function(spe,
       filter(round(.data[[correction]], 2) == 1) |> 
       group_by(.data[["ID"]]) |> 
       mutate(lowerRQuartile = stats::quantile(r, probs = upperDeltaProb))
+    res2 <- metricRes |>
+      filter(round(.data[[correction]], 2) != 1 & r == max(rSeq)) |>
+      group_by(.data[["ID"]]) |>
+      mutate(lowerRQuartile =  max(rSeq))
+    res <- rbind(res, res2)
     upperDelta <- stats::median(res$lowerRQuartile)
     metricRes <- metricRes %>% filter(r < upperDelta)
   }
