@@ -36,11 +36,13 @@
 #' which is added to the matrix `H` as defined in `mgcv::gam`
 #' @param upperDeltaProb the quantile to filter out the constant 1 part for `Gest`
 #' and `Gcross`. If `NULL` no upper filtering is applied.
-#' @param shapeConstraint the new spline basis indicating how to constrain e.g.
+#' @param shapeConstraint EXPERIMENTAL: the new spline basis indicating how to constrain e.g.
 #' the monotonicity of the curve to be estimated. This is a sensible
 #' option for $G$, $L$ and $K$ functions. If `NULL` no shape constraint will be added
 #' @param AR1.rho numeric between -1 and 1 indicating the autocorrelation between nearby
 #' values. Works only for `gaussian(link = "identity")` if other than 0.
+#' @param weightTransform logical indicating whether the weights (number of points) 
+#' should be sqrt transformed
 #' @param ... Other parameters passed to `spatstat.explore` functions for
 #' parameters concerning the spatial function calculation and to `refund::pffr`
 #' for the functional additive mixed model inference
@@ -91,6 +93,7 @@ spatialInference <- function(spe,
                              upperDeltaProb = NULL,
                              shapeConstraint = NULL,
                              AR1.rho = 0,
+                             weightTransform = FALSE,
                              ncores = 1,
                              ...){
   #for computational reasons, remove the assays as we don't need them
@@ -219,6 +222,10 @@ spatialInference <- function(spe,
     }else{
       stopifnot(length(weights) == nrow(dat))
       weights = weights
+    }
+
+    if(weightTransform){
+      weights = sqrt(weights)
     }
     
     #generate a pre-fit of the model without fitting

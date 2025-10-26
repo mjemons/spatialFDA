@@ -75,7 +75,7 @@ functionalGam <- function(data, x, designmat, weights, formula,
     stopifnot(is(data, "data.frame"))
     stopifnot(is(x, "vector"))
     stopifnot(is(designmat, "matrix"))
-    stopifnot(is(weights, "integer"))
+    stopifnot(is(weights, "integer") || is(weights, "numeric"))
     stopifnot(is(formula, "formula"))
     stopifnot(is(family, "character") || is(family, "family"))
 
