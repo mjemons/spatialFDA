@@ -197,13 +197,13 @@ spatialInference <- function(spe,
     colnames(mm) <- gsub("-","_", colnames(mm))
     #create a formula without the first intercept column
     formula <- stats::as.formula(paste("Y ~", paste(colnames(mm)[c(-1)],
-                                                    collapse="+")))
+                                                    collapse="+")), env = emptyenv())
 
     if(!is.null(sample_id)){
       formula <- stats::as.formula(paste("Y ~",
                                   paste(c(colnames(mm)[c(-1)],
                                           paste0("s(",sample_id,", bs = 're')")),
-                                        collapse="+")))
+                                        collapse="+")), env = emptyenv())
     }
 
     #due to the removal of delta, rSeq can be less as well
@@ -440,7 +440,7 @@ exchangeSplineBasis <- function(mdl, var, bs){
     formulaVars <- formula.tools::rhs.vars(mdl$formula)
     formulaVars[1] <- newIntercept
   
-    newFormula <- stats::as.formula(paste("Y ~ ", paste(formulaVars, collapse = "+")))
+    newFormula <- stats::as.formula(paste("Y ~ ", paste(formulaVars, collapse = "+")), env = emptyenv())
 
     return(newFormula)
 }
