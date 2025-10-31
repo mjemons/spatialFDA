@@ -177,5 +177,20 @@ test_that("edf values correspond between RSE and mdl summary as well
   )
 })
 
+test_that("spatialInference runs with different spline bases",{
+  res <- spatialInference(spe, c("alpha", "Tc"),
+                        fun = "Gcross", marks = "cell_type",
+                        rSeq = seq(0, 50, length.out = 50), correction = "rs",
+                        sample_id = "patient_id",
+                        weights = NULL,
+                        image_id = "image_number", condition = "patient_stage",
+                        ncores = 1,
+                        bs.yindex = list(bs = "tp", k = 7, m = c(2, 1)),
+                        bs.int = list(bs = "tp", k = 25, m = c(2, 1)),
+                        algorithm = "bam"
+)
+  expect_true(!is.null(res$mdl) && !is.null(res$designmat))
+})
+
 
 

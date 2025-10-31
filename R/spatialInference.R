@@ -234,7 +234,8 @@ spatialInference <- function(spe,
       designmat = mm, weights = weights,
       formula = formula,
       family = family,
-      fit = FALSE
+      fit = FALSE,
+      ...
     )
     #extract the number of parameters for the penalty matrix
     p <- ncol(G$X)
