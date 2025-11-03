@@ -157,6 +157,7 @@ resLs <- crossSpatialInference(
     family = mgcv::scat(link = "log"),
     image_id = "image_number", 
     condition = "patient_stage",
+    weighTransform = TRUE,
     ncores = 1,
     algorithm = "bam"
 )
