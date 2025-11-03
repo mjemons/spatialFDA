@@ -56,7 +56,9 @@ res <- spatialInference(spe, c("alpha", "Tc"),
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "bam"
+                        algorithm = "bam",
+                        eps = NULL, delta = 0, family = stats::gaussian(link = "log"),
+                        AR1 = FALSE, weightTransform = FALSE, sandwich = FALSE
 )
 
 mdl2 <- res$mdl

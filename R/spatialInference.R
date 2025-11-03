@@ -38,6 +38,10 @@
 #' and `Gcross`. If `NULL` no upper filtering is applied.
 #' @param weightTransform logical indicating whether the weights (number of points) 
 #' should be sqrt transformed
+#' @param AR1 logical indicating whether to calculate the autocorrelation of the 
+#' residuals along the domain and account for this in a second fitting step
+#' @param sandwich logical indicating whether to adjust for heterscedasticity of the 
+#' residuals with a sandwich correction
 #' @param ... Other parameters passed to `spatstat.explore` functions for
 #' parameters concerning the spatial function calculation and to `refund::pffr`
 #' for the functional additive mixed model inference
@@ -80,13 +84,15 @@ spatialInference <- function(spe,
                              assay = "exprs",
                              transformation = NULL,
                              weights = "total",
-                             eps = NULL,
-                             delta = 0,
-                             family = stats::gaussian(link = "log"),
+                             eps = 1e-3,
+                             delta = "minNnDist",
+                             family = stats::gaussian(link = "identity"),
                              verbose = TRUE,
                              ridgepenalty = 0,
                              upperDeltaProb = NULL,
                              weightTransform = FALSE,
+                             AR1 = TRUE,
+                             sandwich = FALSE,
                              ncores = 1,
                              ...){
   #for computational reasons, remove the assays as we don't need them
@@ -235,15 +241,47 @@ spatialInference <- function(spe,
     #add the ridge penalty
     H <- diag(ridgepenalty, p)
     
-    #third, run functionalGam
-    mdl <- functionalGam(
-      data = dat, x = r,
-      designmat = mm, weights = weights,
-      formula = formula,
-      family = family,
-      H = H,
-      ...
-    )
+    if(AR1){
+      #if there is an AR1 correlation parameter given, fit first a model and compute the median ACF 
+      #of the residuals
+      mdl <- functionalGam(
+        data = dat, x = r,
+        designmat = mm, weights = weights,
+        formula = formula,
+        family = family,
+        H = H,
+        ...
+      )
+      #compute median ACF for a lag of 2 values
+      rho_est <- apply(stats::resid(mdl), 1, function(x) stats::acf(x, plot = FALSE)$acf[2]) |> stats::median()
+      #refit with estimated residual autocorrelation
+      mdl <- functionalGam(
+        data = dat, x = r,
+        designmat = mm, weights = weights,
+        formula = formula,
+        family = family,
+        H = H,
+        rho = rho_est,
+        ...
+      )
+    }else{
+      mdl <- functionalGam(
+        data = dat, x = r,
+        designmat = mm, weights = weights,
+        formula = formula,
+        family = family,
+        H = H,
+        ...
+      )
+    }
+    #if sandwich is given, calculate the sandwich-corrected covariance matrix 
+    #and overwrite the existing one
+    if(sandwich){
+      mdl_sw <- mdl
+      #overwrite both the frequentist and the Bayesian covariance matrix
+      mdl_sw$Vp <- mdl_sw$Ve <- stats::vcov(mdl, sandwich = TRUE)
+      mdl <- mdl_sw
+    }
     
     ### Calculation of metrics assessing the quality of the model fit
 

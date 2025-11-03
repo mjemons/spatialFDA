@@ -42,11 +42,15 @@ extractCrossInferenceData <- function(resLs,
     metricResRaw <- resLs[[x]]$metricResRaw
     if(!is.null(mdl)){
       table <- summary(mdl)$s.table %>% as.data.frame()
+      #in case that discrete = TRUE we have to reformat the data
+      rownames(table) <- gsub("\\.x\\.", "(x)", rownames(table))
+      rownames(table) <- gsub("NA.", "character(0)", rownames(table))
+
       table$coefficient <- rownames(table)
       table$combination <- x
       table <- table %>% separate(.data[["combination"]],
                                   c("cell1", "cell2"), sep = "_")
-
+      
       #extract the mean functional coefficient as effect size measure
       coef <- coef(mdl)
       df <- lapply(rownames(table), function(predictor){

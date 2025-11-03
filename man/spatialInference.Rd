@@ -18,13 +18,15 @@ spatialInference(
   assay = "exprs",
   transformation = NULL,
   weights = "total",
-  eps = NULL,
-  delta = 0,
-  family = stats::gaussian(link = "log"),
+  eps = 0.001,
+  delta = "minNnDist",
+  family = stats::gaussian(link = "identity"),
   verbose = TRUE,
   ridgepenalty = 0,
   upperDeltaProb = NULL,
   weightTransform = FALSE,
+  AR1 = TRUE,
+  sandwich = TRUE,
   ncores = 1,
   ...
 )
@@ -83,6 +85,12 @@ and \code{Gcross}. If \code{NULL} no upper filtering is applied.}
 
 \item{weightTransform}{logical indicating whether the weights (number of points)
 should be sqrt transformed}
+
+\item{AR1}{logical indicating whether to calculate the autocorrelation of the
+residuals along the domain and account for this in a second fitting step}
+
+\item{sandwich}{logical indicating whether to adjust for heterscedasticity of the
+residuals with a sandwich correction}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
 
