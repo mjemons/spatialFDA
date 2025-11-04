@@ -26,7 +26,7 @@ spatialInference(
   upperDeltaProb = NULL,
   weightTransform = FALSE,
   AR1 = TRUE,
-  sandwich = TRUE,
+  sandwich = FALSE,
   ncores = 1,
   ...
 )

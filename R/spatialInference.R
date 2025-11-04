@@ -253,7 +253,8 @@ spatialInference <- function(spe,
         ...
       )
       #compute median ACF for a lag of 2 values
-      rho_est <- apply(stats::resid(mdl), 1, function(x) stats::acf(x, plot = FALSE)$acf[2]) |> stats::median()
+      rho_est <- apply(stats::resid(mdl), 1, function(x) stats::acf(x, plot = FALSE)$acf[2]) |> 
+        stats::median(na.rm = TRUE)
       #refit with estimated residual autocorrelation
       mdl <- functionalGam(
         data = dat, x = r,
