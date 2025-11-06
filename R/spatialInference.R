@@ -201,7 +201,8 @@ spatialInference <- function(spe,
     if(!is.null(sample_id)){
       formula <- stats::as.formula(paste("Y ~",
                                   paste(c(colnames(mm)[c(-1)],
-                                          paste0("s(",sample_id,", bs = 're')")),
+                                          paste0("s(",sample_id,", bs = 're') + 
+                                            c(s(",image_id,", bs = 're'))")),
                                         collapse="+")), env = emptyenv())
     }
 
@@ -327,7 +328,10 @@ spatialInference <- function(spe,
 
     #if it is a mixed model, we need to remove the random effect column
     if(!is.null(sample_id)){
+      #filter out sample_id
       df.edf <- df.edf %>% filter(!grepl(sample_id, rownames(df.edf)))
+      #filter out image_id
+      df.edf <- df.edf %>% filter(!grepl(image_id, rownames(df.edf)))
     }
     #this assumes that the order of the levels is the same as the order of the
     #summary output

@@ -38,7 +38,8 @@ mdl1 <- functionalGam(
   data = dat, x = metricRes$r |> unique(),
   designmat = designmat, weights = dat$npoints,
   formula = formula(Y ~ conditionLong_duration +
-                      conditionOnset + s(patient_id, bs = "re")),
+                      conditionOnset + s(patient_id, bs = "re") +
+                      c(s(image_number, bs = "re"))),
   family = gaussian(link = "log"),
   algorithm = "bam"
 )
@@ -148,7 +149,7 @@ test_that("edf values correspond between RSE and mdl summary",{
   mdlEdf <-  as_tibble(summary(res$mdl)$s.table[,"edf"])
   expect_true(
     sum(res$curveFittingQC[,"edf"] ==
-          mdlEdf[-nrow(mdlEdf),]) == nrow(res$curveFittingQC)
+          mdlEdf[-c(nrow(mdlEdf)-1,nrow(mdlEdf)),]) == nrow(res$curveFittingQC)
   )
 })
 
@@ -170,14 +171,15 @@ test_that("edf values correspond between RSE and mdl summary as well
           after permutation of levels",{
   mdlDf <-  (as_tibble(summary(res$mdl)$s.table))
   mdlDf$coefficient <- rownames(summary(res$mdl)$s.table)
+  mdlDf$coefficient[mdlDf$coefficient == "c(s(image_number))"] <- "s(image_number)"
   mdlDf <- mdlDf %>% arrange(coefficient)
 
   mdlEdf <- as_tibble(mdlDf[,"edf"])
   expect_true(
     sum(res$curveFittingQC[,"edf"] ==
-          mdlEdf[-nrow(mdlEdf),]) == nrow(res$curveFittingQC)
+         mdlEdf[-c(nrow(mdlEdf)-1,nrow(mdlEdf)),]) == nrow(res$curveFittingQC)
   )
-})
+          })
 
 test_that("spatialInference runs with different spline bases",{
   res <- spatialInference(spe, c("alpha", "Tc"),
