@@ -202,7 +202,7 @@ spatialInference <- function(spe,
       formula <- stats::as.formula(paste("Y ~",
                                   paste(c(colnames(mm)[c(-1)],
                                           paste0("s(",sample_id,", bs = 're') + 
-                                            c(s(",image_id,", bs = 're'))")),
+                                            s(",image_id,", bs = 're')")),
                                         collapse="+")), env = emptyenv())
     }
 
@@ -253,7 +253,7 @@ spatialInference <- function(spe,
         H = H,
         ...
       )
-      #compute median ACF for a lag of 2 values
+      #compute median ACF for a lag of 1
       rho_est <- apply(stats::resid(mdl), 1, function(x) stats::acf(x, plot = FALSE)$acf[2]) |> 
         stats::median(na.rm = TRUE)
       #refit with estimated residual autocorrelation
