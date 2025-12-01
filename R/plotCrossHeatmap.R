@@ -28,7 +28,7 @@
 #'                       rSeq = seq(0, 50, length.out = 50), correction = "rs",
 #'                       sample_id = "patient_id",
 #'                       image_id = "image_number", condition = "patient_stage",
-#'                       algorithm = "bam",
+#'                       algorithm = "gamm4",
 #'                       ncores = 1
 #'                   )
 #' df <- extractCrossInferenceData(resLs)
@@ -112,7 +112,7 @@ extractCrossInferenceData <- function(resLs,
 #'                       rSeq = seq(0, 50, length.out = 50), correction = "rs",
 #'                       sample_id = "patient_id",
 #'                       image_id = "image_number", condition = "patient_stage",
-#'                       algorithm = "bam",
+#'                       algorithm = "gamm4",
 #'                       ncores = 1
 #'                   )
 #' p <- plotCrossHeatmap(resLs, adj.pvalue = "BH")

@@ -32,8 +32,6 @@
 #' @param family the distributional family for the functional GAM
 #' @param ncores the number of cores to use for parallel processing, default = 1
 #' @param verbose logical indicating whether to print all information or not
-#' @param ridgepenalty a numeric value defining a ridge penalty parameter 
-#' which is added to the matrix `H` as defined in `mgcv::gam`
 #' @param upperDeltaProb the quantile to filter out the constant 1 part for `Gest`
 #' and `Gcross`. If `NULL` no upper filtering is applied.
 #' @param weightTransform logical indicating whether the weights (number of points) 
@@ -42,6 +40,7 @@
 #' residuals along the domain and account for this in a second fitting step
 #' @param sandwich logical indicating whether to adjust for heterscedasticity of the 
 #' residuals with a sandwich correction
+#' @param algorithm algorithm to fit the refund::pffr method. defaults to `gamm4`
 #' @param ... Other parameters passed to `spatstat.explore` functions for
 #' parameters concerning the spatial function calculation and to `refund::pffr`
 #' for the functional additive mixed model inference
@@ -69,7 +68,7 @@
 #'     sample_id = "patient_id",
 #'     image_id = "image_number", condition = "patient_stage",
 #'     ncores = 1,
-#'     algorithm = "bam"
+#'     algorithm = "gamm4"
 #' )
 spatialInference <- function(spe,
                              selection,
@@ -88,12 +87,12 @@ spatialInference <- function(spe,
                              delta = "minNnDist",
                              family = stats::gaussian(link = "identity"),
                              verbose = TRUE,
-                             ridgepenalty = 0,
                              upperDeltaProb = NULL,
                              weightTransform = FALSE,
-                             AR1 = TRUE,
+                             AR1 = FALSE,
                              sandwich = FALSE,
                              ncores = 1,
+                             algorithm = "gamm4",
                              ...){
   #for computational reasons, remove the assays as we don't need them
   SummarizedExperiment::assays(spe) <- list()
@@ -202,7 +201,7 @@ spatialInference <- function(spe,
       formula <- stats::as.formula(paste("Y ~",
                                   paste(c(colnames(mm)[c(-1)],
                                           paste0("s(",sample_id,", bs = 're') + 
-                                            c(s(",image_id,", bs = 're'))")),
+                                            s(",image_id,", bs = 're')")),
                                         collapse="+")), env = emptyenv())
     }
 
@@ -228,20 +227,6 @@ spatialInference <- function(spe,
       weights = sqrt(weights)
     }
     
-    #generate a pre-fit of the model without fitting
-    G <- functionalGam(
-      data = dat, x = r,
-      designmat = mm, weights = weights,
-      formula = formula,
-      family = family,
-      fit = FALSE,
-      ...
-    )
-    #extract the number of parameters for the penalty matrix
-    p <- ncol(G$X)
-    #add the ridge penalty
-    H <- diag(ridgepenalty, p)
-    
     if(AR1){
       #if there is an AR1 correlation parameter given, fit first a model and compute the median ACF 
       #of the residuals
@@ -250,9 +235,12 @@ spatialInference <- function(spe,
         designmat = mm, weights = weights,
         formula = formula,
         family = family,
-        H = H,
+        algorithm = algorithm,
         ...
       )
+      if(algorithm == "gamm4"){
+      mdl = mdl$gam
+      }
       #compute median ACF for a lag of 1
       rho_est <- apply(stats::resid(mdl), 1, function(x) stats::acf(x, plot = FALSE)$acf[2]) |> 
         stats::median(na.rm = TRUE)
@@ -262,8 +250,8 @@ spatialInference <- function(spe,
         designmat = mm, weights = weights,
         formula = formula,
         family = family,
-        H = H,
         rho = rho_est,
+        algorithm = algorithm,
         ...
       )
     }else{
@@ -272,10 +260,15 @@ spatialInference <- function(spe,
         designmat = mm, weights = weights,
         formula = formula,
         family = family,
-        H = H,
+        algorithm = algorithm,
         ...
       )
     }
+    
+    if(algorithm == "gamm4"){
+      mdl = mdl$gam
+    }
+    
     #if sandwich is given, calculate the sandwich-corrected covariance matrix 
     #and overwrite the existing one
     if(sandwich){

@@ -11,7 +11,7 @@ functionalGam(
   weights,
   formula,
   family = stats::gaussian(link = "log"),
-  H = NULL,
+  algorithm = "gamm4",
   ...
 )
 }
@@ -36,7 +36,7 @@ other interesting options can be \code{betar} and \code{scat}
 \item for more information see \code{family.mgcv}.
 }}
 
-\item{H}{the ridge penalty matrix passed to \code{mgcv::gam}}
+\item{algorithm}{algorithm to fit the refund::pffr method. defaults to \code{gamm4}}
 
 \item{...}{Other parameters passed to \code{pffr}}
 }

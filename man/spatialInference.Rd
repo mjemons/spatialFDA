@@ -22,12 +22,12 @@ spatialInference(
   delta = "minNnDist",
   family = stats::gaussian(link = "identity"),
   verbose = TRUE,
-  ridgepenalty = 0,
   upperDeltaProb = NULL,
   weightTransform = FALSE,
-  AR1 = TRUE,
+  AR1 = FALSE,
   sandwich = FALSE,
   ncores = 1,
+  algorithm = "gamm4",
   ...
 )
 }
@@ -77,9 +77,6 @@ neighbour distance across all images for this cell type pair.}
 
 \item{verbose}{logical indicating whether to print all information or not}
 
-\item{ridgepenalty}{a numeric value defining a ridge penalty parameter
-which is added to the matrix \code{H} as defined in \code{mgcv::gam}}
-
 \item{upperDeltaProb}{the quantile to filter out the constant 1 part for \code{Gest}
 and \code{Gcross}. If \code{NULL} no upper filtering is applied.}
 
@@ -93,6 +90,8 @@ residuals along the domain and account for this in a second fitting step}
 residuals with a sandwich correction}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
+
+\item{algorithm}{algorithm to fit the refund::pffr method. defaults to \code{gamm4}}
 
 \item{...}{Other parameters passed to \code{spatstat.explore} functions for
 parameters concerning the spatial function calculation and to \code{refund::pffr}
@@ -124,6 +123,6 @@ res <- spatialInference(spe, c("alpha", "Tc"),
     sample_id = "patient_id",
     image_id = "image_number", condition = "patient_stage",
     ncores = 1,
-    algorithm = "bam"
+    algorithm = "gamm4"
 )
 }

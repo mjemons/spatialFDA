@@ -17,7 +17,7 @@
 #' fast computation the default is set to `gaussian` with a log link.
 #' other interesting options can be `betar` and `scat`
 #'  - for more information see `family.mgcv`.
-#' @param H the ridge penalty matrix passed to `mgcv::gam`
+#' @param algorithm algorithm to fit the refund::pffr method. defaults to `gamm4`
 #' @param ... Other parameters passed to `pffr`
 #'
 #' @return a fitted pffr object which inherits from gam
@@ -70,7 +70,7 @@
 #' @importFrom stats terms
 functionalGam <- function(data, x, designmat, weights, formula,
                           family = stats::gaussian(link = "log"),
-                          H = NULL, ...) {
+                          algorithm = "gamm4", ...) {
     # type checking
     stopifnot(is(data, "data.frame"))
     stopifnot(is(x, "vector"))
@@ -97,7 +97,7 @@ functionalGam <- function(data, x, designmat, weights, formula,
         data = data,
         weights = weights,
         family = family,
-        H = H,
+        algorithm = algorithm,
         ...
     )
     return(mdl)
