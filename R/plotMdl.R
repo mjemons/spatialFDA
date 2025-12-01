@@ -58,7 +58,7 @@
 #'         conditionOnset + s(patient_id, bs = "re")),
 #'         algorithm = "bam"
 #' )
-#' summary(mdl)
+#' summary(mdl, re.test = FALSE)
 #' plotLs <- lapply(colnames(designmat), plotMdl,
 #'     mdl = mdl,
 #'     shift = mdl$coefficients[["(Intercept)"]]

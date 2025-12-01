@@ -281,7 +281,7 @@ spatialInference <- function(spe,
     ### Calculation of metrics assessing the quality of the model fit
 
     # adj R-squared of the entire model
-    Rsq.adj <- summary(mdl)$r.sq
+    Rsq.adj <- summary(mdl, re.test = FALSE)$r.sq
     if(verbose){
       message(paste0("The adjusted R-squared of the model is ", Rsq.adj))
     }
@@ -317,7 +317,7 @@ spatialInference <- function(spe,
     #Furthermore, we need to get condition specific estimated degrees of freedom
     #of the model parameters. These are in the model summary
 
-    df.edf <- summary(mdl)[["s.table"]] %>% as.data.frame()
+    df.edf <- summary(mdl, re.test = FALSE)[["s.table"]] %>% as.data.frame()
 
     #if it is a mixed model, we need to remove the random effect column
     if(!is.null(sample_id)){

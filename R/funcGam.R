@@ -69,7 +69,7 @@
 #' @importFrom methods is
 #' @importFrom stats terms
 functionalGam <- function(data, x, designmat, weights, formula,
-                          family = stats::gaussian(link = "log"),
+                          family = stats::gaussian(link = "identity"),
                           algorithm = "gamm4", ...) {
     # type checking
     stopifnot(is(data, "data.frame"))
