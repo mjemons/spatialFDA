@@ -197,11 +197,11 @@ spatialInference <- function(spe,
     formula <- stats::as.formula(paste("Y ~", paste(colnames(mm)[c(-1)],
                                                     collapse="+")), env = emptyenv())
 
-    if(!is.null(sample_id)){
+    if(!is.null(sample_id) & !is.null(image_id)){
+      dat$interaction <- interaction(dat[[sample_id]], dat[[image_id]], drop = TRUE)
       formula <- stats::as.formula(paste("Y ~",
                                   paste(c(colnames(mm)[c(-1)],
-                                          paste0("s(",sample_id,", bs = 're') + 
-                                            s(",image_id,", bs = 're')")),
+                                          paste0("s(interaction, bs = 're')")),
                                         collapse="+")), env = emptyenv())
     }
 
