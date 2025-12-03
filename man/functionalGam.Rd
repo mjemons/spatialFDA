@@ -10,7 +10,7 @@ functionalGam(
   designmat,
   weights,
   formula,
-  family = stats::gaussian(link = "log"),
+  family = stats::gaussian(link = "identity"),
   algorithm = "gamm4",
   ...
 )
