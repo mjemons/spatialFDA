@@ -200,7 +200,8 @@ spatialInference <- function(spe,
     if(!is.null(sample_id) & !is.null(image_id)){
       formula <- stats::as.formula(paste("Y ~",
                                   paste(c(colnames(mm)[c(-1)],
-                                          paste0("s(",sample_id,",",image_id,", bs = 're')")),
+                                          paste0("s(",sample_id,", bs = 're') + 
+                                            c(s(",image_id,", bs = 're'))")),
                                         collapse="+")), env = emptyenv())
     }
 
