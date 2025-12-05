@@ -28,7 +28,7 @@
 #'                       rSeq = seq(0, 50, length.out = 50), correction = "rs",
 #'                       sample_id = "patient_id",
 #'                       image_id = "image_number", condition = "patient_stage",
-#'                       algorithm = "gamm4",
+#'                       algorithm = "bam",
 #'                       ncores = 1
 #'                   )
 #' df <- extractCrossInferenceData(resLs)
@@ -41,7 +41,8 @@ extractCrossInferenceData <- function(resLs,
     metricRes <- resLs[[x]]$metricRes
     metricResRaw <- resLs[[x]]$metricResRaw
     if(!is.null(mdl)){
-      table <- summary(mdl)$s.table %>% as.data.frame()
+      table <- summary(mdl, re.test = FALSE)$s.table %>% as.data.frame()
+
       #in case that discrete = TRUE we have to reformat the data
       rownames(table) <- gsub("\\.x\\.", "(x)", rownames(table))
       rownames(table) <- gsub("NA.", "character(0)", rownames(table))
@@ -50,7 +51,6 @@ extractCrossInferenceData <- function(resLs,
       table$combination <- x
       table <- table %>% separate(.data[["combination"]],
                                   c("cell1", "cell2"), sep = "_")
-      
       #extract the mean functional coefficient as effect size measure
       coef <- coef(mdl)
       df <- lapply(rownames(table), function(predictor){
@@ -112,7 +112,7 @@ extractCrossInferenceData <- function(resLs,
 #'                       rSeq = seq(0, 50, length.out = 50), correction = "rs",
 #'                       sample_id = "patient_id",
 #'                       image_id = "image_number", condition = "patient_stage",
-#'                       algorithm = "gamm4",
+#'                       algorithm = "bam",
 #'                       ncores = 1
 #'                   )
 #' p <- plotCrossHeatmap(resLs, adj.pvalue = "BH")

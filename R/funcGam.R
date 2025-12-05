@@ -17,7 +17,9 @@
 #' fast computation the default is set to `gaussian` with a log link.
 #' other interesting options can be `betar` and `scat`
 #'  - for more information see `family.mgcv`.
-#' @param algorithm algorithm to fit the refund::pffr method. defaults to `gamm4`
+#' @param algorithm algorithm to fit the refund::pffr method. defaults to `bam`
+#' @param discrete parameter passed to `mgcv::bam`. Discretises covariates for
+#' efficient computation
 #' @param ... Other parameters passed to `pffr`
 #'
 #' @return a fitted pffr object which inherits from gam
@@ -70,7 +72,7 @@
 #' @importFrom stats terms
 functionalGam <- function(data, x, designmat, weights, formula,
                           family = stats::gaussian(link = "identity"),
-                          algorithm = "gamm4", ...) {
+                          algorithm = "bam", discrete = TRUE, ...) {
     # type checking
     stopifnot(is(data, "data.frame"))
     stopifnot(is(x, "vector"))
@@ -78,6 +80,9 @@ functionalGam <- function(data, x, designmat, weights, formula,
     stopifnot(is(weights, "integer") || is(weights, "numeric"))
     stopifnot(is(formula, "formula"))
     stopifnot(is(family, "character") || is(family, "family"))
+    if(algorithm != "bam" && discrete == TRUE){
+        stop("discrete option is only available with algorithm == bam")
+    }
 
     data <- cbind(data, designmat)
     # Test that length of number of points and nrow of designmat correspond
@@ -98,6 +103,7 @@ functionalGam <- function(data, x, designmat, weights, formula,
         weights = weights,
         family = family,
         algorithm = algorithm,
+        discrete = discrete,
         ...
     )
     return(mdl)

@@ -11,7 +11,8 @@ functionalGam(
   weights,
   formula,
   family = stats::gaussian(link = "identity"),
-  algorithm = "gamm4",
+  algorithm = "bam",
+  discrete = TRUE,
   ...
 )
 }
@@ -36,7 +37,10 @@ other interesting options can be \code{betar} and \code{scat}
 \item for more information see \code{family.mgcv}.
 }}
 
-\item{algorithm}{algorithm to fit the refund::pffr method. defaults to \code{gamm4}}
+\item{algorithm}{algorithm to fit the refund::pffr method. defaults to \code{bam}}
+
+\item{discrete}{parameter passed to \code{mgcv::bam}. Discretises covariates for
+efficient computation}
 
 \item{...}{Other parameters passed to \code{pffr}}
 }

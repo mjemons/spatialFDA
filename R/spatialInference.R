@@ -40,7 +40,9 @@
 #' residuals along the domain and account for this in a second fitting step
 #' @param sandwich logical indicating whether to adjust for heterscedasticity of the 
 #' residuals with a sandwich correction
-#' @param algorithm algorithm to fit the refund::pffr method. defaults to `gamm4`
+#' @param algorithm algorithm to fit the refund::pffr method. defaults to `bam`
+#' @param discrete parameter passed to `mgcv::bam`. Discretises covariates for
+#' efficient computation
 #' @param ... Other parameters passed to `spatstat.explore` functions for
 #' parameters concerning the spatial function calculation and to `refund::pffr`
 #' for the functional additive mixed model inference
@@ -68,7 +70,7 @@
 #'     sample_id = "patient_id",
 #'     image_id = "image_number", condition = "patient_stage",
 #'     ncores = 1,
-#'     algorithm = "gamm4"
+#'     algorithm = "bam"
 #' )
 spatialInference <- function(spe,
                              selection,
@@ -89,10 +91,11 @@ spatialInference <- function(spe,
                              verbose = TRUE,
                              upperDeltaProb = NULL,
                              weightTransform = FALSE,
-                             AR1 = FALSE,
+                             AR1 = TRUE,
                              sandwich = FALSE,
                              ncores = 1,
-                             algorithm = "gamm4",
+                             algorithm = "bam",
+                             discrete = TRUE,
                              ...){
   #for computational reasons, remove the assays as we don't need them
   SummarizedExperiment::assays(spe) <- list()
@@ -236,6 +239,7 @@ spatialInference <- function(spe,
         formula = formula,
         family = family,
         algorithm = algorithm,
+        discrete = discrete,
         ...
       )
       if(algorithm == "gamm4"){
@@ -252,6 +256,7 @@ spatialInference <- function(spe,
         family = family,
         rho = rho_est,
         algorithm = algorithm,
+        discrete = discrete,
         ...
       )
     }else{

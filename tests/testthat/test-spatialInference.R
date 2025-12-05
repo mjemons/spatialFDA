@@ -39,12 +39,10 @@ mdl1 <- functionalGam(
   designmat = designmat, weights = dat$npoints,
   formula = formula(Y ~ conditionLong_duration +
                       conditionOnset + s(patient_id, bs = "re") +
-                      s(image_number, bs = "re")),
+                      c(s(image_number, bs = "re"))),
   family = gaussian(link = "identity"),
-  algorithm = "gamm4"
+  algorithm = "bam"
 )
-
-mdl1 <- mdl1$gam
 
 ## do the same with spatialInference
 
@@ -59,7 +57,7 @@ res <- spatialInference(spe, c("alpha", "Tc"),
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "gamm4",
+                        algorithm = "bam", discrete = FALSE,
                         eps = NULL, delta = 0, family = stats::gaussian(link = "identity"),
                         AR1 = FALSE, weightTransform = FALSE, sandwich = FALSE
 )
@@ -76,7 +74,7 @@ resBeta <- spatialInference(spe, "beta",
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "gamm4"
+                        algorithm = "bam", discrete = TRUE
 )
 
 test_that("spatialInference handels case when one condition has no images with
@@ -91,7 +89,7 @@ res <- spatialInference(spe, c("alpha", "Tc"),
                         weights = "min",
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "gamm4"
+                        algorithm = "bam", discrete = TRUE
 )
 
 #order
@@ -112,7 +110,7 @@ res <- spatialInference(spe, c("alpha", "Tc"),
                         weights = "max",
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "gamm4"
+                        algorithm = "bam", discrete = TRUE
 )
 
 #order
@@ -133,7 +131,7 @@ res <- spatialInference(spe, c("alpha", "Tc"),
                         weights = NULL,
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "gamm4"
+                        algorithm = "bam", discrete = TRUE
 )
 
 #order
@@ -148,10 +146,10 @@ test_that("weights of the model are equal weight", {
 })
 
 test_that("edf values correspond between RSE and mdl summary",{
-  mdlEdf <-  as_tibble(summary(res$mdl)$s.table[,"edf"])
+  mdlEdf <-  as_tibble(summary(res$mdl, re.test = FALSE)$s.table[,"edf"])
   expect_true(
-    sum(res$curveFittingQC[,"edf"] ==
-          mdlEdf[-c(nrow(mdlEdf)-1,nrow(mdlEdf)),]) == nrow(res$curveFittingQC)
+    sum(drop_na(res$curveFittingQC[,"edf"]) ==
+         mdlEdf) == nrow(drop_na(res$curveFittingQC))
   )
 })
 
@@ -166,20 +164,20 @@ res <- spatialInference(spe, c("alpha", "Tc"),
                         weights = NULL,
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "gamm4"
+                        algorithm = "bam", discrete = TRUE
 )
 
 test_that("edf values correspond between RSE and mdl summary as well
           after permutation of levels",{
-  mdlDf <-  (as_tibble(summary(res$mdl)$s.table))
-  mdlDf$coefficient <- rownames(summary(res$mdl)$s.table)
+  mdlDf <-  (as_tibble(summary(res$mdl, re.test = FALSE)$s.table))
+  mdlDf$coefficient <- rownames(summary(res$mdl, re.test = FALSE)$s.table)
   mdlDf$coefficient[mdlDf$coefficient == "c(s(image_number))"] <- "s(image_number)"
   mdlDf <- mdlDf %>% arrange(coefficient)
 
   mdlEdf <- as_tibble(mdlDf[,"edf"])
   expect_true(
-    sum(res$curveFittingQC[,"edf"] ==
-         mdlEdf[-c(nrow(mdlEdf)-1,nrow(mdlEdf)),]) == nrow(res$curveFittingQC)
+    sum(drop_na(res$curveFittingQC[,"edf"]) ==
+         mdlEdf) == nrow(drop_na(res$curveFittingQC))
   )
           })
 
@@ -193,7 +191,7 @@ test_that("spatialInference runs with different spline bases",{
                         ncores = 1,
                         bs.yindex = list(bs = "tp", k = 7, m = c(2, 1)),
                         bs.int = list(bs = "tp", k = 25, m = c(2, 1)),
-                        algorithm = "gamm4"
+                        algorithm = "bam", discrete = TRUE
 )
   expect_true(!is.null(res$mdl) && !is.null(res$designmat))
 })

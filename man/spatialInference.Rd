@@ -24,10 +24,11 @@ spatialInference(
   verbose = TRUE,
   upperDeltaProb = NULL,
   weightTransform = FALSE,
-  AR1 = FALSE,
+  AR1 = TRUE,
   sandwich = FALSE,
   ncores = 1,
-  algorithm = "gamm4",
+  algorithm = "bam",
+  discrete = TRUE,
   ...
 )
 }
@@ -91,7 +92,10 @@ residuals with a sandwich correction}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
 
-\item{algorithm}{algorithm to fit the refund::pffr method. defaults to \code{gamm4}}
+\item{algorithm}{algorithm to fit the refund::pffr method. defaults to \code{bam}}
+
+\item{discrete}{parameter passed to \code{mgcv::bam}. Discretises covariates for
+efficient computation}
 
 \item{...}{Other parameters passed to \code{spatstat.explore} functions for
 parameters concerning the spatial function calculation and to \code{refund::pffr}
@@ -123,6 +127,6 @@ res <- spatialInference(spe, c("alpha", "Tc"),
     sample_id = "patient_id",
     image_id = "image_number", condition = "patient_stage",
     ncores = 1,
-    algorithm = "gamm4"
+    algorithm = "bam"
 )
 }
