@@ -266,6 +266,7 @@ spatialInference <- function(spe,
         formula = formula,
         family = family,
         algorithm = algorithm,
+        discrete = discrete,
         ...
       )
     }
