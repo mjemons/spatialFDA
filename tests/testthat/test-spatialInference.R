@@ -39,9 +39,10 @@ mdl1 <- functionalGam(
   designmat = designmat, weights = dat$npoints,
   formula = formula(Y ~ conditionLong_duration +
                       conditionOnset + s(patient_id, bs = "re") +
-                      c(s(image_number, bs = "re"))),
+                      c(s(patient_id, image_number, bs = "re"))),
   family = gaussian(link = "identity"),
-  algorithm = "bam"
+  algorithm = "bam",
+  discrete = FALSE
 )
 
 ## do the same with spatialInference

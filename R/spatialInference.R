@@ -41,8 +41,6 @@
 #' @param sandwich logical indicating whether to adjust for heterscedasticity of the 
 #' residuals with a sandwich correction
 #' @param algorithm algorithm to fit the refund::pffr method. defaults to `bam`
-#' @param discrete parameter passed to `mgcv::bam`. Discretises covariates for
-#' efficient computation
 #' @param ... Other parameters passed to `spatstat.explore` functions for
 #' parameters concerning the spatial function calculation and to `refund::pffr`
 #' for the functional additive mixed model inference
@@ -91,11 +89,10 @@ spatialInference <- function(spe,
                              verbose = TRUE,
                              upperDeltaProb = NULL,
                              weightTransform = FALSE,
-                             AR1 = TRUE,
+                             AR1 = FALSE,
                              sandwich = FALSE,
                              ncores = 1,
                              algorithm = "bam",
-                             discrete = TRUE,
                              ...){
   #for computational reasons, remove the assays as we don't need them
   SummarizedExperiment::assays(spe) <- list()
@@ -204,7 +201,7 @@ spatialInference <- function(spe,
       formula <- stats::as.formula(paste("Y ~",
                                   paste(c(colnames(mm)[c(-1)],
                                           paste0("s(",sample_id,", bs = 're') + 
-                                            c(s(",image_id,", bs = 're'))")),
+                                            c(s(",sample_id, ",", image_id,", bs = 're'))")),
                                         collapse="+")), env = emptyenv())
     }
 
@@ -239,11 +236,10 @@ spatialInference <- function(spe,
         formula = formula,
         family = family,
         algorithm = algorithm,
-        discrete = discrete,
         ...
       )
       if(algorithm == "gamm4"){
-      mdl = mdl$gam
+        mdl = mdl$gam
       }
       #compute median ACF for a lag of 1
       rho_est <- apply(stats::resid(mdl), 1, function(x) stats::acf(x, plot = FALSE)$acf[2]) |> 
@@ -256,7 +252,6 @@ spatialInference <- function(spe,
         family = family,
         rho = rho_est,
         algorithm = algorithm,
-        discrete = discrete,
         ...
       )
     }else{
@@ -266,7 +261,6 @@ spatialInference <- function(spe,
         formula = formula,
         family = family,
         algorithm = algorithm,
-        discrete = discrete,
         ...
       )
     }

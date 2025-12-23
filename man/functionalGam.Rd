@@ -12,7 +12,8 @@ functionalGam(
   formula,
   family = stats::gaussian(link = "identity"),
   algorithm = "bam",
-  discrete = TRUE,
+  bs.yindex = list(bs = "ps", k = 5, m = c(2, 1)),
+  bs.int = list(bs = "ps", k = 20, m = c(2, 1)),
   ...
 )
 }
@@ -39,8 +40,11 @@ other interesting options can be \code{betar} and \code{scat}
 
 \item{algorithm}{algorithm to fit the refund::pffr method. defaults to \code{bam}}
 
-\item{discrete}{parameter passed to \code{mgcv::bam}. Discretises covariates for
-efficient computation}
+\item{bs.yindex}{a list specifying the spline bases for the index. See \code{refund::pffr}
+for more details}
+
+\item{bs.int}{a list specfying the spline bases for the global function intercept.
+See \code{refund::pffr} for more details}
 
 \item{...}{Other parameters passed to \code{pffr}}
 }

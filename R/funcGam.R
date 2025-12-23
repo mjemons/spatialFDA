@@ -18,8 +18,10 @@
 #' other interesting options can be `betar` and `scat`
 #'  - for more information see `family.mgcv`.
 #' @param algorithm algorithm to fit the refund::pffr method. defaults to `bam`
-#' @param discrete parameter passed to `mgcv::bam`. Discretises covariates for
-#' efficient computation
+#' @param bs.yindex a list specifying the spline bases for the index. See `refund::pffr`
+#' for more details
+#' @param bs.int a list specfying the spline bases for the global function intercept.
+#'  See `refund::pffr` for more details
 #' @param ... Other parameters passed to `pffr`
 #'
 #' @return a fitted pffr object which inherits from gam
@@ -70,9 +72,16 @@
 #' @import dplyr
 #' @importFrom methods is
 #' @importFrom stats terms
-functionalGam <- function(data, x, designmat, weights, formula,
-                          family = stats::gaussian(link = "identity"),
-                          algorithm = "bam", discrete = TRUE, ...) {
+functionalGam <- function(data, 
+    x, 
+    designmat, 
+    weights, 
+    formula,
+    family = stats::gaussian(link = "identity"),
+    algorithm = "bam", 
+    bs.yindex = list(bs = "ps", k = 5, m = c(2, 1)),
+    bs.int = list(bs = "ps", k = 20, m = c(2, 1)),
+    ...) {
     # type checking
     stopifnot(is(data, "data.frame"))
     stopifnot(is(x, "vector"))
@@ -80,9 +89,6 @@ functionalGam <- function(data, x, designmat, weights, formula,
     stopifnot(is(weights, "integer") || is(weights, "numeric"))
     stopifnot(is(formula, "formula"))
     stopifnot(is(family, "character") || is(family, "family"))
-    if(algorithm != "bam" && discrete == TRUE){
-        stop("discrete option is only available with algorithm == bam")
-    }
 
     data <- cbind(data, designmat)
     # Test that length of number of points and nrow of designmat correspond
@@ -103,7 +109,8 @@ functionalGam <- function(data, x, designmat, weights, formula,
         weights = weights,
         family = family,
         algorithm = algorithm,
-        discrete = discrete,
+        bs.yindex = bs.yindex,
+        bs.int = bs.int,
         ...
     )
     return(mdl)
