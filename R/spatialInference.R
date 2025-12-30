@@ -40,6 +40,8 @@
 #' residuals along the domain and account for this in a second fitting step
 #' @param sandwich logical indicating whether to adjust for heterscedasticity of the 
 #' residuals with a sandwich correction
+#' @param ridgepenalty a numeric value defining a ridge penalty parameter 
+#' which is added to the matrix `H` as defined in `mgcv::gam`
 #' @param algorithm algorithm to fit the refund::pffr method. defaults to `bam`
 #' @param ... Other parameters passed to `spatstat.explore` functions for
 #' parameters concerning the spatial function calculation and to `refund::pffr`
@@ -91,6 +93,7 @@ spatialInference <- function(spe,
                              weightTransform = FALSE,
                              AR1 = FALSE,
                              sandwich = FALSE,
+                             ridgepenalty = 0,
                              ncores = 1,
                              algorithm = "bam",
                              ...){
@@ -226,6 +229,20 @@ spatialInference <- function(spe,
     if(weightTransform){
       weights = sqrt(weights)
     }
+
+    #generate a pre-fit of the model without fitting
+    G <- functionalGam(
+      data = dat, x = r,
+      designmat = mm, weights = weights,
+      formula = formula,
+      family = family,
+      fit = FALSE,
+      ...
+    )
+    #extract the number of parameters for the penalty matrix
+    p <- ncol(G$X)
+    #add the ridge penalty
+    H <- diag(ridgepenalty, p)
     
     if(AR1){
       #if there is an AR1 correlation parameter given, fit first a model and compute the median ACF 
@@ -236,6 +253,7 @@ spatialInference <- function(spe,
         formula = formula,
         family = family,
         algorithm = algorithm,
+        H = H,
         ...
       )
       if(algorithm == "gamm4"){
@@ -252,6 +270,7 @@ spatialInference <- function(spe,
         family = family,
         rho = rho_est,
         algorithm = algorithm,
+        H = H,
         ...
       )
     }else{
@@ -261,6 +280,7 @@ spatialInference <- function(spe,
         formula = formula,
         family = family,
         algorithm = algorithm,
+        H = H,
         ...
       )
     }

@@ -26,6 +26,7 @@ spatialInference(
   weightTransform = FALSE,
   AR1 = FALSE,
   sandwich = FALSE,
+  ridgepenalty = 0,
   ncores = 1,
   algorithm = "bam",
   ...
@@ -88,6 +89,9 @@ residuals along the domain and account for this in a second fitting step}
 
 \item{sandwich}{logical indicating whether to adjust for heterscedasticity of the
 residuals with a sandwich correction}
+
+\item{ridgepenalty}{a numeric value defining a ridge penalty parameter
+which is added to the matrix \code{H} as defined in \code{mgcv::gam}}
 
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
 

@@ -18,6 +18,7 @@
 #' other interesting options can be `betar` and `scat`
 #'  - for more information see `family.mgcv`.
 #' @param algorithm algorithm to fit the refund::pffr method. defaults to `bam`
+#' @param H the ridge penalty matrix passed to `mgcv::gam`
 #' @param bs.yindex a list specifying the spline bases for the index. See `refund::pffr`
 #' for more details
 #' @param bs.int a list specfying the spline bases for the global function intercept.
@@ -79,6 +80,7 @@ functionalGam <- function(data,
     formula,
     family = stats::gaussian(link = "identity"),
     algorithm = "bam", 
+    H = NULL,
     bs.yindex = list(bs = "ps", k = 5, m = c(2, 1)),
     bs.int = list(bs = "ps", k = 20, m = c(2, 1)),
     ...) {
@@ -111,6 +113,7 @@ functionalGam <- function(data,
         algorithm = algorithm,
         bs.yindex = bs.yindex,
         bs.int = bs.int,
+        H = H,
         ...
     )
     return(mdl)
