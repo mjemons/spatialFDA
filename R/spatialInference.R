@@ -293,8 +293,9 @@ spatialInference <- function(spe,
     #and overwrite the existing one
     if(sandwich){
       mdl_sw <- mdl
-      #overwrite both the frequentist and the Bayesian covariance matrix
-      mdl_sw$Vp <- mdl_sw$Ve <- stats::vcov(mdl, sandwich = TRUE)
+      #overwrite both the frequentist and the Bayesian covariance matrices
+      mdl_sw$Vp <- mdl_sw$Vc <- stats::vcov(mdl, sandwich = TRUE)
+      mdl_sw$Ve <- stats::vcov(mdl, sandwich = TRUE, freq = TRUE)
       mdl <- mdl_sw
     }
     

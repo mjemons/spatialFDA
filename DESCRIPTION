@@ -39,7 +39,8 @@ Imports:
     graphics,
     ExperimentHub,
     scales,
-    S4Vectors
+    S4Vectors,
+    mgcv
 biocViews: Software, Spatial, Transcriptomics
 VignetteBuilder: knitr
 Suggests: 

@@ -116,5 +116,26 @@ functionalGam <- function(data,
         H = H,
         ...
     )
+    #add functional GAM class for custom printing
+    class(mdl) <- c("functionalGam", class(mdl))
     return(mdl)
+}
+
+#' Summary for functionalGam object
+#'
+#' @param object a fitted \code{functionalGam}-object
+#' @param ... see \code{\link[mgcv]{summary.gam}()} for options.
+#'
+#' @return A list with summary information, see \code{\link[mgcv]{summary.gam}()}
+#' @export
+#' @method summary functionalGam
+#' @importFrom mgcv summary.gam
+#' @author Martin Emons, adapted from \code{\link[refund]{summary.pffr}()} by Fabian Scheipl
+summary.functionalGam <- function(object, ...){
+    ret <- NextMethod("summary.pffr")
+    if(any(ret$s.table[,"p-value"] < 0) | any(ret$s.table[,"p-value"] > 1)){
+        warning("p-values outside of [0,1]. Clipped to [0,1]")
+        ret$s.table[, "p-value"] <- pmin(pmax(ret$s.table[, "p-value"], 0), 1)
+    }
+    return(ret)
 }
