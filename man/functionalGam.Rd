@@ -15,6 +15,7 @@ functionalGam(
   H = NULL,
   bs.yindex = list(bs = "ps", k = 5, m = c(2, 1)),
   bs.int = list(bs = "ps", k = 20, m = c(2, 1)),
+  sandwich = "cluster",
   ...
 )
 }
@@ -48,6 +49,9 @@ for more details}
 
 \item{bs.int}{a list specfying the spline bases for the global function intercept.
 See \code{refund::pffr} for more details}
+
+\item{sandwich}{string indicating how and if to adjust for heterscedasticity of the
+residuals with a sandwich correction}
 
 \item{...}{Other parameters passed to \code{pffr}}
 }

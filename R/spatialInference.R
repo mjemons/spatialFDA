@@ -38,7 +38,7 @@
 #' should be sqrt transformed
 #' @param AR1 logical indicating whether to calculate the autocorrelation of the 
 #' residuals along the domain and account for this in a second fitting step
-#' @param sandwich logical indicating whether to adjust for heterscedasticity of the 
+#' @param sandwich string indicating how and if to adjust for heterscedasticity of the 
 #' residuals with a sandwich correction
 #' @param ridgepenalty a numeric value defining a ridge penalty parameter 
 #' which is added to the matrix `H` as defined in `mgcv::gam`
@@ -91,8 +91,8 @@ spatialInference <- function(spe,
                              verbose = TRUE,
                              upperDeltaProb = NULL,
                              weightTransform = FALSE,
-                             AR1 = FALSE,
-                             sandwich = FALSE,
+                             AR1 = TRUE,
+                             sandwich = "cluster",
                              ridgepenalty = 0,
                              ncores = 1,
                              algorithm = "bam",
@@ -237,6 +237,7 @@ spatialInference <- function(spe,
       formula = formula,
       family = family,
       fit = FALSE,
+      sandwich = sandwich,
       ...
     )
     #extract the number of parameters for the penalty matrix
@@ -254,6 +255,7 @@ spatialInference <- function(spe,
         family = family,
         algorithm = algorithm,
         H = H,
+        sandwich = sandwich,
         ...
       )
       if(algorithm == "gamm4"){
@@ -271,6 +273,7 @@ spatialInference <- function(spe,
         rho = rho_est,
         algorithm = algorithm,
         H = H,
+        sandwich = sandwich,
         ...
       )
     }else{
@@ -281,22 +284,13 @@ spatialInference <- function(spe,
         family = family,
         algorithm = algorithm,
         H = H,
+        sandwich = sandwich,
         ...
       )
     }
     
     if(algorithm == "gamm4"){
       mdl = mdl$gam
-    }
-    
-    #if sandwich is given, calculate the sandwich-corrected covariance matrix 
-    #and overwrite the existing one
-    if(sandwich){
-      mdl_sw <- mdl
-      #overwrite both the frequentist and the Bayesian covariance matrices
-      mdl_sw$Vp <- mdl_sw$Vc <- stats::vcov(mdl, sandwich = TRUE)
-      mdl_sw$Ve <- stats::vcov(mdl, sandwich = TRUE, freq = TRUE)
-      mdl <- mdl_sw
     }
     
     ### Calculation of metrics assessing the quality of the model fit

@@ -24,8 +24,8 @@ spatialInference(
   verbose = TRUE,
   upperDeltaProb = NULL,
   weightTransform = FALSE,
-  AR1 = FALSE,
-  sandwich = FALSE,
+  AR1 = TRUE,
+  sandwich = "cluster",
   ridgepenalty = 0,
   ncores = 1,
   algorithm = "bam",
@@ -87,7 +87,7 @@ should be sqrt transformed}
 \item{AR1}{logical indicating whether to calculate the autocorrelation of the
 residuals along the domain and account for this in a second fitting step}
 
-\item{sandwich}{logical indicating whether to adjust for heterscedasticity of the
+\item{sandwich}{string indicating how and if to adjust for heterscedasticity of the
 residuals with a sandwich correction}
 
 \item{ridgepenalty}{a numeric value defining a ridge penalty parameter

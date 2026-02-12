@@ -19,6 +19,8 @@
 #'  - for more information see `family.mgcv`.
 #' @param algorithm algorithm to fit the refund::pffr method. defaults to `bam`
 #' @param H the ridge penalty matrix passed to `mgcv::gam`
+#' @param sandwich string indicating how and if to adjust for heterscedasticity of the 
+#' residuals with a sandwich correction
 #' @param bs.yindex a list specifying the spline bases for the index. See `refund::pffr`
 #' for more details
 #' @param bs.int a list specfying the spline bases for the global function intercept.
@@ -83,6 +85,7 @@ functionalGam <- function(data,
     H = NULL,
     bs.yindex = list(bs = "ps", k = 5, m = c(2, 1)),
     bs.int = list(bs = "ps", k = 20, m = c(2, 1)),
+    sandwich = "cluster",
     ...) {
     # type checking
     stopifnot(is(data, "data.frame"))
@@ -114,6 +117,7 @@ functionalGam <- function(data,
         bs.yindex = bs.yindex,
         bs.int = bs.int,
         H = H,
+        sandwich = sandwich,
         ...
     )
     #add functional GAM class for custom printing
