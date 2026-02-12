@@ -74,11 +74,11 @@ plotMdl <- function(mdl, predictor, shift = NULL) {
     if (predictor == "(Intercept)" && !is.null(shift)) {
         #rename as pffr output is without brackets
         predictor = "Intercept"
-        coef$sm[["Intercept(x)"]]$coef$value <-
-          coef$sm[["Intercept(x)"]]$coef$value + shift
+        coef$sm[["Intercept(yindex)"]]$coef$value <-
+          coef$sm[["Intercept(yindex)"]]$coef$value + shift
     }
     # get the actual values into a dataframe
-    df <- coef$sm[[paste0(predictor, "(x)")]]$coef
+    df <- coef$sm[[paste0(predictor, "(yindex)")]]$coef
     # plot
     p <- ggplot(df, aes(.data$x.vec, .data$value)) +
         geom_line(linewidth = 1) +

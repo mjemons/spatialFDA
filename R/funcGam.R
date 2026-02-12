@@ -18,7 +18,6 @@
 #' other interesting options can be `betar` and `scat`
 #'  - for more information see `family.mgcv`.
 #' @param algorithm algorithm to fit the refund::pffr method. defaults to `bam`
-#' @param H the ridge penalty matrix passed to `mgcv::gam`
 #' @param sandwich string indicating how and if to adjust for heterscedasticity of the 
 #' residuals with a sandwich correction
 #' @param bs.yindex a list specifying the spline bases for the index. See `refund::pffr`
@@ -82,7 +81,6 @@ functionalGam <- function(data,
     formula,
     family = stats::gaussian(link = "identity"),
     algorithm = "bam", 
-    H = NULL,
     bs.yindex = list(bs = "ps", k = 5, m = c(2, 1)),
     bs.int = list(bs = "ps", k = 20, m = c(2, 1)),
     sandwich = "cluster",
@@ -116,7 +114,6 @@ functionalGam <- function(data,
         algorithm = algorithm,
         bs.yindex = bs.yindex,
         bs.int = bs.int,
-        H = H,
         sandwich = sandwich,
         ...
     )

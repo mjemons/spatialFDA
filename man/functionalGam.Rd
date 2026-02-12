@@ -12,7 +12,6 @@ functionalGam(
   formula,
   family = stats::gaussian(link = "identity"),
   algorithm = "bam",
-  H = NULL,
   bs.yindex = list(bs = "ps", k = 5, m = c(2, 1)),
   bs.int = list(bs = "ps", k = 20, m = c(2, 1)),
   sandwich = "cluster",
@@ -41,8 +40,6 @@ other interesting options can be \code{betar} and \code{scat}
 }}
 
 \item{algorithm}{algorithm to fit the refund::pffr method. defaults to \code{bam}}
-
-\item{H}{the ridge penalty matrix passed to \code{mgcv::gam}}
 
 \item{bs.yindex}{a list specifying the spline bases for the index. See \code{refund::pffr}
 for more details}
