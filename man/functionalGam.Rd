@@ -15,6 +15,7 @@ functionalGam(
   bs.yindex = list(bs = "ps", k = 5, m = c(2, 1)),
   bs.int = list(bs = "ps", k = 20, m = c(2, 1)),
   sandwich = "cluster",
+  discrete = TRUE,
   ...
 )
 }
@@ -49,6 +50,10 @@ See \code{refund::pffr} for more details}
 
 \item{sandwich}{string indicating how and if to adjust for heterscedasticity of the
 residuals with a sandwich correction}
+
+\item{discrete}{option to discretise the function for faster computation. default is
+\code{TRUE}. See \code{mgcv::bam} for more information. When using \code{gam}, this option has to be
+\code{FALSE}}
 
 \item{...}{Other parameters passed to \code{pffr}}
 }

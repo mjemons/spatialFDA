@@ -20,6 +20,9 @@
 #' @param algorithm algorithm to fit the refund::pffr method. defaults to `bam`
 #' @param sandwich string indicating how and if to adjust for heterscedasticity of the 
 #' residuals with a sandwich correction
+#' @param discrete option to discretise the function for faster computation. default is
+#' `TRUE`. See `mgcv::bam` for more information. When using `gam`, this option has to be 
+#' `FALSE`
 #' @param bs.yindex a list specifying the spline bases for the index. See `refund::pffr`
 #' for more details
 #' @param bs.int a list specfying the spline bases for the global function intercept.
@@ -84,6 +87,7 @@ functionalGam <- function(data,
     bs.yindex = list(bs = "ps", k = 5, m = c(2, 1)),
     bs.int = list(bs = "ps", k = 20, m = c(2, 1)),
     sandwich = "cluster",
+    discrete = TRUE,
     ...) {
     # type checking
     stopifnot(is(data, "data.frame"))
@@ -92,6 +96,12 @@ functionalGam <- function(data,
     stopifnot(is(weights, "integer") || is(weights, "numeric"))
     stopifnot(is(formula, "formula"))
     stopifnot(is(family, "character") || is(family, "family"))
+
+    if(algorithm != "bam"){
+        discrete = FALSE
+        message("Algorithm is not `bam`, therefore setting
+        `discrete` to FALSE")
+    }
 
     data <- cbind(data, designmat)
     # Test that length of number of points and nrow of designmat correspond
@@ -115,6 +125,7 @@ functionalGam <- function(data,
         bs.yindex = bs.yindex,
         bs.int = bs.int,
         sandwich = sandwich,
+        discrete = discrete,
         ...
     )
     #add functional GAM class for custom printing
