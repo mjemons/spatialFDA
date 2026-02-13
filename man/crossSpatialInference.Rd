@@ -19,7 +19,7 @@ crossSpatialInference(
   transformation = NULL,
   eps = 0.001,
   delta = "minNnDist",
-  family = stats::gaussian(link = "identity"),
+  family = stats::gaussian(link = "log"),
   verbose = TRUE,
   ncores = 1,
   ...

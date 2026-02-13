@@ -10,7 +10,7 @@ functionalGam(
   designmat,
   weights,
   formula,
-  family = stats::gaussian(link = "identity"),
+  family = stats::gaussian(link = "log"),
   algorithm = "bam",
   bs.yindex = list(bs = "ps", k = 5, m = c(2, 1)),
   bs.int = list(bs = "ps", k = 20, m = c(2, 1)),

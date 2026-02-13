@@ -69,7 +69,7 @@ crossSpatialInference <- function(spe,
                                   transformation = NULL,
                                   eps =  1e-3,
                                   delta = "minNnDist",
-                                  family = stats::gaussian(link = "identity"),
+                                  family = stats::gaussian(link = "log"),
                                   verbose = TRUE,
                                   ncores = 1,
                                   ...){
