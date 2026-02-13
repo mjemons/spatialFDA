@@ -38,8 +38,7 @@ mdl1 <- functionalGam(
   data = dat, x = metricRes$r |> unique(),
   designmat = designmat, weights = dat$npoints,
   formula = formula(Y ~ conditionLong_duration +
-                      conditionOnset + s(patient_id, bs = "re") +
-                      c(s(image_number, bs = "re"))),
+                      conditionOnset + s(patient_id, bs = "re")),
   family = gaussian(link = "identity"),
   algorithm = "bam",
   discrete = FALSE

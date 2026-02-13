@@ -80,7 +80,7 @@ plotMdl <- function(mdl, predictor, shift = NULL) {
     # get the actual values into a dataframe
     df <- coef$sm[[paste0(predictor, "(yindex)")]]$coef
     # plot
-    p <- ggplot(df, aes(.data$x.vec, .data$value)) +
+    p <- ggplot(df, aes(.data$yindex.vec, .data$value)) +
         geom_line(linewidth = 1) +
         # here, I implement a Wald CI - could be improved
         geom_ribbon(

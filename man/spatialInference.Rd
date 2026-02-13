@@ -24,7 +24,7 @@ spatialInference(
   verbose = TRUE,
   upperDeltaProb = NULL,
   weightTransform = FALSE,
-  AR1 = TRUE,
+  AR1 = FALSE,
   sandwich = "cluster",
   ncores = 1,
   algorithm = "bam",

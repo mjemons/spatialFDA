@@ -89,7 +89,7 @@ spatialInference <- function(spe,
                              verbose = TRUE,
                              upperDeltaProb = NULL,
                              weightTransform = FALSE,
-                             AR1 = TRUE,
+                             AR1 = FALSE,
                              sandwich = "cluster",
                              ncores = 1,
                              algorithm = "bam",
@@ -197,11 +197,10 @@ spatialInference <- function(spe,
     formula <- stats::as.formula(paste("Y ~", paste(colnames(mm)[c(-1)],
                                                     collapse="+")), env = emptyenv())
 
-    if(!is.null(sample_id) & !is.null(image_id)){
+    if(!is.null(sample_id)){
       formula <- stats::as.formula(paste("Y ~",
                                   paste(c(colnames(mm)[c(-1)],
-                                          paste0("s(",sample_id,", bs = 're') + 
-                                            c(s(", image_id, ", bs = 're'))")),
+                                          paste0("s(",sample_id,", bs = 're')")),
                                         collapse="+")), env = emptyenv())
     }
 

@@ -44,7 +44,7 @@ extractCrossInferenceData <- function(resLs,
       table <- summary(mdl, re.test = FALSE)$s.table %>% as.data.frame()
 
       #in case that discrete = TRUE we have to reformat the data
-      rownames(table) <- gsub("\\.x\\.", "(x)", rownames(table))
+      rownames(table) <- gsub("\\.yindex\\.", "(yindex)", rownames(table))
       rownames(table) <- gsub("NA.", "character(0)", rownames(table))
 
       table$coefficient <- rownames(table)
