@@ -198,5 +198,17 @@ test_that("spatialInference runs with different spline bases",{
   expect_true(!is.null(res$mdl) && !is.null(res$designmat))
 })
 
+test_that("spatilInference can handle completely missing points",{
+  res <- spatialInference(spe, c("beta", "B"),
+    fun = "Gcross", marks = "cell_type",
+    rSeq = seq(0, 50, length.out = 50), correction = "rs",
+    sample_id = "patient_id",
+    image_id = "image_number", condition = "patient_stage",
+    ncores = 1,
+    algorithm = "bam"
+  )
+  expect_true(is.null(res$mdl) && is.null(res$designmat))
+})
+
 
 

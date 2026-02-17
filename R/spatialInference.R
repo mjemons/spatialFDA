@@ -131,6 +131,20 @@ spatialInference <- function(spe,
   }
 
   noConditionsPreFiltering <- (length(unique(metricResRaw[[condition]])))
+  if(!correction %in% colnames(metricResRaw)){
+    if(verbose){
+      message("Can not fit a model if one condition has no images with curves")
+    }
+    mdl = NULL
+    mm = NULL
+    QCDf = NULL
+    #return pffr object and calcMetricPerFov dataframe in a named list
+    return(list(metricRes = metricResRaw,
+                designmat = mm,
+                mdl = mdl,
+                curveFittingQC = QCDf))
+    
+  }
   # #removing field of views that have as a curve only zeros - these are cases where
   # #there is no cells of one type
   metricRes <- metricResRaw %>% dplyr::group_by(.data[["ID"]]) %>%
