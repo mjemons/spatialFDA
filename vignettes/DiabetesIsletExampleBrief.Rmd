@@ -151,15 +151,9 @@ resLs <- crossSpatialInference(
     rSeq = seq(0, 50, length.out = 50), 
     correction = "rs",
     sample_id = "patient_id",
-    transformation = "Fisher",
-    eps = 0,
-    delta = "minNnDist",
     family = mgcv::scat(link = "log"),
     image_id = "image_number", 
     condition = "patient_stage",
-    weighTransform = TRUE,
-    ncores = 1,
-    algorithm = "bam"
 )
 
 names(resLs)
@@ -168,9 +162,9 @@ names(resLs)
 We first consider the combination of cell types defined in `selection` as an overview bubble plot of the $F$-test results. This gives us a general indication of which cell types are co-localising and a notion of significance of the $F$-test.
 
 ```{r, bubblePlot, results='hide', message = FALSE, eval=TRUE}
-p <- plotCrossHeatmap(resLs, coefficientsToPlot = c("conditionLong_duration(x)", "conditionOnset(x)"), QCThreshold = 0, QCMetric = "medianMinIntensity")
+p <- plotCrossHeatmap(resLs, coefficientsToPlot = c("conditionLong_duration(yindex)", "conditionOnset(yindex)"), QCThreshold = 0, QCMetric = "medianMinIntensity")
 p <- p + theme(legend.position = "bottom") + guides(shape = "none") + 
-  facet_wrap(~factor(coefficient, levels = c("conditionOnset(x)", "conditionLong_duration(x)"), labels = c("conditionOnset(x)" = "Onset", "conditionLong_duration(x)" = "Long-Duration")))
+  facet_wrap(~factor(coefficient, levels = c("conditionOnset(yindex)", "conditionLong_duration(yindex)"), labels = c("conditionOnset(yindex)" = "Onset", "conditionLong_duration(yindex)" = "Long-Duration")))
 
 p
 ```
@@ -226,24 +220,24 @@ collector <- plotFbPlot(metricRes, "r", "rs", "patient_stage")
 
 The functional boxplot provides a convenient summary of the spatial statistics curves. We see that the median curve for onset samples plateaus at a higher level and that non-diabetic and long-duration functional boxplots are in general very similar. There are some outlier curves but since they are not far off the envelopes, we do not filter them out. In comparison to the raw spatial statistics curves we note that the transformations stabilise the variance along the domain $r$
 
-## Functional GAM
+## Functional GAMM
 
-In the functional boxplot we got an overview of the variability of the spatial statistic curves and could describe differences qualitatively. In order to test these differences, we use inference via functional data analysis. The functional general additive model (GAM) provides a way to perform statistical inference on the spatial statistics functions and is implemented in the function `pffr` from `r BiocStyle::CRANpkg('refund')` [@scheiplFunctionalAdditiveMixed2015; @scheiplGeneralizedFunctionalAdditive2016; @refund2024]. 
+In the functional boxplot we got an overview of the variability of the spatial statistic curves and could describe differences qualitatively. In order to test these differences, we use inference via functional data analysis. The functional general additive mixed model (fGAMM) provides a way to perform statistical inference on the spatial statistics functions and is implemented in the function `pffr` from `r BiocStyle::CRANpkg('refund')` [@scheiplFunctionalAdditiveMixed2015; @scheiplGeneralizedFunctionalAdditive2016; @refund2024]. 
 
-```{r, funcGam}
+```{r, funcGamm}
 mdl <- res$mdl
 mm <- res$designmat
 
-summary(mdl)
+summary(mdl, re.test = FALSE)
 ```
 
-The summary of the functional GAM provides information on the constant parameters and the functional coefficients. For the functional coefficients, an $F$-test over the entire domain is performed which answers the question if there is any difference between the reference curves (here "Non-diabetic") and the conditions over the entire domain. 
+The summary of the fGAMM provides information on the constant parameters and the functional coefficients. For the functional coefficients, an $F$-test over the entire domain is performed which answers the question if there is any difference between the reference curves (here "Non-diabetic") and the conditions over the entire domain. 
 
 We note that there is a small non-significant difference in the $G$ function between non-diabetic and long-duration T1D samples, but a strong difference between non-diabetic and onset T1D according to the model summary. 
 
 As the functional coefficients are functions of the domain $r$ themselves, we can plot them too
 
-```{r, plotFuncGam}
+```{r, plotFuncGamm}
 plotLs <- lapply(colnames(mm), plotMdl, mdl = mdl,
                  shift = mdl$coefficients[["(Intercept)"]])
 wrap_plots(plotLs, nrow = 3, axes = 'collect')
@@ -255,7 +249,7 @@ The point wise confidence bands are a limitation of this method and could be imp
 
 ## Model evaluation
 
-The functional GAMs provide coefficients that we could plot above. In order to judge the confidence we can have in these coefficients, we look to quantify the model fit. First, we look at the correlation and check the qq plot of the model residuals.
+The functional GAMMs provide coefficients that we could plot above. In order to judge the confidence we can have in these coefficients, we look to quantify the model fit. First, we look at the correlation and check the qq plot of the model residuals.
 
 ```{r contour, warning = FALSE}
 residuals(mdl) |> cor() |> filled.contour(levels = seq(-1, 1, l = 40))

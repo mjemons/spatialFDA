@@ -323,7 +323,7 @@ The $L$ function above showed no clear difference between the three conditions w
 The model implemented here is of the form:
 
 $$
-\mathbb{E}[y_i(r)] = g(\alpha(r) + \beta_{0,g(i)}(r) + \sum_{j=1}^J f_j(X_{ji},r))
+\mathbb{E}[y_i(r)] = g^{-1}(\alpha(r) + \beta_{0,g(i)}(r) + \sum_{j=1}^J f_j(X_{ji},r))
 $$
 
 With the following terms:
@@ -386,12 +386,12 @@ In the functional additive mixed model, we have specified global intercept varyi
 
 ```{r intercept, warning = FALSE, eval = TRUE}
 # look at the smooth random intercepts per patient
-data <- coef(mdl)$smterms$`s(patient_id)`$coef
+data <- coef(mdl)$smterms$`character(0)`$coef
 
 data <- data %>% left_join(dat %>% 
                              select(patient_id, condition) %>% unique)
 
-p <- ggplot(data, aes(x = x.vec, y = value, colour = condition, group = patient_id)) +
+p <- ggplot(data, aes(x = yindex.vec, y = value, colour = condition, group = patient_id)) +
   geom_line() +
   theme_light() + 
   geom_smooth(aes(group = 1), col = 'black') +
