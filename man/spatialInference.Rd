@@ -18,14 +18,16 @@ spatialInference(
   assay = "exprs",
   transformation = NULL,
   weights = "total",
-  eps = NULL,
-  delta = 0,
+  eps = 0.001,
+  delta = "minNnDist",
   family = stats::gaussian(link = "log"),
   verbose = TRUE,
-  ridgepenalty = 0,
   upperDeltaProb = NULL,
-  weightTransform = FALSE,
+  weightTransform = TRUE,
+  AR1 = FALSE,
+  sandwich = "cluster",
   ncores = 1,
+  algorithm = "bam",
   ...
 )
 }
@@ -75,16 +77,21 @@ neighbour distance across all images for this cell type pair.}
 
 \item{verbose}{logical indicating whether to print all information or not}
 
-\item{ridgepenalty}{a numeric value defining a ridge penalty parameter
-which is added to the matrix \code{H} as defined in \code{mgcv::gam}}
-
 \item{upperDeltaProb}{the quantile to filter out the constant 1 part for \code{Gest}
 and \code{Gcross}. If \code{NULL} no upper filtering is applied.}
 
 \item{weightTransform}{logical indicating whether the weights (number of points)
 should be sqrt transformed}
 
+\item{AR1}{logical indicating whether to calculate the autocorrelation of the
+residuals along the domain and account for this in a second fitting step}
+
+\item{sandwich}{string indicating how and if to adjust for heterscedasticity of the
+residuals with a sandwich correction}
+
 \item{ncores}{the number of cores to use for parallel processing, default = 1}
+
+\item{algorithm}{algorithm to fit the refund::pffr method. defaults to \code{bam}}
 
 \item{...}{Other parameters passed to \code{spatstat.explore} functions for
 parameters concerning the spatial function calculation and to \code{refund::pffr}

@@ -11,7 +11,11 @@ functionalGam(
   weights,
   formula,
   family = stats::gaussian(link = "log"),
-  H = NULL,
+  algorithm = "bam",
+  bs.yindex = list(bs = "ps", k = 5, m = c(2, 1)),
+  bs.int = list(bs = "ps", k = 20, m = c(2, 1)),
+  sandwich = "cluster",
+  discrete = TRUE,
   ...
 )
 }
@@ -36,7 +40,20 @@ other interesting options can be \code{betar} and \code{scat}
 \item for more information see \code{family.mgcv}.
 }}
 
-\item{H}{the ridge penalty matrix passed to \code{mgcv::gam}}
+\item{algorithm}{algorithm to fit the refund::pffr method. defaults to \code{bam}}
+
+\item{bs.yindex}{a list specifying the spline bases for the index. See \code{refund::pffr}
+for more details}
+
+\item{bs.int}{a list specfying the spline bases for the global function intercept.
+See \code{refund::pffr} for more details}
+
+\item{sandwich}{string indicating how and if to adjust for heterscedasticity of the
+residuals with a sandwich correction}
+
+\item{discrete}{option to discretise the function for faster computation. default is
+\code{TRUE}. See \code{mgcv::bam} for more information. When using \code{gam}, this option has to be
+\code{FALSE}}
 
 \item{...}{Other parameters passed to \code{pffr}}
 }

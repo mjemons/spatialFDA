@@ -32,12 +32,15 @@
 #' @param family the distributional family for the functional GAM
 #' @param ncores the number of cores to use for parallel processing, default = 1
 #' @param verbose logical indicating whether to print all information or not
-#' @param ridgepenalty a numeric value defining a ridge penalty parameter 
-#' which is added to the matrix `H` as defined in `mgcv::gam`
 #' @param upperDeltaProb the quantile to filter out the constant 1 part for `Gest`
 #' and `Gcross`. If `NULL` no upper filtering is applied.
 #' @param weightTransform logical indicating whether the weights (number of points) 
 #' should be sqrt transformed
+#' @param AR1 logical indicating whether to calculate the autocorrelation of the 
+#' residuals along the domain and account for this in a second fitting step
+#' @param sandwich string indicating how and if to adjust for heterscedasticity of the 
+#' residuals with a sandwich correction
+#' @param algorithm algorithm to fit the refund::pffr method. defaults to `bam`
 #' @param ... Other parameters passed to `spatstat.explore` functions for
 #' parameters concerning the spatial function calculation and to `refund::pffr`
 #' for the functional additive mixed model inference
@@ -80,14 +83,16 @@ spatialInference <- function(spe,
                              assay = "exprs",
                              transformation = NULL,
                              weights = "total",
-                             eps = NULL,
-                             delta = 0,
+                             eps = 1e-3,
+                             delta = "minNnDist",
                              family = stats::gaussian(link = "log"),
                              verbose = TRUE,
-                             ridgepenalty = 0,
                              upperDeltaProb = NULL,
-                             weightTransform = FALSE,
+                             weightTransform = TRUE,
+                             AR1 = FALSE,
+                             sandwich = "cluster",
                              ncores = 1,
+                             algorithm = "bam",
                              ...){
   #for computational reasons, remove the assays as we don't need them
   SummarizedExperiment::assays(spe) <- list()
@@ -126,6 +131,20 @@ spatialInference <- function(spe,
   }
 
   noConditionsPreFiltering <- (length(unique(metricResRaw[[condition]])))
+  if(!correction %in% colnames(metricResRaw)){
+    if(verbose){
+      message("Can not fit a model if one condition has no images with curves")
+    }
+    mdl = NULL
+    mm = NULL
+    QCDf = NULL
+    #return pffr object and calcMetricPerFov dataframe in a named list
+    return(list(metricRes = metricResRaw,
+                designmat = mm,
+                mdl = mdl,
+                curveFittingQC = QCDf))
+    
+  }
   # #removing field of views that have as a curve only zeros - these are cases where
   # #there is no cells of one type
   metricRes <- metricResRaw %>% dplyr::group_by(.data[["ID"]]) %>%
@@ -221,34 +240,55 @@ spatialInference <- function(spe,
       weights = sqrt(weights)
     }
     
-    #generate a pre-fit of the model without fitting
-    G <- functionalGam(
-      data = dat, x = r,
-      designmat = mm, weights = weights,
-      formula = formula,
-      family = family,
-      fit = FALSE,
-      ...
-    )
-    #extract the number of parameters for the penalty matrix
-    p <- ncol(G$X)
-    #add the ridge penalty
-    H <- diag(ridgepenalty, p)
+    if(AR1){
+      #if there is an AR1 correlation parameter given, fit first a model and compute the median ACF 
+      #of the residuals
+      mdl <- functionalGam(
+        data = dat, x = r,
+        designmat = mm, weights = weights,
+        formula = formula,
+        family = family,
+        algorithm = algorithm,
+        sandwich = sandwich,
+        ...
+      )
+      if(algorithm == "gamm4"){
+        mdl = mdl$gam
+      }
+      #compute median ACF for a lag of 1
+      rho_est <- apply(stats::resid(mdl), 1, function(x) stats::acf(x, plot = FALSE)$acf[2]) |> 
+        stats::median(na.rm = TRUE)
+      #refit with estimated residual autocorrelation
+      mdl <- functionalGam(
+        data = dat, x = r,
+        designmat = mm, weights = weights,
+        formula = formula,
+        family = family,
+        rho = rho_est,
+        algorithm = algorithm,
+        sandwich = sandwich,
+        ...
+      )
+    }else{
+      mdl <- functionalGam(
+        data = dat, x = r,
+        designmat = mm, weights = weights,
+        formula = formula,
+        family = family,
+        algorithm = algorithm,
+        sandwich = sandwich,
+        ...
+      )
+    }
     
-    #third, run functionalGam
-    mdl <- functionalGam(
-      data = dat, x = r,
-      designmat = mm, weights = weights,
-      formula = formula,
-      family = family,
-      H = H,
-      ...
-    )
+    if(algorithm == "gamm4"){
+      mdl = mdl$gam
+    }
     
     ### Calculation of metrics assessing the quality of the model fit
 
     # adj R-squared of the entire model
-    Rsq.adj <- summary(mdl)$r.sq
+    Rsq.adj <- summary(mdl, re.test = FALSE)$r.sq
     if(verbose){
       message(paste0("The adjusted R-squared of the model is ", Rsq.adj))
     }
@@ -257,13 +297,13 @@ spatialInference <- function(spe,
     dat <- dat %>%
       mutate(coefficient =
                paste0("condition",
-                      gsub("-","_", .data[[conditionVariable]]),"(x)")) %>%
+                      gsub("-","_", .data[[conditionVariable]]),"(yindex)")) %>%
       #rename the reference category to be Intercept
       mutate(coefficient =
                case_when(coefficient ==
                            paste0("condition",
-                                  gsub("-","_",levels(condition)[[1]]), "(x)")
-                         ~ "Intercept(x)", TRUE ~ coefficient))
+                                  gsub("-","_",levels(condition)[[1]]), "(yindex)")
+                         ~ "Intercept(yindex)", TRUE ~ coefficient))
 
     # calculate the median intensity per condition
     dfIntensity <- dat %>%
@@ -284,11 +324,14 @@ spatialInference <- function(spe,
     #Furthermore, we need to get condition specific estimated degrees of freedom
     #of the model parameters. These are in the model summary
 
-    df.edf <- summary(mdl)[["s.table"]] %>% as.data.frame()
+    df.edf <- summary(mdl, re.test = FALSE)[["s.table"]] %>% as.data.frame()
 
     #if it is a mixed model, we need to remove the random effect column
     if(!is.null(sample_id)){
+      #filter out sample_id
       df.edf <- df.edf %>% filter(!grepl(sample_id, rownames(df.edf)))
+      #filter out image_id
+      df.edf <- df.edf %>% filter(!grepl(image_id, rownames(df.edf)))
     }
     #this assumes that the order of the levels is the same as the order of the
     #summary output
@@ -314,12 +357,12 @@ spatialInference <- function(spe,
     residualPffr <- residualPffr %>%
       mutate(coefficient = paste0("condition",
                                   gsub("-","_",
-                                       .data[[conditionVariable]]),"(x)")) %>%
+                                       .data[[conditionVariable]]),"(yindex)")) %>%
       #rename the reference category to be Intercept
       mutate(coefficient = case_when(coefficient == paste0("condition",
                                                            gsub("-","_",
-                                                                levels(condition)[[1]]), "(x)")
-                                     ~ "Intercept(x)",
+                                                                levels(condition)[[1]]), "(yindex)")
+                                     ~ "Intercept(yindex)",
                                      TRUE ~ coefficient))
     # combine the residuals with the degrees of freedom
     residualPffr <- residualPffr %>% left_join(df.residual, by = "coefficient")

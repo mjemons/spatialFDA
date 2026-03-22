@@ -1,3 +1,12 @@
+# spatialFDA 1.3.2
+* covariance matrices are now corrected for cluster-correlations along
+the domain $r$ with sandwich-estimators by default - thank you @fabianscheipl
+for implementing this in `refund::pffr`
+* models can now also be fit with `gamm4`
+* Experimental: implemented an AR(1) penalty along the domain $r$ in `bam` fits. This
+is to some extent already adressed by the cluster-robust sandwich estimators so 
+might be removed in the future. 
+
 # spatialFDA 1.3.1
 * option to square-root transform the weights in the functional Gam
 * changes to cutoff calculations at the saturating end of $G$ functions

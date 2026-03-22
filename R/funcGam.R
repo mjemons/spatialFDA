@@ -17,7 +17,16 @@
 #' fast computation the default is set to `gaussian` with a log link.
 #' other interesting options can be `betar` and `scat`
 #'  - for more information see `family.mgcv`.
-#' @param H the ridge penalty matrix passed to `mgcv::gam`
+#' @param algorithm algorithm to fit the refund::pffr method. defaults to `bam`
+#' @param sandwich string indicating how and if to adjust for heterscedasticity of the 
+#' residuals with a sandwich correction
+#' @param discrete option to discretise the function for faster computation. default is
+#' `TRUE`. See `mgcv::bam` for more information. When using `gam`, this option has to be 
+#' `FALSE`
+#' @param bs.yindex a list specifying the spline bases for the index. See `refund::pffr`
+#' for more details
+#' @param bs.int a list specfying the spline bases for the global function intercept.
+#'  See `refund::pffr` for more details
 #' @param ... Other parameters passed to `pffr`
 #'
 #' @return a fitted pffr object which inherits from gam
@@ -68,16 +77,31 @@
 #' @import dplyr
 #' @importFrom methods is
 #' @importFrom stats terms
-functionalGam <- function(data, x, designmat, weights, formula,
-                          family = stats::gaussian(link = "log"),
-                          H = NULL, ...) {
+functionalGam <- function(data, 
+    x, 
+    designmat, 
+    weights, 
+    formula,
+    family = stats::gaussian(link = "log"),
+    algorithm = "bam", 
+    bs.yindex = list(bs = "ps", k = 5, m = c(2, 1)),
+    bs.int = list(bs = "ps", k = 20, m = c(2, 1)),
+    sandwich = "cluster",
+    discrete = TRUE,
+    ...) {
     # type checking
     stopifnot(is(data, "data.frame"))
     stopifnot(is(x, "vector"))
     stopifnot(is(designmat, "matrix"))
-    stopifnot(is(weights, "integer") || is(weights, "numeric"))
+    stopifnot(is(weights, "numeric"), all(weights > 0))
     stopifnot(is(formula, "formula"))
     stopifnot(is(family, "character") || is(family, "family"))
+
+    if(algorithm != "bam"){
+        discrete = FALSE
+        message("Algorithm is not `bam`, therefore setting
+        `discrete` to FALSE")
+    }
 
     data <- cbind(data, designmat)
     # Test that length of number of points and nrow of designmat correspond
@@ -97,8 +121,33 @@ functionalGam <- function(data, x, designmat, weights, formula,
         data = data,
         weights = weights,
         family = family,
-        H = H,
+        algorithm = algorithm,
+        bs.yindex = bs.yindex,
+        bs.int = bs.int,
+        sandwich = sandwich,
+        discrete = discrete,
         ...
     )
+    #add functional GAM class for custom printing
+    class(mdl) <- c("functionalGam", class(mdl))
     return(mdl)
+}
+
+#' Summary for functionalGam object
+#'
+#' @param object a fitted \code{functionalGam}-object
+#' @param ... see \code{\link[mgcv]{summary.gam}()} for options.
+#'
+#' @return A list with summary information, see \code{\link[mgcv]{summary.gam}()}
+#' @export
+#' @method summary functionalGam
+#' @importFrom mgcv summary.gam
+#' @author Martin Emons, adapted from \code{\link[refund]{summary.pffr}()} by Fabian Scheipl
+summary.functionalGam <- function(object, ...){
+    ret <- NextMethod("summary.pffr")
+    if(any(ret$s.table[,"p-value"] < 0) | any(ret$s.table[,"p-value"] > 1)){
+        warning("p-values outside of [0,1]. Clipped to [0,1]")
+        ret$s.table[, "p-value"] <- pmin(pmax(ret$s.table[, "p-value"], 0), 1)
+    }
+    return(ret)
 }

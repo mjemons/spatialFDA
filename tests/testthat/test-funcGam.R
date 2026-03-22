@@ -45,7 +45,7 @@ mdl <- functionalGam(
 )
 
 test_that("Output is of correct type", {
-  expect_equal(is(mdl), "pffr")
+  expect_equal(is(mdl), "functionalGam")
   expect_true(!is.null(mdl$coefficients))
   expect_true(!is.null(mdl$residuals))
   expect_true(!is.null(mdl$weights))
@@ -62,7 +62,7 @@ test_that("Fails if designmat and formula arguments don't correspond", {
   ))
 })
 
-test_that("Can handle missingnis in response - still pffr object", {
+test_that("Can handle missingnis in response - still functionalGam object", {
   dat[1, 2][9] <- NA
   mdl <- functionalGam(
     data = dat, x = metricRes$r |> unique(),
@@ -71,7 +71,7 @@ test_that("Can handle missingnis in response - still pffr object", {
                         conditionOnset + s(patient_id, bs = "re")),
     algorithm = "bam"
   )
-  expect_equal(is(mdl), "pffr")
+  expect_equal(is(mdl), "functionalGam")
   expect_true(!is.null(mdl$coefficients))
   expect_true(!is.null(mdl$residuals))
   expect_true(!is.null(mdl$weights))

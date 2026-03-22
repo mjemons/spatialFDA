@@ -15,7 +15,7 @@ res <- spatialInference(spe, c("alpha"),
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "bam"
+                        algorithm = "bam", discrete = TRUE
 )
 
 mdl1 <- res$mdl
@@ -26,7 +26,7 @@ resLs <- crossSpatialInference(spe, c("alpha", "Tc"),
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "bam"
+                        algorithm = "bam", discrete = TRUE
 )
 
 mdl2 <- resLs$alpha_alpha$mdl
@@ -42,7 +42,7 @@ res <- spatialInference(spe, c("alpha", "Tc"),
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "bam"
+                        algorithm = "bam", discrete = TRUE
 )
 
 mdl3 <- res$mdl

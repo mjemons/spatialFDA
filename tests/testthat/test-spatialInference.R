@@ -39,8 +39,9 @@ mdl1 <- functionalGam(
   designmat = designmat, weights = dat$npoints,
   formula = formula(Y ~ conditionLong_duration +
                       conditionOnset + s(patient_id, bs = "re")),
-  family = gaussian(link = "log"),
-  algorithm = "bam"
+  family = gaussian(link = "identity"),
+  algorithm = "bam",
+  discrete = FALSE
 )
 
 ## do the same with spatialInference
@@ -56,7 +57,9 @@ res <- spatialInference(spe, c("alpha", "Tc"),
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "bam"
+                        algorithm = "bam", discrete = FALSE,
+                        eps = NULL, delta = 0, family = stats::gaussian(link = "identity"),
+                        AR1 = FALSE, weightTransform = FALSE, sandwich = FALSE
 )
 
 mdl2 <- res$mdl
@@ -71,7 +74,7 @@ resBeta <- spatialInference(spe, "beta",
                         sample_id = "patient_id",
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "bam"
+                        algorithm = "bam", discrete = TRUE
 )
 
 test_that("spatialInference handels case when one condition has no images with
@@ -84,9 +87,10 @@ res <- spatialInference(spe, c("alpha", "Tc"),
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
                         weights = "min",
+                        weightTransform = FALSE,
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "bam"
+                        algorithm = "bam", discrete = TRUE
 )
 
 #order
@@ -105,9 +109,10 @@ res <- spatialInference(spe, c("alpha", "Tc"),
                         rSeq = seq(0, 50, length.out = 50), correction = "rs",
                         sample_id = "patient_id",
                         weights = "max",
+                        weightTransform = FALSE,
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "bam"
+                        algorithm = "bam", discrete = TRUE
 )
 
 #order
@@ -128,7 +133,7 @@ res <- spatialInference(spe, c("alpha", "Tc"),
                         weights = NULL,
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "bam"
+                        algorithm = "bam", discrete = TRUE
 )
 
 #order
@@ -143,10 +148,10 @@ test_that("weights of the model are equal weight", {
 })
 
 test_that("edf values correspond between RSE and mdl summary",{
-  mdlEdf <-  as_tibble(summary(res$mdl)$s.table[,"edf"])
+  mdlEdf <-  as_tibble(summary(res$mdl, re.test = FALSE)$s.table[,"edf"])
   expect_true(
-    sum(res$curveFittingQC[,"edf"] ==
-          mdlEdf[-nrow(mdlEdf),]) == nrow(res$curveFittingQC)
+    sum(drop_na(res$curveFittingQC[,"edf"]) ==
+         mdlEdf) == nrow(drop_na(res$curveFittingQC))
   )
 })
 
@@ -161,21 +166,22 @@ res <- spatialInference(spe, c("alpha", "Tc"),
                         weights = NULL,
                         image_id = "image_number", condition = "patient_stage",
                         ncores = 1,
-                        algorithm = "bam"
+                        algorithm = "bam", discrete = TRUE
 )
 
 test_that("edf values correspond between RSE and mdl summary as well
           after permutation of levels",{
-  mdlDf <-  (as_tibble(summary(res$mdl)$s.table))
-  mdlDf$coefficient <- rownames(summary(res$mdl)$s.table)
+  mdlDf <-  (as_tibble(summary(res$mdl, re.test = FALSE)$s.table))
+  mdlDf$coefficient <- rownames(summary(res$mdl, re.test = FALSE)$s.table)
+  mdlDf$coefficient[mdlDf$coefficient == "c(s(image_number))"] <- "s(image_number)"
   mdlDf <- mdlDf %>% arrange(coefficient)
 
   mdlEdf <- as_tibble(mdlDf[,"edf"])
   expect_true(
-    sum(res$curveFittingQC[,"edf"] ==
-          mdlEdf[-nrow(mdlEdf),]) == nrow(res$curveFittingQC)
+    sum(drop_na(res$curveFittingQC[,"edf"]) ==
+         mdlEdf) == nrow(drop_na(res$curveFittingQC))
   )
-})
+          })
 
 test_that("spatialInference runs with different spline bases",{
   res <- spatialInference(spe, c("alpha", "Tc"),
@@ -187,9 +193,21 @@ test_that("spatialInference runs with different spline bases",{
                         ncores = 1,
                         bs.yindex = list(bs = "tp", k = 7, m = c(2, 1)),
                         bs.int = list(bs = "tp", k = 25, m = c(2, 1)),
-                        algorithm = "bam"
+                        algorithm = "bam", discrete = TRUE
 )
   expect_true(!is.null(res$mdl) && !is.null(res$designmat))
+})
+
+test_that("spatilInference can handle completely missing points",{
+  res <- spatialInference(spe, c("beta", "B"),
+    fun = "Gcross", marks = "cell_type",
+    rSeq = seq(0, 50, length.out = 50), correction = "rs",
+    sample_id = "patient_id",
+    image_id = "image_number", condition = "patient_stage",
+    ncores = 1,
+    algorithm = "bam"
+  )
+  expect_true(is.null(res$mdl) && is.null(res$designmat))
 })
 
 

@@ -58,7 +58,7 @@
 #'         conditionOnset + s(patient_id, bs = "re")),
 #'         algorithm = "bam"
 #' )
-#' summary(mdl)
+#' summary(mdl, re.test = FALSE)
 #' plotLs <- lapply(colnames(designmat), plotMdl,
 #'     mdl = mdl,
 #'     shift = mdl$coefficients[["(Intercept)"]]
@@ -74,13 +74,13 @@ plotMdl <- function(mdl, predictor, shift = NULL) {
     if (predictor == "(Intercept)" && !is.null(shift)) {
         #rename as pffr output is without brackets
         predictor = "Intercept"
-        coef$sm[["Intercept(x)"]]$coef$value <-
-          coef$sm[["Intercept(x)"]]$coef$value + shift
+        coef$sm[["Intercept(yindex)"]]$coef$value <-
+          coef$sm[["Intercept(yindex)"]]$coef$value + shift
     }
     # get the actual values into a dataframe
-    df <- coef$sm[[paste0(predictor, "(x)")]]$coef
+    df <- coef$sm[[paste0(predictor, "(yindex)")]]$coef
     # plot
-    p <- ggplot(df, aes(.data$x.vec, .data$value)) +
+    p <- ggplot(df, aes(.data$yindex.vec, .data$value)) +
         geom_line(linewidth = 1) +
         # here, I implement a Wald CI - could be improved
         geom_ribbon(
