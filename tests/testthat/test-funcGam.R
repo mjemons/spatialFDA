@@ -45,7 +45,7 @@ mdl <- functionalGam(
 )
 
 test_that("Output is of correct type", {
-  expect_equal(is(mdl), "pffr")
+  expect_equal(is(mdl), "functionalGam")
   expect_true(!is.null(mdl$coefficients))
   expect_true(!is.null(mdl$residuals))
   expect_true(!is.null(mdl$weights))
@@ -71,7 +71,7 @@ test_that("Can handle missingnis in response - still pffr object", {
                         conditionOnset + s(patient_id, bs = "re")),
     algorithm = "bam"
   )
-  expect_equal(is(mdl), "pffr")
+  expect_equal(is(mdl), "functionalGam")
   expect_true(!is.null(mdl$coefficients))
   expect_true(!is.null(mdl$residuals))
   expect_true(!is.null(mdl$weights))

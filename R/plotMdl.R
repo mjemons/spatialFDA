@@ -74,13 +74,13 @@ plotMdl <- function(mdl, predictor, shift = NULL) {
     if (predictor == "(Intercept)" && !is.null(shift)) {
         #rename as pffr output is without brackets
         predictor = "Intercept"
-        coef$sm[["Intercept(x)"]]$coef$value <-
-          coef$sm[["Intercept(x)"]]$coef$value + shift
+        coef$smterms[["Intercept(x)"]]$coef$value <-
+          coef$smterms[["Intercept(x)"]]$coef$value + shift
     }
     # get the actual values into a dataframe
-    df <- coef$sm[[paste0(predictor, "(x)")]]$coef
+    df <- coef$smterms[[paste0(predictor, "(x)")]]$coef
     # plot
-    p <- ggplot(df, aes(.data$x.vec, .data$value)) +
+    p <- ggplot(df, aes(.data$yindex.vec, .data$value)) +
         geom_line(linewidth = 1) +
         # here, I implement a Wald CI - could be improved
         geom_ribbon(

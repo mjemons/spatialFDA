@@ -1,3 +1,9 @@
+# spatialFDA 1.2.1
+* hot fix to be compatible with the newest `refund` version from `CRAN`.
+
+# spatialFDA 1.2.0
+* Bioconductor release
+
 # spatialFDA 1.1.21
 * allowing for the explicit passing of `correction` in `spatialInference`
 and `crossSpatialInference` to fix issues with calculating `Lcross`.
