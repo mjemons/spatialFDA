@@ -297,13 +297,13 @@ spatialInference <- function(spe,
     dat <- dat %>%
       mutate(coefficient =
                paste0("condition",
-                      gsub("-","_", .data[[conditionVariable]]),"(yindex)")) %>%
+                      gsub("-","_", .data[[conditionVariable]]),"(x)")) %>%
       #rename the reference category to be Intercept
       mutate(coefficient =
                case_when(coefficient ==
                            paste0("condition",
-                                  gsub("-","_",levels(condition)[[1]]), "(yindex)")
-                         ~ "Intercept(yindex)", TRUE ~ coefficient))
+                                  gsub("-","_",levels(condition)[[1]]), "(x)")
+                         ~ "Intercept(x)", TRUE ~ coefficient))
 
     # calculate the median intensity per condition
     dfIntensity <- dat %>%
@@ -357,12 +357,12 @@ spatialInference <- function(spe,
     residualPffr <- residualPffr %>%
       mutate(coefficient = paste0("condition",
                                   gsub("-","_",
-                                       .data[[conditionVariable]]),"(yindex)")) %>%
+                                       .data[[conditionVariable]]),"(x)")) %>%
       #rename the reference category to be Intercept
       mutate(coefficient = case_when(coefficient == paste0("condition",
                                                            gsub("-","_",
-                                                                levels(condition)[[1]]), "(yindex)")
-                                     ~ "Intercept(yindex)",
+                                                                levels(condition)[[1]]), "(x)")
+                                     ~ "Intercept(x)",
                                      TRUE ~ coefficient))
     # combine the residuals with the degrees of freedom
     residualPffr <- residualPffr %>% left_join(df.residual, by = "coefficient")

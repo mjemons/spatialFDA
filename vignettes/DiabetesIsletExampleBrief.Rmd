@@ -162,9 +162,9 @@ names(resLs)
 We first consider the combination of cell types defined in `selection` as an overview bubble plot of the $F$-test results. This gives us a general indication of which cell types are co-localising and a notion of significance of the $F$-test.
 
 ```{r, bubblePlot, results='hide', message = FALSE, eval=TRUE}
-p <- plotCrossHeatmap(resLs, coefficientsToPlot = c("conditionLong_duration(yindex)", "conditionOnset(yindex)"), QCThreshold = 0, QCMetric = "medianMinIntensity")
+p <- plotCrossHeatmap(resLs, coefficientsToPlot = c("conditionLong_duration(x)", "conditionOnset(x)"), QCThreshold = 0, QCMetric = "medianMinIntensity")
 p <- p + theme(legend.position = "bottom") + guides(shape = "none") + 
-  facet_wrap(~factor(coefficient, levels = c("conditionOnset(yindex)", "conditionLong_duration(yindex)"), labels = c("conditionOnset(yindex)" = "Onset", "conditionLong_duration(yindex)" = "Long-Duration")))
+  facet_wrap(~factor(coefficient, levels = c("conditionOnset(x)", "conditionLong_duration(x)"), labels = c("conditionOnset(x)" = "Onset", "conditionLong_duration(x)" = "Long-Duration")))
 
 p
 ```

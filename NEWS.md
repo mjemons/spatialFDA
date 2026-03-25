@@ -1,3 +1,8 @@
+# spatialFDA 1.3.3
+* rewrote `summary.functionalGam` and added a new `coef.functionalGam` to have no 
+breaking changes in `spatialFDA` due to changes in `refund::pffr` naming.
+* this makes `spatialFDA` again compatible with the `OSTA` chapter.
+
 # spatialFDA 1.3.2
 * covariance matrices are now corrected for cluster-correlations along
 the domain $r$ with sandwich-estimators by default - thank you @fabianscheipl

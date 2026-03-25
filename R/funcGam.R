@@ -144,10 +144,46 @@ functionalGam <- function(data,
 #' @importFrom mgcv summary.gam
 #' @author Martin Emons, adapted from \code{\link[refund]{summary.pffr}()} by Fabian Scheipl
 summary.functionalGam <- function(object, ...){
-    ret <- NextMethod("summary.pffr")
+    call <- match.call()
+    call[[1]] <- summary
+    #need to remove functionalGam (similar to summary.pffr) in order
+    #for the coef function to work correctly in summary.gam
+    class(object) <- class(object)[!(class(object) %in% "functionalGam")]
+    call$object <- as.name("object")
+    ret <- eval(call)
+  
     if(any(ret$s.table[,"p-value"] < 0) | any(ret$s.table[,"p-value"] > 1)){
         warning("p-values outside of [0,1]. Clipped to [0,1]")
         ret$s.table[, "p-value"] <- pmin(pmax(ret$s.table[, "p-value"], 0), 1)
+    }
+    # Rename (yindex) to (x) in row names of s.table and p.table
+    if (!is.null(rownames(ret$s.table))) {
+        rownames(ret$s.table) <- gsub("yindex", "x", rownames(ret$s.table))
+    }
+    if (!is.null(ret$p.table) && !is.null(rownames(ret$p.table))) {
+        rownames(ret$p.table) <- gsub("yindex", "x", rownames(ret$p.table))
+    }
+    class(ret) <- c("summary.functionalGam", class(ret))
+    return(ret)
+}
+
+#' Coef for functionalGam object
+#'
+#' @param object a fitted \code{functionalGam}-object
+#' @param ... see \code{\link[refund]{coef.pffr}()} for options.
+#'
+#' @return coefficicents of the model, see \code{\link[refund]{coef.pffr}()}
+#' @export
+#' @method coef functionalGam
+#' @author Martin Emons, adapted from \code{\link[refund]{coef.pffr}()} by Fabian Scheipl
+coef.functionalGam <- function(object, ...){
+    ret <- NextMethod("coef.pffr")
+    # Rename (yindex) to (x) in names of smterms and pterms
+    if (!is.null(names(ret$smterms))) {
+        names(ret$smterms) <- gsub("yindex", "x", names(ret$smterms))
+    }
+    if (!is.null(names(ret$pterms))) {
+        names(ret$pterms) <- gsub("yindex", "x", names(ret$pterms))
     }
     return(ret)
 }
