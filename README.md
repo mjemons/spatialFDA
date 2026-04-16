@@ -42,3 +42,16 @@ stable versions.
 
 In case you have suggestions to `spatialFDA` please consider opening an
 issue to this repository.
+
+## Citation
+
+When using `spatialFDA` please cite our pre-print
+
+    @article {Emons2026.04.13.718197,
+        author = {Emons, Martin and Scheipl, Fabian and Gunz, Samuel and Purdom, Elizabeth and Robinson, Mark D},
+        title = {Differential co-localisation analysis of multi-sample and multi-condition experiments with spatialFDA},
+        year = {2026},
+        doi = {10.64898/2026.04.13.718197},
+        publisher = {Cold Spring Harbor Laboratory},
+        journal = {bioRxiv}
+    }
