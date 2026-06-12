@@ -36,9 +36,11 @@
 prepData <- function(metricRes, x, y, sample_id = NULL, image_id = NULL,
                      condition = NULL){
     # type checking
-    stopifnot(is(metricRes, "data.frame"))
-    stopifnot(is(x, "character"))
-    stopifnot(is(y, "character"))
+    stopifnot(
+        is.data.frame(metricRes),
+        is.character(x),
+        is.character(y)
+    )
     # extract the functional response matrix
     mat <- metricRes %>%
         dplyr::select("ID", x, y) %>%

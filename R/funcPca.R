@@ -46,8 +46,10 @@
 #' @import dplyr
 #' @importFrom methods is
 functionalPCA <- function(data, r, ...) {
-    stopifnot(is(data, "data.frame"))
-    stopifnot(is(r, "vector"))
+    stopifnot(
+        is.data.frame(data), 
+        is.vector(r)
+    )
     # calculate the fPCA - this is a bit a pointless wrapper until now
     res <- refund::fpca.sc(
         Y = data$Y, center = TRUE, argvals = r, ...
@@ -109,8 +111,10 @@ functionalPCA <- function(data, r, ...) {
 #' @import dplyr
 #' @importFrom methods is
 plotFpca <- function(data, res, colourby = NULL, labelby = NULL) {
-    stopifnot(is(data, "data.frame"))
-    stopifnot(is(res, "fpca"))
+    stopifnot(
+        is.data.frame(data),
+        is(res, "fpca")
+    )
     scoresDf <- res$scores %>% as.data.frame()
     # plot fCPA results - assumes same order of fPCA results and input data
     p <- ggplot(scoresDf, aes(scoresDf[, 1], scoresDf[, 2],

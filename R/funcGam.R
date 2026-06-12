@@ -90,12 +90,14 @@ functionalGam <- function(data,
     discrete = TRUE,
     ...) {
     # type checking
-    stopifnot(is(data, "data.frame"))
-    stopifnot(is(x, "vector"))
-    stopifnot(is(designmat, "matrix"))
-    stopifnot(is(weights, "numeric"), all(weights > 0))
-    stopifnot(is(formula, "formula"))
-    stopifnot(is(family, "character") || is(family, "family"))
+    stopifnot(
+        is.data.frame(data),
+        is.vector(x),
+        is.matrix(designmat),
+        is.numeric(weights), all(weights > 0),
+        inherits(formula, "formula"),
+        is.character(family) || inherits(family, "family")
+    )
 
     if(algorithm != "bam"){
         discrete = FALSE

@@ -99,7 +99,7 @@ spatialInference <- function(spe,
   #for computational reasons, remove the rowData as we don't need them
   SummarizedExperiment::rowData(spe) <- S4Vectors::DataFrame(row.names = rownames(spe))
   #small assertion that the condition has to be a factor
-  stopifnot(is(colData(spe)[[condition]], "factor"))
+  stopifnot(is.factor(colData(spe)[[condition]]))
 
   #first, run calcMetricPerFov
   metricResRaw <- calcMetricPerFov(spe = spe,
@@ -171,7 +171,7 @@ spatialInference <- function(spe,
       metricRes[[correction]] <- pmax(asin(sqrt(metricRes[[correction]])),
                                       eps)
     }else{
-    stopifnot(is(transformation, "numeric"))
+    stopifnot(is.numeric(transformation))
     metricRes[[correction]] <- pmax((metricRes[[correction]])^(transformation),
                                     eps)
     }

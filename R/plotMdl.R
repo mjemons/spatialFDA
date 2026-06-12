@@ -67,8 +67,10 @@
 #' @importFrom methods is
 plotMdl <- function(mdl, predictor, shift = NULL) {
     # type checking
-    stopifnot(is(mdl, "pffr"))
-    stopifnot(is(predictor, "character"))
+    stopifnot(
+        is(mdl, "pffr"),
+        is.character(predictor)
+    )
     # extract the coefficients from the model
     coef <- coef(mdl)
     if (predictor == "(Intercept)" && !is.null(shift)) {

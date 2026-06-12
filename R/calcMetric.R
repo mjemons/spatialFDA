@@ -42,7 +42,7 @@
     window = NULL,
     ...) {
     # type checking
-    stopifnot(is(df, "data.frame"))
+    stopifnot(is.data.frame(df))
     pp <- .dfToppp(df, marks = marks, continuous = continuous, window = window)
     stopifnot("Window size must be greater than the maximum radius length considered"
               =spatstat.geom::boundingradius(pp) >= max(rSeq))
@@ -219,10 +219,12 @@ calcMetricPerFov <- function(spe, selection, subsetby, fun, marks = NULL,
     rSeq = NULL, by = NULL, continuous = FALSE, assay = "exprs", ncores = 1,
     verbose = TRUE, ...) {
     # type checking of input
-    stopifnot(is(spe, "SpatialExperiment"))
-    stopifnot(is(fun, "character"))
-    stopifnot(is(marks, "character"))
-    stopifnot(is(ncores, "numeric"))
+    stopifnot(
+        is(spe, "SpatialExperiment"),
+        is.character(fun),
+        is.character(marks),
+        is.numeric(ncores)
+    )
 
     # check if the provide marks are in the column marks of spe colData
     if (!continuous && base::sum(!(selection %in% colData(spe)[[marks]])) > 0) {
@@ -323,10 +325,12 @@ calcCrossMetricPerFov <- function(
         marks = NULL, rSeq = NULL, by = NULL,
         ncores = 1, continuous = FALSE, assay = "exprs", ...) {
     # type checking of input
-    stopifnot(is(spe, "SpatialExperiment"))
-    stopifnot(is(fun, "character"))
-    stopifnot(is(marks, "character"))
-    stopifnot(is(ncores, "numeric"))
+    stopifnot(
+        is(spe, "SpatialExperiment"),
+        is.character(fun),
+        is.character(marks),
+        is.numeric(ncores)
+    )
 
     # Special case of dot functions
     if (grepl("dot", fun)) {
