@@ -227,7 +227,7 @@ calcMetricPerFov <- function(spe, selection, subsetby, fun, marks = NULL,
     )
 
     # check if the provide marks are in the column marks of spe colData
-    if (!continuous && base::sum(!(selection %in% colData(spe)[[marks]])) > 0) {
+    if (!continuous && any(!(selection %in% colData(spe)[[marks]]))) {
       stop(paste0("not all marks of ", selection,
                   " are in the colData ", marks,  " of the spe"))
     }

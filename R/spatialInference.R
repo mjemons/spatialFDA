@@ -148,7 +148,7 @@ spatialInference <- function(spe,
   # #removing field of views that have as a curve only zeros - these are cases where
   # #there is no cells of one type
   metricRes <- metricResRaw %>% dplyr::group_by(.data[["ID"]]) %>%
-    dplyr::filter(sum(.data[[correction]]) >= 1)
+    dplyr::filter(any(.data[[correction]]))
 
   #filter the upper part of the curve 
   if(!is.null(upperDeltaProb) && (fun == "Gest" || fun == "Gcross")){
