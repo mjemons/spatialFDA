@@ -201,8 +201,8 @@ spatialInference <- function(spe,
     conditionVariable <- condition
     condition <- dat[[condition]]
     if(verbose){
-      message(paste0("Creating design matrix with ", levels(condition)[[1]],
-                 " as reference"))
+      message("Creating design matrix with ", levels(condition)[[1]],
+              " as reference")
     }
     mm <- stats::model.matrix(~condition)
     #make sure that the colnames don't have "-" instead of "_"
@@ -290,7 +290,7 @@ spatialInference <- function(spe,
     # adj R-squared of the entire model
     Rsq.adj <- summary(mdl, re.test = FALSE)$r.sq
     if(verbose){
-      message(paste0("The adjusted R-squared of the model is ", Rsq.adj))
+      message("The adjusted R-squared of the model is ", Rsq.adj)
     }
 
     ##rename the conditions to be the same as in the summary output

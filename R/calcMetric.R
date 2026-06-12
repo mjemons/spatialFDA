@@ -228,8 +228,8 @@ calcMetricPerFov <- function(spe, selection, subsetby, fun, marks = NULL,
 
     # check if the provide marks are in the column marks of spe colData
     if (!continuous && any(!(selection %in% colData(spe)[[marks]]))) {
-      stop(paste0("not all marks of ", selection,
-                  " are in the colData ", marks,  " of the spe"))
+      stop("not all marks of ", selection,
+           " are in the colData ", marks,  " of the spe")
     }
     if(continuous) {
       expr <- SummarizedExperiment::assay(spe, assay)[marks, , drop=FALSE] %>%
@@ -244,15 +244,15 @@ calcMetricPerFov <- function(spe, selection, subsetby, fun, marks = NULL,
     if(length(selection)>1){
       # printing the combination calculated
         if(verbose){
-            message(paste0("Calculating ", fun, " from ",
+            message("Calculating ", fun, " from ",
                             selection[1], " to ",
-                            selection[2]))
+                            selection[2])
         }
     }
     else{
       # printing the combination calculated
         if(verbose){
-            message(paste0("Calculating ", fun, " of ", selection[1]))
+            message("Calculating ", fun, " of ", selection[1])
         }
     }
     # we have one case for discrete cell types where we have one column to subset
