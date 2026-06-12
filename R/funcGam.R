@@ -182,10 +182,10 @@ coef.functionalGam <- function(object, ...){
     ret <- NextMethod("coef.pffr")
     # Rename (yindex) to (x) in names of smterms and pterms
     if (!is.null(names(ret$smterms))) {
-        names(ret$smterms) <- gsub("yindex", "x", names(ret$smterms))
+        names(ret$smterms) <- gsub("yindex", "x", names(ret$smterms), fixed = TRUE)
     }
     if (!is.null(names(ret$pterms))) {
-        names(ret$pterms) <- gsub("yindex", "x", names(ret$pterms))
+        names(ret$pterms) <- gsub("yindex", "x", names(ret$pterms), fixed = TRUE)
     }
     return(ret)
 }
