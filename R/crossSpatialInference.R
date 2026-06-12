@@ -108,7 +108,7 @@ crossSpatialInference <- function(spe,
                            ...)
     return(res)
   })
-  mat <- do.call("cbind",ls) %>% t()
+  mat <- do.call(cbind,ls) %>% t()
   cellTypes <- paste0(mat[,1], "_", mat[,2])
   names(resLs) <- cellTypes
 
