@@ -43,7 +43,11 @@ prepData <- function(metricRes, x, y, sample_id = NULL, image_id = NULL,
     mat <- metricRes %>%
         dplyr::select("ID", x, y) %>%
         tidyr::spread("ID", y) %>%
-        dplyr::select(!x)
+        dplyr::select(!x) %>%
+        as.matrix() 
+
+
+    storage.mode(mat) <- "numeric"
     # create a dataframe as required by pffr
     # the colnames of the matrix are the new row IDs
     dat <- data.frame(ID = colnames(mat))

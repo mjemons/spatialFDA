@@ -54,7 +54,7 @@ plotMetricPerFov <- function(metricDf, theo = FALSE, correction = NULL,
     if (!is.null(ID)) {
         p <- p +
             geom_line(aes(colour = factor(.data[[ID]])), ...) +
-            facet_wrap(selection ~ ID, nrow, ncol)
+            facet_wrap(vars(selection, .data[[ID]]), nrow, ncol)
     } else {
         p <- p +
             geom_line(aes(colour = factor(.data[[imageId]])), ...)
@@ -227,12 +227,13 @@ plotCrossMetricPerFov <- function(
 #' @importFrom fda fbplot
 #' @importFrom graphics title
 plotFbPlot <- function(
-    metricDf, x, y, aggregateBy) {
+    metricDf, x, y, aggregateBy, sample_id = "sample_id",
+    image_id = "image_id") {
   aggregationLs <- metricDf[[aggregateBy]] %>% unique
   ylim <- c(min(metricDf[[y]]), max(metricDf[[y]]))
   lapply(aggregationLs, function(aggregate){
       filteredData <- metricDf %>% filter(.data[[aggregateBy]] == aggregate)
-      res <- prepData(filteredData, x, y) %>% drop_na
+      res <- prepData(filteredData, x, y, sample_id, image_id) %>% drop_na
       fda::fbplot(t(res$Y), ylim = ylim)
       graphics::title(main = aggregate)
     })
