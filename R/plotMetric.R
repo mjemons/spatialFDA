@@ -54,7 +54,7 @@ plotMetricPerFov <- function(metricDf, theo = FALSE, correction = NULL,
     if (!is.null(ID)) {
         p <- p +
             geom_line(aes(colour = factor(.data[[ID]])), ...) +
-            facet_wrap(vars(selection, .data[[ID]]), nrow, ncol)
+            facet_wrap(vars(.data[["selection"]], .data[[ID]]), nrow, ncol)
     } else {
         p <- p +
             geom_line(aes(colour = factor(.data[[imageId]])), ...)
@@ -200,6 +200,8 @@ plotCrossMetricPerFov <- function(
 #' @param metricDf the metric dataframe as calculated by `calcMetricPerFov`
 #' @param x the name of the x-axis of the spatial metric
 #' @param y the name of the y-axis of the spatial metric
+#' @param imageId the ID of the image/fov
+#' @param sampleId the ID of the sample
 #' @param aggregateBy the criterion by which to aggregate the curves into a
 #' functional boxplot. Can be e.g. the condition of the different samples.
 #'
@@ -223,17 +225,18 @@ plotCrossMetricPerFov <- function(
 #'   "|", metricRes$image_number
 #' )
 #'
-#' plotFbPlot(metricRes, 'r', 'rs', 'patient_stage')
+#' plotFbPlot(metricRes, 'r', 'rs', 'patient_stage', 'patient_id',
+#'  'image_number')
 #' @importFrom fda fbplot
 #' @importFrom graphics title
 plotFbPlot <- function(
-    metricDf, x, y, aggregateBy, sample_id = "sample_id",
-    image_id = "image_id") {
+    metricDf, x, y, aggregateBy, sampleId,
+    imageId) {
   aggregationLs <- metricDf[[aggregateBy]] %>% unique
   ylim <- c(min(metricDf[[y]]), max(metricDf[[y]]))
   lapply(aggregationLs, function(aggregate){
       filteredData <- metricDf %>% filter(.data[[aggregateBy]] == aggregate)
-      res <- prepData(filteredData, x, y, sample_id, image_id) %>% drop_na
+      res <- prepData(filteredData, x, y, sampleId, imageId) %>% drop_na
       fda::fbplot(t(res$Y), ylim = ylim)
       graphics::title(main = aggregate)
     })
