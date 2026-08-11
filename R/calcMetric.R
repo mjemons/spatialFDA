@@ -167,7 +167,7 @@
     metricRes$minIntensity <- base::min(spatstat.geom::intensity(ppSub))
     if(continuous == FALSE){
         metricRes$intensityQuery <- 
-        spatstat.geom::intensity(ppSub)[[selection[length(selection)]]]
+        spatstat.geom::intensity(ppSub)[[as.character(selection[length(selection)])]]
     }
     metricRes$pplevels <- paste(levels(spatstat.geom::marks(ppSub)),
                                 collapse = " to ")

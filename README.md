@@ -38,6 +38,8 @@ This package is still under active development, the content is therefore
 subject to change. Please refer to the `Bioconductor` releases for
 stable versions.
 
+AI coding assistants were used for parts of this package.
+
 ## Contact
 
 In case you have suggestions to `spatialFDA` please consider opening an
