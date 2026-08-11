@@ -210,5 +210,18 @@ test_that("spatilInference can handle completely missing points",{
   expect_true(is.null(res$mdl) && is.null(res$designmat))
 })
 
+test_that("spatilInference works with intensity covariate adjustement",{
+  res <- spatialInference(spe, c("alpha", "Tc"),
+    fun = "Gcross", marks = "cell_type",
+    rSeq = seq(0, 50, length.out = 50), correction = "rs",
+    sample_id = "patient_id",
+    image_id = "image_number", condition = "patient_stage",
+    ncores = 1,
+    algorithm = "bam",
+    intensityAdjustment = TRUE
+  )
+  expect_true(!is.null(res$mdl))
+})
+
 
 

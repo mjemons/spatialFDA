@@ -17,12 +17,14 @@
 #' @param continuous A boolean indicating whether the marks are continuous
 #' defaults to FALSE
 #' @param assay the assay which is used if `continuous = TRUE`
-#' @param transformation the transformation to be applied as exponential e.g. 1/2 for sqrt
-#' or Fisher's variance-stabilising transformation if "Fisher"
-#' @param proportionAdjustment a logical whether or not to normalise out cell type proportion
-#' differences in the functional regression model. For $L$ functions the proportion effects
-#' is already explicit in the metric definition. In fact, the same value as the 
-#' untransformed weighting scheme (min, max, total) will be applied
+#' @param transformation the transformation to be applied as exponential e.g.
+#' 1/2 for sqrt or Fisher's variance-stabilising transformation if "Fisher"
+#' @param intensityAdjustment a logical whether or not to normalise out cell 
+#' type intensity differences in the functional regression model.
+#' For $L$ functions the intensity effects is already explicit in the metric 
+#' definition. The intensity adjustement is via the average intensity of the 
+#' query cell type B in a cross (A->B) setting parametrised as a constant 
+#' covariate over the domain $r$.
 #' @param weights the weighting to be applied to the functional GAM. Either NULL
 #' (equal weights), total (npoints of total pattern), min (npoints of the smaller
 #' subpattern) or max (npoints of the larger subpattern) or a user defined value
@@ -86,7 +88,7 @@ spatialInference <- function(spe,
                              continuous = FALSE,
                              assay = "exprs",
                              transformation = NULL,
-                             proportionAdjustment = FALSE,
+                             intensityAdjustment = FALSE,
                              weights = "total",
                              eps = 1e-3,
                              delta = "minNnDist",
@@ -245,22 +247,15 @@ spatialInference <- function(spe,
       weights = sqrt(weights)
     }
 
-    if(proportionAdjustment){
+    if(intensityAdjustment){
       if(fun %in% c("Lcross", "Lest", "Kcross", "Kest")){
         warning("Proportion offset included with ", fun, " that already
         normalises for proportion differences in the metric definition")
       }
-      if(dat$npointsmax == dat$npointsmin){
-        formula <- stats::update.formula(
-          formula,
-          . ~ . + dat$npointsmax
-        )
-      }else{
-        formula <- stats::update.formula(
-          formula,
-          . ~ . + dat$npointsmax + dat$npointsmin
-        )
-      }
+      formula <- stats::update.formula(
+        formula,
+        . ~ . + c(intensityQuery)
+      )
     }
     
     if(AR1){

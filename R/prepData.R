@@ -62,7 +62,7 @@ prepData <- function(metricRes, x, y, sample_id = NULL, image_id = NULL,
     # extract the coordinates and meta data and convert to factor
     meta <- metricRes %>%
         dplyr::select("ID", "centroidx", "centroidy", "minIntensity", sample_id,
-                      image_id, condition) %>%
+                      image_id, condition, "intensityQuery") %>%
         unique() %>%
         mutate(across(c(sample_id,
                         image_id, condition), as.factor))

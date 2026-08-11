@@ -17,7 +17,7 @@ spatialInference(
   continuous = FALSE,
   assay = "exprs",
   transformation = NULL,
-  proportionAdjustment = FALSE,
+  intensityAdjustment = FALSE,
   weights = "total",
   eps = 0.001,
   delta = "minNnDist",
@@ -58,13 +58,15 @@ defaults to FALSE}
 
 \item{assay}{the assay which is used if \code{continuous = TRUE}}
 
-\item{transformation}{the transformation to be applied as exponential e.g. 1/2 for sqrt
-or Fisher's variance-stabilising transformation if "Fisher"}
+\item{transformation}{the transformation to be applied as exponential e.g.
+1/2 for sqrt or Fisher's variance-stabilising transformation if "Fisher"}
 
-\item{proportionAdjustment}{a logical whether or not to normalise out cell type proportion
-differences in the functional regression model. For $L$ functions the proportion effects
-is already explicit in the metric definition. In fact, the same value as the
-untransformed weighting scheme (min, max, total) will be applied}
+\item{intensityAdjustment}{a logical whether or not to normalise out cell
+type intensity differences in the functional regression model.
+For $L$ functions the intensity effects is already explicit in the metric
+definition. The intensity adjustement is via the average intensity of the
+query cell type B in a cross (A->B) setting parametrised as a constant
+covariate over the domain $r$.}
 
 \item{weights}{the weighting to be applied to the functional GAM. Either NULL
 (equal weights), total (npoints of total pattern), min (npoints of the smaller
