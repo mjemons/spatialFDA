@@ -17,7 +17,7 @@ spatialInference(
   continuous = FALSE,
   assay = "exprs",
   transformation = NULL,
-  intensityAdjustment = FALSE,
+  intensityAdjustment = "default",
   weights = "total",
   eps = 0.001,
   delta = "minNnDist",
@@ -66,7 +66,8 @@ type intensity differences in the functional regression model.
 For $L$ functions the intensity effects is already explicit in the metric
 definition. The intensity adjustement is via the average intensity of the
 query cell type B in a cross (A->B) setting parametrised as a constant
-covariate over the domain $r$.}
+covariate over the domain $r$. The "default" normalises $G$ and $F$ functions
+like this but not all other functions.}
 
 \item{weights}{the weighting to be applied to the functional GAM. Either NULL
 (equal weights), total (npoints of total pattern), min (npoints of the smaller

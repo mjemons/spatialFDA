@@ -24,7 +24,8 @@
 #' For $L$ functions the intensity effects is already explicit in the metric 
 #' definition. The intensity adjustement is via the average intensity of the 
 #' query cell type B in a cross (A->B) setting parametrised as a constant 
-#' covariate over the domain $r$.
+#' covariate over the domain $r$. The "default" normalises $G$ and $F$ functions
+#' like this but not all other functions.  
 #' @param weights the weighting to be applied to the functional GAM. Either NULL
 #' (equal weights), total (npoints of total pattern), min (npoints of the smaller
 #' subpattern) or max (npoints of the larger subpattern) or a user defined value
@@ -88,7 +89,7 @@ spatialInference <- function(spe,
                              continuous = FALSE,
                              assay = "exprs",
                              transformation = NULL,
-                             intensityAdjustment = FALSE,
+                             intensityAdjustment = "default",
                              weights = "total",
                              eps = 1e-3,
                              delta = "minNnDist",
@@ -107,6 +108,16 @@ spatialInference <- function(spe,
   SummarizedExperiment::rowData(spe) <- S4Vectors::DataFrame(row.names = rownames(spe))
   #small assertion that the condition has to be a factor
   stopifnot(is(colData(spe)[[condition]], "factor"))
+
+  #the default behaviour is that G and F functions are intensity corrected in
+  #the model and all others not
+  if(intensityAdjustment == "default"){
+    if(fun %in% c("Gest", "Fest", "Gcross", "Fcross")){
+      intensityAdjustment <- TRUE
+    }else{
+      intensityAdjustment <- FALSE
+    }
+  }
 
   #first, run calcMetricPerFov
   metricResRaw <- calcMetricPerFov(spe = spe,
