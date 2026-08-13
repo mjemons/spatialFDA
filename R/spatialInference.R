@@ -119,6 +119,12 @@ spatialInference <- function(spe,
     }
   }
 
+  if(!is.null(sample_id)){
+    by <- c(sample_id, image_id, condition)
+  }else{
+    by <- c(image_id, condition)
+  }
+
   #first, run calcMetricPerFov
   metricResRaw <- calcMetricPerFov(spe = spe,
                                 selection = selection,
@@ -126,7 +132,7 @@ spatialInference <- function(spe,
                                 fun = fun,
                                 marks =marks,
                                 rSeq = rSeq,
-                                by = c(sample_id, image_id, condition),
+                                by = by,
                                 verbose = verbose,
                                 ncores = ncores,
                                 correction = correction,
