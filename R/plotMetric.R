@@ -236,7 +236,7 @@ plotFbPlot <- function(
   ylim <- c(min(metricDf[[y]]), max(metricDf[[y]]))
   lapply(aggregationLs, function(aggregate){
       filteredData <- metricDf %>% filter(.data[[aggregateBy]] == aggregate)
-      res <- prepData(filteredData, x, y, sampleId, imageId) %>% drop_na
+      res <- prepData(filteredData, x, y, sampleId, imageId) %>% tidyr::drop_na()
       fda::fbplot(t(res$Y), ylim = ylim)
       graphics::title(main = aggregate)
     })

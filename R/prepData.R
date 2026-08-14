@@ -7,6 +7,8 @@
 #' @param sample_id the spe `colData` variable to mark the sample
 #' @param image_id the spe `colData` variable to mark the image
 #' @param condition the spe `colData` variable to mark the condition
+#' @param ID the unique ID corresponding to each row in the metricRes defaults
+#' to `"ID"`
 #'
 #' @return returns a list with three entries, the unique ID, the functional
 #' response Y and the weights
@@ -34,15 +36,15 @@
 #' @import tidyr
 #' @importFrom methods is
 prepData <- function(metricRes, x, y, sample_id = NULL, image_id = NULL,
-                     condition = NULL){
+                     condition = NULL, ID = "ID"){
     # type checking
     stopifnot(is(metricRes, "data.frame"))
     stopifnot(is(x, "character"))
     stopifnot(is(y, "character"))
     # extract the functional response matrix
     mat <- metricRes %>%
-        dplyr::select("ID", x, y) %>%
-        tidyr::spread("ID", y) %>%
+        dplyr::select(ID, x, y) %>%
+        tidyr::spread(ID, y) %>%
         dplyr::select(!x) %>%
         as.matrix() 
 
