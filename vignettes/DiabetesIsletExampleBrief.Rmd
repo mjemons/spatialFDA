@@ -151,9 +151,9 @@ resLs <- crossSpatialInference(
     rSeq = seq(0, 50, length.out = 50), 
     correction = "rs",
     sample_id = "patient_id",
-    family = mgcv::scat(link = "log"),
     image_id = "image_number", 
     condition = "patient_stage",
+    intensityAdjustment = TRUE
 )
 
 names(resLs)
