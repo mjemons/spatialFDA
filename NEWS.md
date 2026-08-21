@@ -1,3 +1,6 @@
+# spatialFDA 1.5.1
+* update version to match bioconductor git
+
 # spatialFDA 1.3.4
 * option to add an intensity covariate adjustement to the fGAMM. This is the 
 new default for `Gest`, `Gcross`, `Fest` and `Fcross` but not for the other 
