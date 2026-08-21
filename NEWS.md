@@ -1,3 +1,9 @@
+# spatialFDA 1.3.4
+* option to add an intensity covariate adjustement to the fGAMM. This is the 
+new default for `Gest`, `Gcross`, `Fest` and `Fcross` but not for the other 
+functions
+* fixing hardcoded ID calls in the plotting scripts 
+
 # spatialFDA 1.3.3
 * rewrote `summary.functionalGam` and added a new `coef.functionalGam` to have no 
 breaking changes in `spatialFDA` due to changes in `refund::pffr` naming.

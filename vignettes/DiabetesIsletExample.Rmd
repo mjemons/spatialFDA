@@ -249,7 +249,7 @@ metricRes$ID <- paste0(
 #there is no cells of one type
 metricRes <- metricRes %>% dplyr::group_by(ID) %>% dplyr::filter(sum(rs) >= 1)
 
-collector <- plotFbPlot(metricRes, "r", "rs", "patient_stage")
+collector <- plotFbPlot(metricRes, "r", "rs", "patient_stage", "patient_id",  "image_number")
 ```
 
 The functional boxplot shows that onset $G$-curves are more variable than the corresponding long-duration and non-diabetic curves. We note as well, that the variability is heteroscedastic along the domain (i.e., variance increases with radius), which is undesirable for our statistical modelling. Therefore, we can e.g. apply a variance stabilising transformation to our data or model this variance in the statistical model.
@@ -259,7 +259,7 @@ The functional boxplot shows that onset $G$-curves are more variable than the co
 # for the transformation use Fisher's variance-stabilising transformation
 metricRes$rs <- asin(sqrt(metricRes$rs))
 
-collector <- plotFbPlot(metricRes, 'r', 'rs', 'patient_stage')
+collector <- plotFbPlot(metricRes, "r", "rs", "patient_stage", "patient_id",  "image_number")
 ```
 
 # Functional principal component analysis

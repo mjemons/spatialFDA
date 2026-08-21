@@ -151,9 +151,9 @@ resLs <- crossSpatialInference(
     rSeq = seq(0, 50, length.out = 50), 
     correction = "rs",
     sample_id = "patient_id",
-    family = mgcv::scat(link = "log"),
     image_id = "image_number", 
     condition = "patient_stage",
+    intensityAdjustment = TRUE
 )
 
 names(resLs)
@@ -215,7 +215,7 @@ metricRes$ID <- paste0(
     "x", metricRes$image_number
 )
 
-collector <- plotFbPlot(metricRes, "r", "rs", "patient_stage")
+collector <- plotFbPlot(metricRes, "r", "rs", "patient_stage", "patient_id",  "image_number")
 ```
 
 The functional boxplot provides a convenient summary of the spatial statistics curves. We see that the median curve for onset samples plateaus at a higher level and that non-diabetic and long-duration functional boxplots are in general very similar. There are some outlier curves but since they are not far off the envelopes, we do not filter them out. In comparison to the raw spatial statistics curves we note that the transformations stabilise the variance along the domain $r$

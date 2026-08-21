@@ -4,7 +4,15 @@
 \alias{prepData}
 \title{Prepare data from calcMetricRes to be in the right format for FDA}
 \usage{
-prepData(metricRes, x, y, sample_id = NULL, image_id = NULL, condition = NULL)
+prepData(
+  metricRes,
+  x,
+  y,
+  sample_id = NULL,
+  image_id = NULL,
+  condition = NULL,
+  ID = "ID"
+)
 }
 \arguments{
 \item{metricRes}{a dataframe as calculated by calcMetricRes - requires
@@ -19,6 +27,9 @@ the columns ID (unique identifier of each row)}
 \item{image_id}{the spe \code{colData} variable to mark the image}
 
 \item{condition}{the spe \code{colData} variable to mark the condition}
+
+\item{ID}{the unique ID corresponding to each row in the metricRes defaults
+to \code{"ID"}}
 }
 \value{
 returns a list with three entries, the unique ID, the functional

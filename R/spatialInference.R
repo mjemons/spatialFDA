@@ -17,8 +17,15 @@
 #' @param continuous A boolean indicating whether the marks are continuous
 #' defaults to FALSE
 #' @param assay the assay which is used if `continuous = TRUE`
-#' @param transformation the transformation to be applied as exponential e.g. 1/2 for sqrt
-#' or Fisher's variance-stabilising transformation if "Fisher"
+#' @param transformation the transformation to be applied as exponential e.g.
+#' 1/2 for sqrt or Fisher's variance-stabilising transformation if "Fisher"
+#' @param intensityAdjustment a logical whether or not to normalise out cell 
+#' type intensity differences in the functional regression model.
+#' For $L$ functions the intensity effects is already explicit in the metric 
+#' definition. The intensity adjustement is via the average intensity of the 
+#' query cell type B in a cross (A->B) setting parametrised as a constant 
+#' covariate over the domain $r$. The "default" normalises $G$ and $F$ functions
+#' like this but not all other functions.  
 #' @param weights the weighting to be applied to the functional GAM. Either NULL
 #' (equal weights), total (npoints of total pattern), min (npoints of the smaller
 #' subpattern) or max (npoints of the larger subpattern) or a user defined value
@@ -82,6 +89,7 @@ spatialInference <- function(spe,
                              continuous = FALSE,
                              assay = "exprs",
                              transformation = NULL,
+                             intensityAdjustment = "default",
                              weights = "total",
                              eps = 1e-3,
                              delta = "minNnDist",
@@ -101,6 +109,22 @@ spatialInference <- function(spe,
   #small assertion that the condition has to be a factor
   stopifnot(is(colData(spe)[[condition]], "factor"))
 
+  #the default behaviour is that G and F functions are intensity corrected in
+  #the model and all others not
+  if(intensityAdjustment == "default"){
+    if(fun %in% c("Gest", "Fest", "Gcross", "Fcross")){
+      intensityAdjustment <- TRUE
+    }else{
+      intensityAdjustment <- FALSE
+    }
+  }
+
+  if(!is.null(sample_id)){
+    by <- c(sample_id, image_id, condition)
+  }else{
+    by <- c(image_id, condition)
+  }
+
   #first, run calcMetricPerFov
   metricResRaw <- calcMetricPerFov(spe = spe,
                                 selection = selection,
@@ -108,7 +132,7 @@ spatialInference <- function(spe,
                                 fun = fun,
                                 marks =marks,
                                 rSeq = rSeq,
-                                by = c(sample_id, image_id, condition),
+                                by = by,
                                 verbose = verbose,
                                 ncores = ncores,
                                 correction = correction,
@@ -238,6 +262,17 @@ spatialInference <- function(spe,
 
     if(weightTransform){
       weights = sqrt(weights)
+    }
+
+    if(intensityAdjustment){
+      if(fun %in% c("Lcross", "Lest", "Kcross", "Kest")){
+        warning("Proportion offset included with ", fun, " that already
+        normalises for proportion differences in the metric definition")
+      }
+      formula <- stats::update.formula(
+        formula,
+        . ~ . + c(intensityQuery)
+      )
     }
     
     if(AR1){

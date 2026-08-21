@@ -165,6 +165,10 @@
     metricRes$centroidx <- centroid$x
     metricRes$centroidy <- centroid$y
     metricRes$minIntensity <- base::min(spatstat.geom::intensity(ppSub))
+    if(continuous == FALSE){
+        metricRes$intensityQuery <- 
+        spatstat.geom::intensity(ppSub)[[as.character(selection[length(selection)])]]
+    }
     metricRes$pplevels <- paste(levels(spatstat.geom::marks(ppSub)),
                                 collapse = " to ")
     # small assertion that the order of the levels in `ppSub`

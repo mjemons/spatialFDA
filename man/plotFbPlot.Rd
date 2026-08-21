@@ -4,7 +4,7 @@
 \alias{plotFbPlot}
 \title{Functional boxplot of spatstat curves}
 \usage{
-plotFbPlot(metricDf, x, y, aggregateBy)
+plotFbPlot(metricDf, x, y, aggregateBy, sampleId, imageId)
 }
 \arguments{
 \item{metricDf}{the metric dataframe as calculated by \code{calcMetricPerFov}}
@@ -15,6 +15,10 @@ plotFbPlot(metricDf, x, y, aggregateBy)
 
 \item{aggregateBy}{the criterion by which to aggregate the curves into a
 functional boxplot. Can be e.g. the condition of the different samples.}
+
+\item{sampleId}{the ID of the sample}
+
+\item{imageId}{the ID of the image/fov}
 }
 \value{
 a list of base R plots
@@ -40,5 +44,6 @@ metricRes$ID <- paste0(
   "|", metricRes$image_number
 )
 
-plotFbPlot(metricRes, 'r', 'rs', 'patient_stage')
+plotFbPlot(metricRes, 'r', 'rs', 'patient_stage', 'patient_id',
+ 'image_number')
 }
