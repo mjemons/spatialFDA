@@ -42,7 +42,7 @@
     window = NULL,
     ...) {
     # type checking
-    stopifnot(is(df, "data.frame"))
+    stopifnot(is.data.frame(df))
     pp <- .dfToppp(df, marks = marks, continuous = continuous, window = window)
     stopifnot("Window size must be greater than the maximum radius length considered"
               =spatstat.geom::boundingradius(pp) >= max(rSeq))
@@ -223,15 +223,17 @@ calcMetricPerFov <- function(spe, selection, subsetby, fun, marks = NULL,
     rSeq = NULL, by = NULL, continuous = FALSE, assay = "exprs", ncores = 1,
     verbose = TRUE, ...) {
     # type checking of input
-    stopifnot(is(spe, "SpatialExperiment"))
-    stopifnot(is(fun, "character"))
-    stopifnot(is(marks, "character"))
-    stopifnot(is(ncores, "numeric"))
+    stopifnot(
+        is(spe, "SpatialExperiment"),
+        is.character(fun),
+        is.character(marks),
+        is.numeric(ncores)
+    )
 
     # check if the provide marks are in the column marks of spe colData
-    if (!continuous && base::sum(!(selection %in% colData(spe)[[marks]])) > 0) {
-      stop(paste0("not all marks of ", selection,
-                  " are in the colData ", marks,  " of the spe"))
+    if (!continuous && any(!(selection %in% colData(spe)[[marks]]))) {
+      stop("not all marks of ", selection,
+           " are in the colData ", marks,  " of the spe")
     }
     if(continuous) {
       expr <- SummarizedExperiment::assay(spe, assay)[marks, , drop=FALSE] %>%
@@ -246,15 +248,15 @@ calcMetricPerFov <- function(spe, selection, subsetby, fun, marks = NULL,
     if(length(selection)>1){
       # printing the combination calculated
         if(verbose){
-            message(paste0("Calculating ", fun, " from ",
+            message("Calculating ", fun, " from ",
                             selection[1], " to ",
-                            selection[2]))
+                            selection[2])
         }
     }
     else{
       # printing the combination calculated
         if(verbose){
-            message(paste0("Calculating ", fun, " of ", selection[1]))
+            message("Calculating ", fun, " of ", selection[1])
         }
     }
     # we have one case for discrete cell types where we have one column to subset
@@ -327,10 +329,12 @@ calcCrossMetricPerFov <- function(
         marks = NULL, rSeq = NULL, by = NULL,
         ncores = 1, continuous = FALSE, assay = "exprs", ...) {
     # type checking of input
-    stopifnot(is(spe, "SpatialExperiment"))
-    stopifnot(is(fun, "character"))
-    stopifnot(is(marks, "character"))
-    stopifnot(is(ncores, "numeric"))
+    stopifnot(
+        is(spe, "SpatialExperiment"),
+        is.character(fun),
+        is.character(marks),
+        is.numeric(ncores)
+    )
 
     # Special case of dot functions
     if (grepl("dot", fun)) {

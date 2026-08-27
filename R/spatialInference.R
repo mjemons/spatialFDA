@@ -107,7 +107,7 @@ spatialInference <- function(spe,
   #for computational reasons, remove the rowData as we don't need them
   SummarizedExperiment::rowData(spe) <- S4Vectors::DataFrame(row.names = rownames(spe))
   #small assertion that the condition has to be a factor
-  stopifnot(is(colData(spe)[[condition]], "factor"))
+  stopifnot(is.factor(colData(spe)[[condition]]))
 
   #the default behaviour is that G and F functions are intensity corrected in
   #the model and all others not
@@ -172,7 +172,7 @@ spatialInference <- function(spe,
   # #removing field of views that have as a curve only zeros - these are cases where
   # #there is no cells of one type
   metricRes <- metricResRaw %>% dplyr::group_by(.data[["ID"]]) %>%
-    dplyr::filter(sum(.data[[correction]]) >= 1)
+    dplyr::filter(any(.data[[correction]]))
 
   #filter the upper part of the curve 
   if(!is.null(upperDeltaProb) && (fun == "Gest" || fun == "Gcross")){
@@ -195,7 +195,7 @@ spatialInference <- function(spe,
       metricRes[[correction]] <- pmax(asin(sqrt(metricRes[[correction]])),
                                       eps)
     }else{
-    stopifnot(is(transformation, "numeric"))
+    stopifnot(is.numeric(transformation))
     metricRes[[correction]] <- pmax((metricRes[[correction]])^(transformation),
                                     eps)
     }
@@ -225,8 +225,8 @@ spatialInference <- function(spe,
     conditionVariable <- condition
     condition <- dat[[condition]]
     if(verbose){
-      message(paste0("Creating design matrix with ", levels(condition)[[1]],
-                 " as reference"))
+      message("Creating design matrix with ", levels(condition)[[1]],
+              " as reference")
     }
     mm <- stats::model.matrix(~condition)
     #make sure that the colnames don't have "-" instead of "_"
@@ -325,19 +325,21 @@ spatialInference <- function(spe,
     # adj R-squared of the entire model
     Rsq.adj <- summary(mdl, re.test = FALSE)$r.sq
     if(verbose){
-      message(paste0("The adjusted R-squared of the model is ", Rsq.adj))
+      message("The adjusted R-squared of the model is ", Rsq.adj)
     }
 
     ##rename the conditions to be the same as in the summary output
     dat <- dat %>%
       mutate(coefficient =
                paste0("condition",
-                      gsub("-","_", .data[[conditionVariable]]),"(x)")) %>%
+                      gsub("-","_", .data[[conditionVariable]], fixed = TRUE),
+                      "(x)")) %>%
       #rename the reference category to be Intercept
       mutate(coefficient =
                case_when(coefficient ==
                            paste0("condition",
-                                  gsub("-","_",levels(condition)[[1]]), "(x)")
+                                  gsub("-","_",levels(condition)[[1]], fixed = TRUE), 
+                                  "(x)")
                          ~ "Intercept(x)", TRUE ~ coefficient))
 
     # calculate the median intensity per condition
@@ -392,11 +394,11 @@ spatialInference <- function(spe,
     residualPffr <- residualPffr %>%
       mutate(coefficient = paste0("condition",
                                   gsub("-","_",
-                                       .data[[conditionVariable]]),"(x)")) %>%
+                                       .data[[conditionVariable]], fixed = TRUE),"(x)")) %>%
       #rename the reference category to be Intercept
       mutate(coefficient = case_when(coefficient == paste0("condition",
                                                            gsub("-","_",
-                                                                levels(condition)[[1]]), "(x)")
+                                                                levels(condition)[[1]], fixed = TRUE), "(x)")
                                      ~ "Intercept(x)",
                                      TRUE ~ coefficient))
     # combine the residuals with the degrees of freedom
