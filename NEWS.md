@@ -1,3 +1,8 @@
+# spatialFDA 1.5.2
+* added option to apply the inverse link on the intercept function to have it
+on the original scale for the `pltMdl` function. To recover the old behaviour,
+set `linkinverse` to `FALSE` in `pltMdl`
+
 # spatialFDA 1.5.1
 * update version to match bioconductor git
 

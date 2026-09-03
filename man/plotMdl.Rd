@@ -4,7 +4,7 @@
 \alias{plotMdl}
 \title{Plot a pffr model object}
 \usage{
-plotMdl(mdl, predictor, shift = NULL)
+plotMdl(mdl, predictor, shift = NULL, linkinverse = TRUE)
 }
 \arguments{
 \item{mdl}{a \code{pffr} model object}
@@ -13,6 +13,9 @@ plotMdl(mdl, predictor, shift = NULL)
 
 \item{shift}{the value by which to shift the centered functional intercept.
 this will most often be the constant intercept}
+
+\item{linkinverse}{logical whether or not to put the intercept on the
+original scale or whether to leave it on the scale of the link function}
 }
 \value{
 ggplot object of the functional estimate

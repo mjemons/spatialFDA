@@ -10,6 +10,8 @@
 #' @param predictor predictor to plot
 #' @param shift the value by which to shift the centered functional intercept.
 #' this will most often be the constant intercept
+#' @param linkinverse logical whether or not to put the intercept on the
+#' original scale or whether to leave it on the scale of the link function
 #'
 #' @return ggplot object of the functional estimate
 #' @export
@@ -65,7 +67,7 @@
 #' )
 #' @import dplyr
 #' @importFrom methods is
-plotMdl <- function(mdl, predictor, shift = NULL) {
+plotMdl <- function(mdl, predictor, shift = NULL, linkinverse = TRUE) {
     # type checking
     stopifnot(is(mdl, "pffr"))
     stopifnot(is(predictor, "character"))
@@ -76,6 +78,12 @@ plotMdl <- function(mdl, predictor, shift = NULL) {
         predictor = "Intercept"
         coef$smterms[["Intercept(x)"]]$coef$value <-
           coef$smterms[["Intercept(x)"]]$coef$value + shift
+    }
+    if(predictor %in% c("(Intercept)", "Intercept")  && linkinverse){
+        #rename as pffr output is without brackets
+        predictor = "Intercept"
+        coef$smterms[["Intercept(x)"]]$coef$value <-
+            mdl$family$linkinv(coef$smterms[["Intercept(x)"]]$coef$value)
     }
     # get the actual values into a dataframe
     df <- coef$smterms[[paste0(predictor, "(x)")]]$coef
